@@ -1,0 +1,40 @@
+#ifndef _MAIN_H
+#define _MAIN_H 1
+
+/* Operating system checking. ######################################################### */
+#if defined( WIN32) || defined(_WIN32) || defined(_WIN64)
+    #define  CLIENT_OS  "Windows Operating System!"
+#elif defined(__APPLE__) || defined(__MACH__)
+    #define  CLIENT_OS  "MacOs Operating System!"
+#elif defined(LINUX) || defined(__linux__)
+    #define  CLIENT_OS  "Linux Operating System!"
+#else
+    #define  CLIENT_OS  "Unkown Operating System!"
+#endif
+
+/* Cmake variables */
+#include "cmake_variables.h"
+
+/* Platform Specific libraries. */
+#include <Windows.h>
+#include <time.h>
+
+/* Build in Libraries. */
+#include <stdio.h>
+#include <xmmintrin.h>
+#include <immintrin.h>
+
+/* Internal Libraries. */
+#include "headers/components/rasterization.h"
+
+/* External Libraries. */
+#ifndef _glfw3_h_
+    #include "libraries/glfw-3.4/include/GLFW/glfw3.h"
+#endif
+
+/* General Macro definitions */
+#define _GNU_SOURCE /* Importand to counter sigaction struct < incomplete type error >. */
+
+#endif /* _MAIN_H */
+
+

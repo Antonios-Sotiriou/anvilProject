@@ -1,0 +1,4 @@
+﻿  glew.c
+     Bibliothek "..\..\lib\Release\x64\glew32.lib" und Objekt "..\..\lib\Release\x64\glew32.exp" werden erstellt.
+LINK : warning LNK4281: Unerwünschte Basisadresse 0x62AA0000 für x64-Image. Legen Sie die Basisadresse zur ASLR-Optimierung oberhalb von 4 GB fest.
+  glew_shared.vcxproj -> C:\Users\anton\Desktop\testLibraries\glew-2.1.0\bin\Release\x64\glew32.dll

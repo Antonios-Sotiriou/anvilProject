@@ -1,0 +1,5 @@
+.git/
+.vs/
+out/
+*.obj
+*.asm
