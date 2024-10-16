@@ -24,17 +24,6 @@ const static void createBuffers(void) {
 }
 /* Creates user defined framebuffers and framebuffers textures. */
 const static void createTextures(void) {
-    /* Main Textures. */
-    //int tex_num = 0;
-    //for (int i = GL_TEXTURE0; i <= GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1; i++) {
-    //    printf("GL_TEXTURE%d : %d\n", tex_num, i);
-    //    tex_num++;
-    //}
-    //printf("tex_num : %d\n", tex_num);
-    //printf("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: %d\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-    //printf("GL_MAX_TEXTURE_IMAGE_UNITS: %d\n", GL_MAX_TEXTURE_IMAGE_UNITS);
-    //printf("GL_MAX_TEXTURE_UNITS: %d\n", GL_MAX_TEXTURE_UNITS);
-
     /* Create a user specific framebuffer to use it for rendering instead of the default framebuffer.*/
     glGenTextures(1, &mainColorMap);
     printf("mainColorMap: %d\n", mainColorMap);
