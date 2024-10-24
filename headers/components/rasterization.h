@@ -2,7 +2,7 @@
 #define _RASTERIZATION_H 1
 
 /* OpenGL headers. */
-#if !define(__glew_h__) || !define(__GLEW_H__)
+#if !defined(__glew_h__) || !defined(__GLEW_H__)
     #include "libraries/glew-2.1.0/include/GL/glew.h"
 #endif
 

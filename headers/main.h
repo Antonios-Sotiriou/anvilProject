@@ -2,7 +2,7 @@
 #define _MAIN_H 1
 
 /* Operating system checking. ######################################################### */
-#if defined( WIN32) || defined(_WIN32) || defined(_WIN64)
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     #define  CLIENT_OS  "Windows Operating System!"
 #elif defined(__APPLE__) || defined(__MACH__)
     #define  CLIENT_OS  "MacOs Operating System!"
@@ -22,7 +22,7 @@
 /* Build in Libraries. */
 #include <stdio.h>
 #include <xmmintrin.h>
-#include <immintrin.h>
+//#include <immintrin.h>
 
 /* Internal Libraries. */
 #include "headers/components/rasterization.h"

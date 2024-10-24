@@ -54,7 +54,7 @@ const int initTestShader(void) {
 
     return shaderProgram;
 }
-const void testShader(void) {
+void testShader(void) {
 
     glUseProgram(testShaderProgram);
 

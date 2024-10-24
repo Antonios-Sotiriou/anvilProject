@@ -1,9 +1,14 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-GLFWwindow *window;
 int width, height, Debug = 1;
 
+void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+        printf("window: %p    key: %d    scancode: %d    action: %d    mods: %d\n", &win, key, scancode, action, mods);
+    if (key == GLFW_KEY_E && action == GLFW_RELEASE)
+        printf("Key Released\n");
+}
 int main(int argc, char *argv[]) {
 
     printf("anvil Version Major       : %d\n", anvil_VERSION_MAJOR);
@@ -21,19 +26,22 @@ int main(int argc, char *argv[]) {
     printf("GLFW Version Minor        : %d\n", vers[1]);
     printf("GLFW Version revision     : %d\n", vers[2]);
 
-
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "anvil", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "anvil", NULL, NULL);
     if ( !window ) {
         glfwTerminate();
         return -1;
     }
+    /* Get window's dimensions. */
     glfwGetWindowSize(window, &width, &height);
+
+    /* Register a keyboarb callback function. */
+    glfwSetKeyCallback(window, key_callback);
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    /* Initialize Rasterization components. (framebuffers, user defined textures, shaders) */
+    /* Initialize openGL Rasterization components. (framebuffers, user defined textures, shaders) */
     initRasterComponents();
 
     /* Loop until the user closes the window */
@@ -50,3 +58,5 @@ int main(int argc, char *argv[]) {
     glfwTerminate();
     return 0;
 }
+
+

@@ -63,7 +63,7 @@ const int initDisplayShader(void) {
     return shaderProgram;
 }
 /* Displays texture with given texture index on full screen. */
-const void displayTexture(const int textureIndex) {
+void displayTexture(const int textureIndex) {
 
     glUseProgram(displayShaderProgram);
 

@@ -6,7 +6,7 @@
 #endif
 
 /* OpenGL headers. */
-#if !define(__glew_h__) || !define(__GLEW_H__)
+#if !defined(__glew_h__) || !defined(__GLEW_H__)
     #include "libraries/glew-2.1.0/include/GL/glew.h"
 #endif
 
@@ -16,7 +16,7 @@ extern GLint mainFBO;
 extern GLenum drawBuffers[2];
 
 const int initMainShader(void);
-const void project(void);
+void project(void);
 
 #endif /* _MAINSHADER_H */
 

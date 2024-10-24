@@ -6,15 +6,15 @@
 #endif
 
 /* OpenGL headers. */
-#if !define(__glew_h__) || !define(__GLEW_H__)
+#if !defined(__glew_h__) || !defined(__GLEW_H__)
     #include "libraries/glew-2.1.0/include/GL/glew.h"
 #endif
 
 /* Global variables. Defined in main.c. */
-extern int displayShaderProgram, width, height;
+extern GLint displayShaderProgram, width, height;
 
 const int initDisplayShader(void);
-const void displayTexture(const int textureIndex);
+void displayTexture(const int textureIndex);
 
 #endif /* _DISPLAYSHADER_H */
 
