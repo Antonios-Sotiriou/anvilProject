@@ -67,7 +67,7 @@ void displayTexture(const int textureIndex) {
 
     glUseProgram(displayShaderProgram);
 
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUniform1i(0, textureIndex);

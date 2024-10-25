@@ -11,8 +11,10 @@
 #include "headers/shaders/displayShader.h"
 #include "headers/shaders/testShader.h"
 
-/* Global variables. Defined in main.c. */
-extern int Debug;
+/* Global variables. */
+#ifndef GLOBAL_H
+    #include "headers/components/global.h"
+#endif // !GLOBAL_H
 
 const void initRasterComponents(void);
 const void rasterize();

@@ -1,7 +1,7 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-int width, height, Debug = 1;
+int WIDTH, HEIGHT, DEBUG = 1;
 
 void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     /* Get window's dimensions. */
-    glfwGetWindowSize(window, &width, &height);
+    glfwGetWindowSize(window, &WIDTH, &HEIGHT);
 
     /* Register a keyboarb callback function. */
     glfwSetKeyCallback(window, key_callback);
@@ -43,6 +43,9 @@ int main(int argc, char *argv[]) {
 
     /* Initialize openGL Rasterization components. (framebuffers, user defined textures, shaders) */
     initRasterComponents();
+
+    /* Create and initialize the GLOBAL SCENE. */
+    createScene();
 
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
@@ -56,6 +59,9 @@ int main(int argc, char *argv[]) {
     }
 
     glfwTerminate();
+
+    /* Releases GLOBAL SCENE resources. */
+    releaseScene();
     return 0;
 }
 

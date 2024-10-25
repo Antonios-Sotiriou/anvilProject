@@ -25,6 +25,8 @@
 //#include <immintrin.h>
 
 /* Internal Libraries. */
+//#include "headers/global.h"
+#include "headers/components/scene.h"
 #include "headers/components/rasterization.h"
 
 /* External Libraries. */

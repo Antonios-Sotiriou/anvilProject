@@ -34,25 +34,32 @@ typedef union {
 } mat4x4;
 #endif // VECTORIZED_CODE ######################################################
 
+/* Cordinate system structure with components represented as P: position, U: up, V: right(vertical), N: front. */
+typedef struct {
+    vec4 v[4];
+} coords;
 /* Base struct to represent a face. */
 typedef struct {
     vec4 v[3];
 } face;
 /* Base structure to represent a shape. */
 typedef struct {
-    vec4 *v;
-    face *f;
-    int v_indexes, f_indexes;
+    coords coords;
+    vec4 *vec4;
+    face *face;
+    int vec4_indexes, face_indexes;
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {
-    mesh *ms;
-    int m_indexes;
+    mesh *mesh;
+    int mesh_indexes;
 } model;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
-    model *md;
-    int m_indexes;
+    //model *model;
+    //int model_indexes;
+    mesh* mesh;
+    int mesh_indexes;
 } scene;
 
 #endif // STRUCTS_H

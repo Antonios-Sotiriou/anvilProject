@@ -10,8 +10,12 @@
     #include "libraries/glew-2.1.0/include/GL/glew.h"
 #endif
 
-/* Global variables. Defined in main.c. */
-extern GLint testShaderProgram, width, height;
+#ifndef GLOBAL_H
+    #include "headers/global.h"
+#endif // GLOBAL_H
+
+/* Global variables. Defined in rasterization.c. */
+extern GLint testShaderProgram;
 extern GLint mainFBO;
 
 const int initTestShader(void);

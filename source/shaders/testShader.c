@@ -58,7 +58,7 @@ void testShader(void) {
 
     glUseProgram(testShaderProgram);
 
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, WIDTH, HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -73,7 +73,7 @@ void testShader(void) {
 
     GLubyte data[4];
     glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(320, height - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+    glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
     printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
     //GLenum err;

@@ -3,7 +3,7 @@
 /* OpenGL Global veriables. */
 GLint mainShaderProgram, displayShaderProgram, testShaderProgram;
 GLint VBO, shadowDepthMap, shadowMapFBO, mainColorMap, mainDepthMap, mainInfoMap, mainFBO;
-GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
 /* Creates vertex buffers and vertex attribute Pointers. */
 const static void createBuffers(void) {
@@ -29,7 +29,7 @@ const static void createTextures(void) {
     printf("mainColorMap: %d\n", mainColorMap);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mainColorMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -38,7 +38,7 @@ const static void createTextures(void) {
     printf("mainDepthMap: %d\n", mainDepthMap);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, mainDepthMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WIDTH, HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -47,7 +47,7 @@ const static void createTextures(void) {
     printf("mainInfoMap: %d\n", mainInfoMap);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, mainInfoMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32I, width, height, 0, GL_RG_INTEGER, GL_INT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32I, WIDTH, HEIGHT, 0, GL_RG_INTEGER, GL_INT, NULL);
 
     /* Attach the generated 2D Texture to our Shadow Map framebuffer's depth buffer */
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
@@ -99,7 +99,7 @@ const void initRasterComponents(void) {
     printf("GLSL VERSION              : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
     printf("GL Renderer               : %s\n", glGetString(GL_RENDERER));
 
-    if ( Debug ) {
+    if ( DEBUG ) {
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(glErrorReportCallback, 0);
     }

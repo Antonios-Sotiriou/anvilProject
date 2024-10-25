@@ -10,10 +10,14 @@
     #include "libraries/glew-2.1.0/include/GL/glew.h"
 #endif
 
-/* Global variables. Defined in main.c. */
-extern GLint mainShaderProgram, width, height;
+#ifndef GLOBAL_H
+    #include "headers/global.h"
+#endif // GLOBAL_H
+
+/* Global variables. Defined in rasterization.c. */
+extern GLint mainShaderProgram;
 extern GLint mainFBO;
-extern GLenum drawBuffers[2];
+extern const GLenum drawBuffers[2];
 
 const int initMainShader(void);
 void project(void);
