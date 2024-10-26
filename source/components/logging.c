@@ -22,5 +22,22 @@ void logmat4x4(const mat4x4 m) {
 }
 #endif // VECTORIZED_CODE
 
+void logcoords(const coords c) {
+	printf("Coords {\n");
+	printf("    Pos: ");
+	logvec4(c.v[0]);
+	printf("    U  : ");
+	logvec4(c.v[1]);
+	printf("    V  : ");
+	logvec4(c.v[2]);
+	printf("    N  : ");
+	logvec4(c.v[3]);
+	printf("}\n");
+}
+void logmesh(const mesh m) {
+	logcoords(m.coords);
+	printf("vec4        :%p\n", m.vao);
+	printf("vec4_indexes:%d\n", m.vao_indexes);
+}
 
 

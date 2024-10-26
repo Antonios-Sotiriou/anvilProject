@@ -2,8 +2,6 @@
 
 scene SCENE = { 0 };
 enum asset { terrain, player1, initAssets };
-#define CUBE_FLAT     anvil_SOURCE_DIR"/meshes/cube/cube_flat.obj"
-#define CUBE_SMOOTH   anvil_SOURCE_DIR"/meshes/cube/cube_smooth.obj"
 
 static void initScene(void);
 

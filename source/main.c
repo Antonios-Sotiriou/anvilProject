@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
     /* Create and initialize the GLOBAL SCENE. */
     createScene();
-
+    logmesh(SCENE.mesh[0]);
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
         /* Render here */

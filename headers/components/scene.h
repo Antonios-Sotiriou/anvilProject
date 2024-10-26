@@ -1,9 +1,9 @@
 #ifndef SCENE_H
 #define SCENE_H 1
 
-#ifndef anvil_VERSION_MAJOR
-    #include "headers/cmake_variables.h"
-#endif // !anvil_VERSION_MAJOR
+#ifndef FLAGS_H
+    #include "headers/flags.h"
+#endif // !FLAGS_H
 
 #ifndef STRUCTS_H
     #include "headers/structs.h"

@@ -1,5 +1,5 @@
-#ifndef _TESTSHADER_H
-#define _TESTSHADER_H 1
+#ifndef TESTSHADER_H
+#define TESTSHADER_H 1
 
 #ifndef STDIO_H
     #include <stdio.h>
@@ -12,7 +12,7 @@
 
 #ifndef GLOBAL_H
     #include "headers/global.h"
-#endif // GLOBAL_H
+#endif // !GLOBAL_H
 
 /* Global variables. Defined in rasterization.c. */
 extern GLint testShaderProgram;
@@ -21,5 +21,5 @@ extern GLint mainFBO;
 const int initTestShader(void);
 void testShader(void);
 
-#endif // !_TESTSHADER_H
+#endif // !TESTSHADER_H
 

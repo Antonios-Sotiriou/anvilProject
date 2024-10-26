@@ -1,5 +1,5 @@
-#ifndef _MAINSHADER_H
-#define _MAINSHADER_H 1
+#ifndef MAINSHADER_H
+#define MAINSHADER_H 1
 
 #ifndef STDIO_H
     #include <stdio.h>
@@ -22,6 +22,6 @@ extern const GLenum drawBuffers[2];
 const int initMainShader(void);
 void project(void);
 
-#endif /* _MAINSHADER_H */
+#endif /* MAINSHADER_H */
 
 

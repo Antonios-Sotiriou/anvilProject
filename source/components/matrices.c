@@ -95,9 +95,9 @@ mat4x4 reperspectiveMatrix(const float fov, const float ar) {
 mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
     return (mat4x4) {
         U,
-        V,
-        N,
-        P
+            V,
+            N,
+            P
     };
 }
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
@@ -108,9 +108,9 @@ mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up) {
 
     return (mat4x4) {
         U,
-        V,
-        N,
-        P
+            V,
+            N,
+            P
     };
 }
 /* Multiplies a vec4 with the given Matrix and returns a new vec4, leaving the original unmodified. */
@@ -122,7 +122,7 @@ vec4 vec4Mulmat(const vec4 v, const mat4x4 m) {
     return _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
 }
 /* Multiplies a Vector with the given Matrix and change its values. */
-void setvec4Mulmat(vec4 *v, const mat4x4 m) {
+void setvec4Mulmat(vec4* v, const mat4x4 m) {
     const vec4 x = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
     const vec4 y = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
     const vec4 z = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
@@ -151,9 +151,9 @@ mat4x4 transposeMatrix(const mat4x4 m) {
 
     return (mat4x4) {
         _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(2, 0, 2, 0)),
-        _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3, 1, 3, 1)),
-        _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(2, 0, 2, 0)),
-        _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(3, 1, 3, 1))
+            _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3, 1, 3, 1)),
+            _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(2, 0, 2, 0)),
+            _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(3, 1, 3, 1))
     };
 }
 /* Inverts the given Matrix returning a new Matrix. */
@@ -301,10 +301,10 @@ vec4 vec4Mulmat(const vec4 v, const mat4x4 m) {
     return r;
 }
 /* Multiplies a Vector with the given Matrix and change its values. */
-void setvec4Mulmat(vec4 *v, const mat4x4 m) {
+void setvec4Mulmat(vec4* v, const mat4x4 m) {
     vec4 r = *v;
     for (int i = 0; i < 4; i++) {
-       v->f32[i] = r.f32[0] * m.m[0].f32[i] + r.f32[1] * m.m[1].f32[i] + r.f32[2] * m.m[2].f32[i] + r.f32[3] * m.m[3].f32[i];
+        v->f32[i] = r.f32[0] * m.m[0].f32[i] + r.f32[1] * m.m[1].f32[i] + r.f32[2] * m.m[2].f32[i] + r.f32[3] * m.m[3].f32[i];
     }
 }
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */

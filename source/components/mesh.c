@@ -19,9 +19,9 @@ static int f_indexes = 0;
 
 static void initMesh(mesh* m);
 static void loadMesh(mesh* m, const char type[]);
-static vec4 *loadVectors(const char path[]);
-//static vec2 *loadTexels(const char path[]);
-//static vec4 *loadNormals(const char path[]);
+static float *loadVectors(const char path[]);
+static float *loadTexels(const char path[]);
+static float *loadNormals(const char path[]);
 static int *loadFaces(const char path[]);
 
 void createMesh(mesh *m, const char type[]) {
@@ -36,95 +36,64 @@ static void initMesh(mesh *m) {
 }
 /* Loads obj file data to a mesh. */
 static void loadMesh(mesh* m, const char type[]) {
-    vec4 *v = loadVectors(type);
+    float *v = loadVectors(type);
     if (!v)
         printf("Could not reallocate Vectors array. loadMesh() - loadVectors()\n");
 
-    //vec2 *t = loadtextors(objfile);
-    //if (!t)
-    //    printf("Could not create Vectors array. loadMesh() - get_textors()\n");
+    float *t = loadTexels(type);
+    if (!t)
+        printf("Could not create Vectors array. loadMesh() - loadTexels()\n");
 
-    //vec4 *n = loadnormals(objfile);
-    //if (!n)
-    //    printf("Could not create Vectors array. loadMesh() - get_normals()\n");
+    float *n = loadNormals(type);
+    if (!n)
+        printf("Could not create Vectors array. loadMesh() - loadNormals()\n");
 
     int *f = loadFaces(type);
     if (!f)
         printf("Could not create Faces array. loadMesh() - loadFaces()\n");
 
-    m->face_indexes = f_indexes / 9;
-    m->face = malloc(sizeof(face) * m->face_indexes);
+    m->vao_indexes = (f_indexes / 9) * 24;
+    m->vao = malloc(4 * m->vao_indexes);
+    if (!m->vao)
+        printf("Could not create mesh vao. loadMesh() - malloc()\n");
 
-    int index = 0;
-    for (int i = 0; i < f_indexes; i += 9) {
-        m->face[index].v[0] = v[f[i]];
-        m->face[index].v[1] = v[f[i + 3]];
-        m->face[index].v[2] = v[f[i + 6]];
-
-        index++;
+    int index = 0, vpad, tpad;
+    for (int i = 0; i < f_indexes; i++) {
+        vpad = f[i] * 3;
+        m->vao[index] = v[vpad];
+        m->vao[index + 1] = v[vpad + 1];
+        m->vao[index + 2] = v[vpad + 2];
+        i++;
+        tpad = f[i] * 2;
+        m->vao[index + 3] = t[tpad];
+        m->vao[index + 4] = t[tpad + 1];
+        i++;
+        vpad = f[i] * 3;
+        m->vao[index + 5] = n[vpad];
+        m->vao[index + 6] = n[vpad + 1];
+        m->vao[index + 7] = n[vpad + 2];
+        //index += 8;
+        //printf("%d %d %d    %d %d %d    %d %d %d\n", f[i], f[i + 1], f[i + 2], f[i + 3], f[i + 4], f[i + 5], f[i + 6], f[i + 7], f[i + 8]);
+        printf("v: %f %f %f    t: %f %f    n: %f %f %f\n", m->vao[0], m->vao[index + 1], m->vao[index + 2], m->vao[index + 3], m->vao[index + 4], m->vao[index + 5], m->vao[index + 6], m->vao[index + 7]);
+        //printf("v: %f %f %f\n", m->vao[index], m->vao[index + 1], m->vao[index + 2]);
+        index += 8;
     }
 
     free(v);
-    //free(t);
-    //free(n);
+    free(t);
+    free(n);
     free(f);
 }
-static int *loadFaces(const char type[]) {
-    size_t facesize = sizeof(int);
+static float *loadVectors(const char type[]) {
     FILE *fp = fopen(type, "r");
     if (!fp) {
         printf("Could not open file : %s.\n", type);
         return NULL;
     }
 
-    int* f = malloc(facesize);
-    if (!f) {
-        printf("Could not allocate memory for Face struct. loadMesh() -- malloc().\n");
-        fclose(fp);
-        return NULL;
-    }
-    int va, vb, vc, vd, ve, vf, vg, vh, vi;
-    int dynamic_inc = 9;
-    int index = 0;
-
-    char ch;
-    while (!feof(fp)) {
-        if ((ch = getc(fp)) == 'f')
-            if ((ch = getc(fp)) == ' ')
-                if (fscanf(fp, "%d/%d/%d %d/%d/%d %d/%d/%d",
-                    &va, &vb, &vc, &vd, &ve, &vf, &vg, &vh, &vi) == 9) {
-
-                    f = realloc(f, facesize * dynamic_inc);
-                    if (!f) {
-                        printf("Could not reallocate memory for Face struct array. loadMesh() -- realloc().\n");
-                        fclose(fp);
-                        free(f);
-                        return NULL;
-                    }
-                    f[index] = va - 1, f[index + 1] = vb - 1, f[index + 2] = vc - 1,
-                        f[index + 3] = vd - 1, f[index + 4] = ve - 1, f[index + 5] = vf - 1,
-                        f[index + 6] = vg - 1, f[index + 7] = vh - 1, f[index + 8] = vi - 1;
-
-                    index += 9;
-                    dynamic_inc += 9;
-                }
-    }
-
-    f_indexes = index;
-    fclose(fp);
-    return f;
-}
-static vec4 *loadVectors(const char type[]) {
-    size_t vecsize = sizeof(vec4);
-    FILE *fp = fopen(type, "r");
-    if (!fp) {
-        printf("Could not open file : %s.\n", type);
-        return NULL;
-    }
-
-    vec4 *v = malloc(vecsize);
+    float *v = malloc(12);
     if (!v) {
-        printf("Could not allocate memory for vec4f struct. get_vectors() -- calloc().\n");
+        printf("Could not allocate memory for vec4f struct. loadVectors() -- malloc().\n");
         fclose(fp);
         return NULL;
     }
@@ -138,19 +107,18 @@ static vec4 *loadVectors(const char type[]) {
             if ((ch = getc(fp)) == ' ')
                 if (fscanf(fp, "%f %f %f", &va, &vb, &vc) == 3) {
 
-                    v = realloc(v, vecsize * dynamic_inc);
+                    v = realloc(v, 12 * dynamic_inc);
                     if (!v) {
                         printf("Could not reallocate memory for vec4f struct array. loadMesh() -- realloc().\n");
                         fclose(fp);
                         free(v);
                         return NULL;
                     }
-                    v[index].m128_f32[0] = va;
-                    v[index].m128_f32[1] = vb;
-                    v[index].m128_f32[2] = vc;
-                    v[index].m128_f32[3] = 1.00;
+                    v[index] = va;
+                    v[index + 1] = vb;
+                    v[index + 2] = vc;
 
-                    index++;
+                    index += 3;
                     dynamic_inc++;
                 }
     }
@@ -158,10 +126,140 @@ static vec4 *loadVectors(const char type[]) {
     fclose(fp);
     return v;
 }
+static float *loadTexels(const char path[]) {
+    FILE* fp = fopen(path, "r");
+    if (!fp) {
+        fprintf(stderr, "Could not open file : %s.\n", path);
+        return NULL;
+    }
+
+    float *t = malloc(4);
+    if (!t) {
+        fprintf(stderr, "Could not allocate memory for Textor struct. loadTexels() -- malloc().\n");
+        fclose(fp);
+        return NULL;
+    }
+    float va, vb;
+    int dynamic_inc = 1;
+    int index = 0;
+
+    char ch;
+    while (!feof(fp)) {
+        if ((ch = getc(fp)) == 'v')
+            if ((ch = getc(fp)) == 't')
+                if ((ch = getc(fp)) == ' ')
+                    if (fscanf(fp, "%f %f", &va, &vb) == 2) {
+
+                        t = realloc(t, 8 * dynamic_inc);
+                        if (!t) {
+                            fprintf(stderr, "Could not reallocate memory for vec4f struct array. loadTexels() -- realloc().\n");
+                            fclose(fp);
+                            free(t);
+                            return NULL;
+                        }
+                        t[index] = va;
+                        t[index + 1] = vb;
+
+                        index += 2;
+                        dynamic_inc++;
+                    }
+    }
+    t_indexes = index;
+    fclose(fp);
+    return t;
+}
+static float *loadNormals(const char path[]) {
+    FILE* fp = fopen(path, "r");
+    if (!fp) {
+        fprintf(stderr, "Could not open file : %s.\n", path);
+        return NULL;
+    }
+
+    float *n = malloc(12);
+    if (!n) {
+        fprintf(stderr, "Could not allocate memory for Textor struct. loadNormals() -- malloc().\n");
+        fclose(fp);
+        return NULL;
+    }
+
+    float va, vb, vc;
+    int dynamic_inc = 1;
+    int index = 0;
+
+    char ch;
+    while (!feof(fp)) {
+        if ((ch = getc(fp)) == 'v')
+            if ((ch = getc(fp)) == 'n')
+                if ((ch = getc(fp)) == ' ')
+                    if (fscanf(fp, "%f %f %f", &va, &vb, &vc) == 3) {
+
+                        n = realloc(n, 12 * dynamic_inc);
+                        if (!n) {
+                            fprintf(stderr, "Could not reallocate memory for vec4f struct array. loadMesh() -- realloc().\n");
+                            fclose(fp);
+                            free(n);
+                            return NULL;
+                        }
+                        n[index] = va;
+                        n[index + 1] = vb;
+                        n[index + 2] = vc;
+
+                        index += 3;
+                        dynamic_inc++;
+                    }
+    }
+    n_indexes = index;
+    fclose(fp);
+    return n;
+}
+static int* loadFaces(const char type[]) {
+    size_t facesize = 4;
+    FILE* fp = fopen(type, "r");
+    if (!fp) {
+        printf("Could not open file : %s.\n", type);
+        return NULL;
+    }
+
+    int* f = malloc(facesize);
+    if (!f) {
+        printf("Could not allocate memory for Face struct. loadMesh() -- malloc().\n");
+        fclose(fp);
+        return NULL;
+    }
+    int va, vb, vc, vd, ve, vf, vg, vh, vi;
+    int dynamic_inc = 1;
+    int index = 0;
+
+    char ch;
+    while (!feof(fp)) {
+        if ((ch = getc(fp)) == 'f')
+            if ((ch = getc(fp)) == ' ')
+                if (fscanf(fp, "%d/%d/%d %d/%d/%d %d/%d/%d",
+                    &va, &vb, &vc, &vd, &ve, &vf, &vg, &vh, &vi) == 9) {
+
+                    f = realloc(f, 36 * dynamic_inc);
+                    if (!f) {
+                        printf("Could not reallocate memory for Face struct array. loadMesh() -- realloc().\n");
+                        fclose(fp);
+                        free(f);
+                        return NULL;
+                    }
+                    f[index] = va - 1,     f[index + 1] = vb - 1, f[index + 2] = vc - 1,
+                    f[index + 3] = vd - 1, f[index + 4] = ve - 1, f[index + 5] = vf - 1,
+                    f[index + 6] = vg - 1, f[index + 7] = vh - 1, f[index + 8] = vi - 1;
+
+                    index += 9;
+                    dynamic_inc++;
+                }
+    }
+
+    f_indexes = index;
+    fclose(fp);
+    return f;
+}
 /* Releases allocated ressources of a mesh. */
 void releaseMesh(mesh* m) {
-    free(m->vec4);
-    free(m->face);
+    free(m->vao);
 }
 
 

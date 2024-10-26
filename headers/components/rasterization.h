@@ -1,5 +1,5 @@
-#ifndef _RASTERIZATION_H
-#define _RASTERIZATION_H 1
+#ifndef RASTERIZATION_H
+#define RASTERIZATION_H 1
 
 /* OpenGL headers. */
 #if !defined(__glew_h__) || !defined(__GLEW_H__)
@@ -19,6 +19,6 @@
 const void initRasterComponents(void);
 const void rasterize();
 
-#endif /* _RASTERIZATION_H */
+#endif /* RASTERIZATION_H */
 
 

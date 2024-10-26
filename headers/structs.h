@@ -41,13 +41,14 @@ typedef struct {
 /* Base struct to represent a face. */
 typedef struct {
     vec4 v[3];
+    vec2 vt[3];
+    vec4 vn[3];
 } face;
 /* Base structure to represent a shape. */
 typedef struct {
     coords coords;
-    vec4 *vec4;
-    face *face;
-    int vec4_indexes, face_indexes;
+    float *vao;
+    int vao_indexes;
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {

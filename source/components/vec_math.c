@@ -5,16 +5,16 @@
 float dotProduct(const vec4 v1, const vec4 v2) {
     vec4 r = _mm_mul_ps(v1, v2);
     return _mm_cvtss_f32(
-               _mm_add_ps(
-                   _mm_add_ps(r, _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 1))),
-                   _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 2))
-               )
-           );
+        _mm_add_ps(
+            _mm_add_ps(r, _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 1))),
+            _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 2))
+        )
+    );
 }
 /* Computes the Cross Product of two given Vectors.Returns a new Vector. */
 vec4 crossProduct(const vec4 v1, const vec4 v2) {
     return _mm_sub_ps(
-        _mm_mul_ps(_mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 2, 1)), _mm_shuffle_ps(v2, v2, _MM_SHUFFLE(0, 1, 0, 2))), 
+        _mm_mul_ps(_mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 2, 1)), _mm_shuffle_ps(v2, v2, _MM_SHUFFLE(0, 1, 0, 2))),
         _mm_mul_ps(_mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 1, 0, 2)), _mm_shuffle_ps(v2, v2, _MM_SHUFFLE(0, 0, 2, 1)))
     );
 }

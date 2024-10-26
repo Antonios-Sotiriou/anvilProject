@@ -36,16 +36,16 @@ quat setQuat(const float angle, const float x, const float y, const float z) {
 float magnitudeQuat(const quat q) {
     quat r = _mm_mul_ps(q, q);
     return _mm_cvtss_f32(
-               _mm_sqrt_ps(
-                   _mm_add_ps(
-                       _mm_add_ps(r, _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 1))),
-                       _mm_add_ps(_mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 2)), _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 3)))
-                   )
-               )
+        _mm_sqrt_ps(
+            _mm_add_ps(
+                _mm_add_ps(r, _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 1))),
+                _mm_add_ps(_mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 2)), _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 3)))
+            )
+        )
     );
 }
 /* Normalizes given quat if its not already. */
-void normalizeQuat(quat *q) {
+void normalizeQuat(quat* q) {
     float check = (q->m128_f32[0] * q->m128_f32[0]) + (q->m128_f32[1] * q->m128_f32[1]) + (q->m128_f32[2] * q->m128_f32[2]) + (q->m128_f32[3] * q->m128_f32[3]);
     if (check > 1.000001f) {
         *q = _mm_div_ps(*q, _mm_sqrt_ps(_mm_set_ps1(check)));
@@ -86,9 +86,9 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
 
     quat left = _mm_mul_ps(_mm_mul_ps(crsrcrcr, cpcpspcp), cycycysy);
     quat right = _mm_mul_ps(
-                     _mm_mul_ps(_mm_shuffle_ps(crsrcrcr, crsrcrcr, _MM_SHUFFLE(1, 1, 0, 1)), _mm_shuffle_ps(cpcpspcp, cpcpspcp, _MM_SHUFFLE(2, 0, 2, 2))),
-                     _mm_shuffle_ps(cycycysy, cycycysy, _MM_SHUFFLE(0, 3, 3, 3))
-                 );
+        _mm_mul_ps(_mm_shuffle_ps(crsrcrcr, crsrcrcr, _MM_SHUFFLE(1, 1, 0, 1)), _mm_shuffle_ps(cpcpspcp, cpcpspcp, _MM_SHUFFLE(2, 0, 2, 2))),
+        _mm_shuffle_ps(cycycysy, cycycysy, _MM_SHUFFLE(0, 3, 3, 3))
+    );
 
     return _mm_add_ps(left, _mm_or_ps(etqor, right));
 }
@@ -128,7 +128,7 @@ mat4x4 MatfromQuat(const quat q, const float x, const float y, const float z) {
 quat slerp(const quat q1, const quat q2, const float t) {
     // Calculate angle between q1 and q2.(Dot Product).
     quat r = _mm_mul_ps(q1, q2);
-    const float cosHalfTheta =  _mm_cvtss_f32(
+    const float cosHalfTheta = _mm_cvtss_f32(
         _mm_add_ps(
             _mm_add_ps(r, _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 1))),
             _mm_add_ps(_mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 2)), _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 3)))
@@ -173,9 +173,9 @@ float magnitudeQuat(const quat q) {
     return sqrtf(r.f32[0] + r.f32[1] + r.f32[2] + r.f32[3]);
 }
 /* Normalizes given quat if its not already. */
-void normalizeQuat(quat *q) {
+void normalizeQuat(quat* q) {
     float check = (q->f32[0] * q->f32[0]) + (q->f32[1] * q->f32[1]) + (q->f32[2] * q->f32[2]) + (q->f32[3] * q->f32[3]);
-    if ( check > 1.000001f ) {
+    if (check > 1.000001f) {
         float magnitude = sqrtf(check);
         q->f32[0] /= magnitude;
         q->f32[1] /= magnitude;
@@ -187,9 +187,9 @@ void normalizeQuat(quat *q) {
 quat conjugateQuat(const quat q) {
     return (quat) {
         q.f32[0],
-        -q.f32[1],
-        -q.f32[2],
-        -q.f32[3]
+            -q.f32[1],
+            -q.f32[2],
+            -q.f32[3]
     };
 }
 /* Creates a rotation quaternion with angle W and rotation axis X Y Z: */
@@ -198,22 +198,22 @@ quat rotationQuat(const float angle, const float x, const float y, const float z
     const float sn = sinf(radius);
     return (quat) {
         cosf(radius),
-        x * sn,
-        y * sn,
-        z * sn
+            x* sn,
+            y* sn,
+            z* sn
     };
 }
 /* Adds quats q1 and q2 together returning a new quat. */
 quat addQuats(const quat q1, const quat q2) {
     return (quat) {
         q1.f32[0] + q2.f32[0],
-        q1.f32[1] + q2.f32[1],
-        q1.f32[2] + q2.f32[2],
-        q1.f32[3] + q2.f32[3]
+            q1.f32[1] + q2.f32[1],
+            q1.f32[2] + q2.f32[2],
+            q1.f32[3] + q2.f32[3]
     };
 }
 /* Creates a quaternion from the given euler angles. */
-quat eulertoQuat(const float roll, const float yaw, const float pitch) { 
+quat eulertoQuat(const float roll, const float yaw, const float pitch) {
     const float half_roll = roll * 0.5f;
     const float half_yaw = yaw * 0.5f;
     const float half_pitch = pitch * 0.5f;
@@ -231,18 +231,18 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
 
     return (quat) {
         (cr * cpcy) + (sr * spsy),
-        (sr * cpcy) - (cr * spsy),
-        (cr * spcy) + (sr * cpsy),
-        (cr * cpsy) - (sr * spcy),
+            (sr * cpcy) - (cr * spsy),
+            (cr * spcy) + (sr * cpsy),
+            (cr * cpsy) - (sr * spcy),
     };
 }
 /* Multiplies two quats(q1, q2) with each other returning a new quat. */
 quat multiplyQuats(const quat q1, const quat q2) {
     return (quat) {
         (q1.f32[0] * q2.f32[0]) - (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[2]) - (q1.f32[3] * q2.f32[3]),
-        (q1.f32[0] * q2.f32[0]) + (q1.f32[1] * q2.f32[0]) + (q1.f32[2] * q2.f32[2]) - (q1.f32[3] * q2.f32[1]),
-        (q1.f32[0] * q2.f32[1]) - (q1.f32[1] * q2.f32[2]) + (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0]),
-        (q1.f32[0] * q2.f32[2]) + (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0])
+            (q1.f32[0] * q2.f32[0]) + (q1.f32[1] * q2.f32[0]) + (q1.f32[2] * q2.f32[2]) - (q1.f32[3] * q2.f32[1]),
+            (q1.f32[0] * q2.f32[1]) - (q1.f32[1] * q2.f32[2]) + (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0]),
+            (q1.f32[0] * q2.f32[2]) + (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0])
     };
 }
 /* Creates a matrix from a given quaternion with translation x, y, z. */
@@ -287,9 +287,9 @@ quat slerp(const quat q1, const quat q2, const float t) {
     if (fabs(sinHalfTheta) < 0.001f) {
         return (quat) {
             (q1.f32[0] * 0.5f) + (q2.f32[0] * 0.5f),
-            (q1.f32[1] * 0.5f) + (q2.f32[1] * 0.5f),
-            (q1.f32[2] * 0.5f) + (q2.f32[2] * 0.5f),
-            (q1.f32[3] * 0.5f) + (q2.f32[3] * 0.5f)
+                (q1.f32[1] * 0.5f) + (q2.f32[1] * 0.5f),
+                (q1.f32[2] * 0.5f) + (q2.f32[2] * 0.5f),
+                (q1.f32[3] * 0.5f) + (q2.f32[3] * 0.5f)
         };
     }
 
@@ -299,9 +299,9 @@ quat slerp(const quat q1, const quat q2, const float t) {
     // Calculate the quaternion.
     return (quat) {
         (q1.f32[0] * ratioA) + (q2.f32[0] * ratioB),
-        (q1.f32[1] * ratioA) + (q2.f32[1] * ratioB),
-        (q1.f32[2] * ratioA) + (q2.f32[2] * ratioB),
-        (q1.f32[3] * ratioA) + (q2.f32[3] * ratioB)
+            (q1.f32[1] * ratioA) + (q2.f32[1] * ratioB),
+            (q1.f32[2] * ratioA) + (q2.f32[2] * ratioB),
+            (q1.f32[3] * ratioA) + (q2.f32[3] * ratioB)
     };
 }
 /* Linearly interpolates between two quaternions at coefficient t. */
@@ -309,9 +309,9 @@ quat lerp(const quat q1, const quat q2, const float t) {
     const float scale = 1.f - t;
     return (quat) {
         (q1.f32[0] * scale) + (q2.f32[0] * t),
-        (q1.f32[1] * scale) + (q2.f32[1] * t),
-        (q1.f32[2] * scale) + (q2.f32[2] * t),
-        (q1.f32[3] * scale) + (q2.f32[3] * t)
+            (q1.f32[1] * scale) + (q2.f32[1] * t),
+            (q1.f32[2] * scale) + (q2.f32[2] * t),
+            (q1.f32[3] * scale) + (q2.f32[3] * t)
     };
 }
 #endif // VECTORIZED_CODE #######################################################################################

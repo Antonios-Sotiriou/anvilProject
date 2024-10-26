@@ -1,5 +1,5 @@
-#ifndef _DISPLAYSHADER_H
-#define _DISPLAYSHADER_H 1
+#ifndef DISPLAYSHADER_H
+#define DISPLAYSHADER_H 1
 
 #ifndef STDIO_H
     #include <stdio.h>
@@ -20,6 +20,6 @@ extern GLint displayShaderProgram;
 const int initDisplayShader(void);
 void displayTexture(const int textureIndex);
 
-#endif /* _DISPLAYSHADER_H */
+#endif /* DISPLAYSHADER_H */
 
 

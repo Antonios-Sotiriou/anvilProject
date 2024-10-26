@@ -7,12 +7,12 @@
 
 // Local created headers.
 #ifndef FLAGS_H
-    #include "flags.h"
+    #include "headers/flags.h"
 #endif // !FLAGS_H
 
 #ifndef STRUCTS_H
-    #include "structs.h"
-#endif // STRUCTS_H
+    #include "headers/structs.h"
+#endif // !STRUCTS_H
 
 float dotProduct(const vec4 v1, const vec4 v2);
 vec4 crossProduct(const vec4 v1, const vec4 v2);
@@ -27,6 +27,6 @@ vec4 vecAddvec(const vec4 v1, const vec4 v2);
 vec4 vecSubf32(const vec4 v1, const float num);
 vec4 vecSubvec(const vec4 v1, const vec4 v2);
 
-#endif // VEC_MATH_H
+#endif // !VEC_MATH_H
 
 

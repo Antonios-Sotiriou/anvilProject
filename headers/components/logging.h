@@ -7,16 +7,18 @@
 
 // Local created headers.
 #ifndef FLAGS_H
-    #include "flags.h"
+    #include "headers/flags.h"
 #endif // !FLAGS_H
 
 #ifndef STRUCTS_H
-    #include "structs.h"
-#endif // STRUCTS_H
+    #include "headers/structs.h"
+#endif // !STRUCTS_H
 
 void logvec4(const vec4 v);
 void logmat4x4(const mat4x4 m);
+void logcoords(const coords m);
+void logmesh(const mesh m);
 
-#endif // LOGGING_H
+#endif // !LOGGING_H
 
 
