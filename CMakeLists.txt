@@ -9,7 +9,7 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 # Creates an executable.
-add_executable(anvil "source/main.c" "headers/main.h" "source/shaders/mainShader.c" "headers/shaders/mainShader.h" "source/shaders/displayShader.c" "headers/shaders/displayShader.h" "headers/shaders/testShader.h" "source/shaders/testShader.c" "source/components/rasterization.c" "headers/components/rasterization.h" "headers/flags.h" "headers/structs.h" "headers/global.h" "headers/components/scene.h" "headers/components/mesh.h" "source/components/mesh.c")
+add_executable(anvil "source/main.c" "headers/main.h" "source/shaders/mainShader.c" "headers/shaders/mainShader.h" "source/shaders/displayShader.c" "headers/shaders/displayShader.h" "headers/shaders/testShader.h" "source/shaders/testShader.c" "source/components/rasterization.c" "headers/components/rasterization.h" "headers/flags.h" "headers/structs.h" "headers/global.h" "headers/components/scene.h" "source/components/scene.c" "headers/components/mesh.h" "source/components/mesh.c")
 
 configure_file("main.h.in" "${PROJECT_SOURCE_DIR}/headers/cmake_variables.h")
 

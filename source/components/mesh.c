@@ -38,7 +38,7 @@ static void initMesh(mesh *m) {
 static void loadMesh(mesh* m, const char type[]) {
     vec4 *v = loadVectors(type);
     if (!v)
-        printf("Could not reallocate Vectors array. loadMesh() - get_vectors()\n");
+        printf("Could not reallocate Vectors array. loadMesh() - loadVectors()\n");
 
     //vec2 *t = loadtextors(objfile);
     //if (!t)
@@ -50,7 +50,7 @@ static void loadMesh(mesh* m, const char type[]) {
 
     int *f = loadFaces(type);
     if (!f)
-        printf("Could not create Faces array. loadMesh() - get_faces()\n");
+        printf("Could not create Faces array. loadMesh() - loadFaces()\n");
 
     m->face_indexes = f_indexes / 9;
     m->face = malloc(sizeof(face) * m->face_indexes);
@@ -71,7 +71,7 @@ static void loadMesh(mesh* m, const char type[]) {
 }
 static int *loadFaces(const char type[]) {
     size_t facesize = sizeof(int);
-    FILE* fp = fopen(type, "r");
+    FILE *fp = fopen(type, "r");
     if (!fp) {
         printf("Could not open file : %s.\n", type);
         return NULL;

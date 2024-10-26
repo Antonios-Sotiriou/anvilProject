@@ -3,6 +3,6 @@
 
 #define VECTORIZED_CODE
 
-#endif // FLAGS_H
+#endif // !FLAGS_H
 
 

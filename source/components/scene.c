@@ -2,8 +2,8 @@
 
 scene SCENE = { 0 };
 enum asset { terrain, player1, initAssets };
-#define CUBE_FLAT     "meshes/cube/cube_flat"
-#define CUBE_SMOOTH   "meshes/cube/cube_smooth"
+#define CUBE_FLAT     anvil_SOURCE_DIR"/meshes/cube/cube_flat.obj"
+#define CUBE_SMOOTH   anvil_SOURCE_DIR"/meshes/cube/cube_smooth.obj"
 
 static void initScene(void);
 
@@ -14,12 +14,12 @@ void createScene(void) {
 }
 /* Initializes the models and meshes than compose the GLOBAL SCENE. */
 static void initScene(void) {
-    createMesh(&SCENE.mesh[asset[terrain]], CUBE_FLAT);
+    createMesh(&SCENE.mesh[terrain], CUBE_FLAT);
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
-        releaseMesh(SCENE.mesh[i]);
+        releaseMesh(&SCENE.mesh[i]);
     }
     free(SCENE.mesh);
 }

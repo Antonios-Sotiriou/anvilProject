@@ -58,7 +58,7 @@ typedef struct {
 typedef struct {
     //model *model;
     //int model_indexes;
-    mesh* mesh;
+    mesh *mesh;
     int mesh_indexes;
 } scene;
 
