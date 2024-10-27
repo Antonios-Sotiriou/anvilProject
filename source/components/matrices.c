@@ -78,7 +78,7 @@ mat4x4 perspectiveMatrix(const float fov, const float aspectratio, const float z
     m.m[1].m128_f32[1] = aspectratio * fovRadius;
     m.m[2].m128_f32[2] = zf / (zf - zn);
     m.m[2].m128_f32[3] = 1.0f;
-    m.m[3].m128_f32[2] = (zf * zn) / (zf - zn);
+    m.m[3].m128_f32[2] = (zf * zn) / (zn - zf);
     return m;
 }
 /* Reverse Perspective Projection Matrix. fov: field of view, ar: aspect ratio. */

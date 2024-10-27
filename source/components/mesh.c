@@ -37,25 +37,35 @@ static void initMesh(mesh *m) {
 /* Loads obj file data to a mesh. */
 static void loadMesh(mesh* m, const char type[]) {
     float *v = loadVectors(type);
-    if (!v)
+    if (!v) {
         printf("Could not reallocate Vectors array. loadMesh() - loadVectors()\n");
+        return;
+    }
 
     float *t = loadTexels(type);
-    if (!t)
+    if (!t) {
         printf("Could not create Vectors array. loadMesh() - loadTexels()\n");
+        return;
+    }
 
     float *n = loadNormals(type);
-    if (!n)
+    if (!n) {
         printf("Could not create Vectors array. loadMesh() - loadNormals()\n");
+        return;
+    }
 
     int *f = loadFaces(type);
-    if (!f)
+    if (!f) {
         printf("Could not create Faces array. loadMesh() - loadFaces()\n");
+        return;
+    }
 
     m->vao_indexes = (f_indexes / 9) * 24;
     m->vao = malloc(4 * m->vao_indexes);
-    if (!m->vao)
+    if (!m->vao) {
         printf("Could not create mesh vao. loadMesh() - malloc()\n");
+        return;
+    }
 
     int index = 0, vpad, tpad;
     for (int i = 0; i < f_indexes; i++) {
@@ -72,10 +82,6 @@ static void loadMesh(mesh* m, const char type[]) {
         m->vao[index + 5] = n[vpad];
         m->vao[index + 6] = n[vpad + 1];
         m->vao[index + 7] = n[vpad + 2];
-        //index += 8;
-        //printf("%d %d %d    %d %d %d    %d %d %d\n", f[i], f[i + 1], f[i + 2], f[i + 3], f[i + 4], f[i + 5], f[i + 6], f[i + 7], f[i + 8]);
-        printf("v: %f %f %f    t: %f %f    n: %f %f %f\n", m->vao[0], m->vao[index + 1], m->vao[index + 2], m->vao[index + 3], m->vao[index + 4], m->vao[index + 5], m->vao[index + 6], m->vao[index + 7]);
-        //printf("v: %f %f %f\n", m->vao[index], m->vao[index + 1], m->vao[index + 2]);
         index += 8;
     }
 

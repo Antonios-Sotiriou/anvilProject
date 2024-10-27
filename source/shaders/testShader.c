@@ -74,11 +74,11 @@ void testShader(void) {
         { 0., 0.f, 1.f, 0.f }
     };
 
-    mat4x4 trm = translationMatrix(0.f, 0.f, 20.f);
+    mat4x4 trm = translationMatrix(30.f, 30.f, 100.f);
     mat4x4 scl = scaleMatrix(10.f);
     trm = matMulmat(scl, trm);
     mat4x4 lookat = lookatMatrix(initCoords[0], initCoords[1], initCoords[2], initCoords[3]);
-    mat4x4 ppM = perspectiveMatrix(45.f, 1.f, _CRT_INT_MAX, 10.f);
+    mat4x4 ppM = perspectiveMatrix(45.f, 1.f, 10.f, _CRT_INT_MAX);
     mat4x4 worldMatrix = matMulmat(transposeMatrix(lookat), ppM);
     GLfloat vpMatrix[16], modelMatrix[16];
     memcpy(&vpMatrix, &worldMatrix, 64);
@@ -89,7 +89,7 @@ void testShader(void) {
 
     /* Just for testing purposes code. ##################### */
 
-    glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[0].vao_indexes * 4, &SCENE.mesh[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[0].vao_indexes * 4, SCENE.mesh[0].vao, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[0].vao_indexes / 8);
 
     //GLubyte data[4];
