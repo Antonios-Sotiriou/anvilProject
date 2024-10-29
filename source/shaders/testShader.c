@@ -1,6 +1,9 @@
 #include "headers/shaders/testShader.h"
 #include "headers/components/matrices.h"
+#include "headers/components/quaternions.h"
 
+float rot = 0.f;
+int COUNT = 0;
 const static char* vertexShaderSource = "#version 460 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
 "layout (location = 1) in vec2 vsTexels;\n"
@@ -64,25 +67,26 @@ void testShader(void) {
 
     glViewport(0, 0, WIDTH, HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */
-    const static vec4 initCoords[4] = {
-        { 0.f, 0.f, 0.f, 1.f },
-        { 1.f, 0.f, 0.f, 0.f },
-        { 0.f, 1.f, 0.f, 0.f },
-        { 0., 0.f, 1.f, 0.f }
-    };
+    COUNT++;
+    if (COUNT % 100 == 0) {
+        rot += 1.f;
+    }
 
-    mat4x4 trm = translationMatrix(30.f, 30.f, 100.f);
-    mat4x4 scl = scaleMatrix(10.f);
-    trm = matMulmat(scl, trm);
-    mat4x4 lookat = lookatMatrix(initCoords[0], initCoords[1], initCoords[2], initCoords[3]);
-    mat4x4 ppM = perspectiveMatrix(45.f, 1.f, 10.f, _CRT_INT_MAX);
+
+    quat q1 = rotationQuat(rot, 1.f, 0.f, 0.f);
+    vec4 t = { 0.f, 0.f, 50.f, 1.f };
+    mat4x4 qm = modelMatfromQST(q1, 10.f, t);
+
+    mat4x4 lookat = lookatMatrix(SCENE.mesh[camera].coords.v[0], SCENE.mesh[1].coords.v[1], SCENE.mesh[1].coords.v[2], SCENE.mesh[1].coords.v[3]);
+    mat4x4 ppM = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 1.f, _CRT_INT_MAX);
     mat4x4 worldMatrix = matMulmat(transposeMatrix(lookat), ppM);
+
     GLfloat vpMatrix[16], modelMatrix[16];
     memcpy(&vpMatrix, &worldMatrix, 64);
-    memcpy(&modelMatrix, trm, 64);
+    memcpy(&modelMatrix, qm, 64);
 
     glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
     glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);

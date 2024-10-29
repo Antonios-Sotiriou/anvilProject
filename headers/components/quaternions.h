@@ -9,7 +9,7 @@
 
 // Local created headers.
 #ifndef FLAGS_H
-#include "headers/flags.h"
+    #include "headers/flags.h"
 #endif // !FLAGS_H
 
 #ifndef STRUCTS_H
@@ -33,7 +33,8 @@ quat rotationQuat(const float angle, const float x, const float y, const float z
 quat addQuats(const quat q1, const quat q2);
 quat eulertoQuat(const float roll, const float yaw, const float pitch);
 quat multiplyQuats(const quat q1, const quat q2);
-mat4x4 MatfromQuat(const quat q, const float x, const float y, const float z);
+mat4x4 matfromQuat(const quat q, const float x, const float y, const float z);
+mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t);
 quat slerp(const quat q1, const quat q2, const float t);
 quat lerp(const quat q1, const quat q2, const float t);
 

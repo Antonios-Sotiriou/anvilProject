@@ -5,7 +5,7 @@ const static vec4 initCoords[4] = {
     { 0.f, 0.f, 0.f, 1.f },
     { 1.f, 0.f, 0.f, 0.f },
     { 0.f, 1.f, 0.f, 0.f },
-    { 0., 0.f, 1.f, 0.f }
+    { 0.f, 0.f, 1.f, 0.f }
 };
 
 /* vectors array indexes */
@@ -33,6 +33,8 @@ void createMesh(mesh *m, const char type[]) {
 static void initMesh(mesh *m) {
     /* Assign starting coordinates for all meshes */
     memcpy(&m->coords, &initCoords, 64);
+    //m->q = unitQuat();
+    m->scale = 10.f;
 }
 /* Loads obj file data to a mesh. */
 static void loadMesh(mesh* m, const char type[]) {

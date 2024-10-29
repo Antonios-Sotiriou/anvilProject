@@ -95,9 +95,9 @@ mat4x4 reperspectiveMatrix(const float fov, const float ar) {
 mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
     return (mat4x4) {
         U,
-            V,
-            N,
-            P
+        V,
+        N,
+        P
     };
 }
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
@@ -108,9 +108,9 @@ mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up) {
 
     return (mat4x4) {
         U,
-            V,
-            N,
-            P
+        V,
+        N,
+        P
     };
 }
 /* Multiplies a vec4 with the given Matrix and returns a new vec4, leaving the original unmodified. */
@@ -151,9 +151,9 @@ mat4x4 transposeMatrix(const mat4x4 m) {
 
     return (mat4x4) {
         _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(2, 0, 2, 0)),
-            _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3, 1, 3, 1)),
-            _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(2, 0, 2, 0)),
-            _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(3, 1, 3, 1))
+        _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3, 1, 3, 1)),
+        _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(2, 0, 2, 0)),
+        _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(3, 1, 3, 1))
     };
 }
 /* Inverts the given Matrix returning a new Matrix. */
@@ -257,7 +257,7 @@ mat4x4 perspectiveMatrix(const float fov, const float ar, const float zn, const 
     m.m[1].f32[1] = ar * fovRadius;
     m.m[2].f32[2] = zf / (zf - zn);
     m.m[2].f32[3] = 1.0f;
-    m.m[3].f32[2] = (zf * zn) / (zf - zn);
+    m.m[3].f32[2] = (zf * zn) / (zn - zf);
     return m;
 }
 /* Reverse Perspective Projection Matrix. fov: field of view, ar: aspect ratio. */

@@ -15,6 +15,8 @@
 typedef union __m128 vec4;
 /* vectors internal format is X Y: */
 typedef union __m64 vec2;
+/* Quaternion's internal format is W X Y Z. */
+typedef union __m128 quat;
 
 typedef union {
     vec4 m[4];
@@ -28,6 +30,8 @@ typedef union {
 typedef union {
     float f32[2];
 } vec2;
+/* Quaternion's internal format is W X Y Z. */
+typedef vec4 quat;
 
 typedef union {
     vec4 m[4];
@@ -47,7 +51,8 @@ typedef struct {
 /* Base structure to represent a shape. */
 typedef struct {
     coords coords;
-    float *vao;
+    quat q;
+    float *vao, scale;
     int vao_indexes;
 } mesh;
 /* Model structure to represent a collection of shapes. */
