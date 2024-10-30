@@ -4,18 +4,25 @@
 int WIDTH, HEIGHT, DEBUG = 1;
 
 void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-        printf("window: %p    key: %d    scancode: %d    action: %d    mods: %d\n", &win, key, scancode, action, mods);
-        //SCENE.mesh[0].coords.v[0].f32[2] += 1.f;
+
+    switch (key) {
+        case GLFW_KEY_W :
+            if (action == GLFW_PRESS) {
+                moveForward(action);
+            }
+            else if (action == GLFW_RELEASE) {
+                moveForward(action);
+            }
+            break;
+        case GLFW_KEY_S :
+            if (action == GLFW_PRESS) {
+                moveBackward(action);
+            }
+            else if (action == GLFW_RELEASE) {
+                moveBackward(action);
+            }
+            break;
     }
-    if (key == GLFW_KEY_E && action == GLFW_RELEASE)
-        printf("Key Released\n");
-    if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-        printf("window: %p    key: %d    scancode: %d    action: %d    mods: %d\n", &win, key, scancode, action, mods);
-        //SCENE.mesh[0].coords.v[0].f32[2] -= 1.0f;
-    }
-    if (key == GLFW_KEY_Q && action == GLFW_RELEASE)
-        printf("Key Released\n");
 }
 int main(int argc, char *argv[]) {
 

@@ -50,10 +50,14 @@ typedef struct {
 } face;
 /* Base structure to represent a shape. */
 typedef struct {
-    coords coords;
-    quat q;
-    float *vao, scale;
-    int vao_indexes;
+    coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
+    quat q;                              // Quaternion to save rotations.
+    float *vao,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
+        scale;                           // Value to store the scale of the mesh.
+    int vao_indexes,                     // Number of vao indexes as individual floats.
+        faces_indexes,                   // Number of faces in vao. ( vao_indexes / 24 ).
+        vecs_indexes,                    // Number of vectors in vao. ( vao_indexes / 8 or faces_indexes * 3).
+        vao_size;                        // The size of the vao in bytes.( vao_indexes * 4 ).
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {
@@ -68,6 +72,6 @@ typedef struct {
     int mesh_indexes;
 } scene;
 
-#endif // STRUCTS_H
+#endif // !STRUCTS_H
 
 

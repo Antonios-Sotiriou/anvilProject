@@ -1,5 +1,5 @@
-#ifndef _MAIN_H
-#define _MAIN_H 1
+#ifndef MAIN_H
+#define MAIN_H 1
 
 /* Operating system checking. ######################################################### */
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
@@ -28,6 +28,7 @@
 #include "headers/flags.h"
 #include "headers/components/scene.h"
 #include "headers/components/rasterization.h"
+#include "headers/components/camera.h"
 
 /* External Libraries. */
 #ifndef _glfw3_h_
@@ -37,6 +38,6 @@
 /* General Macro definitions */
 #define _GNU_SOURCE /* Importand to counter sigaction struct < incomplete type error >. */
 
-#endif /* _MAIN_H */
+#endif // !MAIN_H
 
 

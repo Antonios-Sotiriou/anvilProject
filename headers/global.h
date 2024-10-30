@@ -3,7 +3,7 @@
 
 #ifndef STRUCTS_H
     #include "structs.h"
-#endif // STRUCTS_H
+#endif // !STRUCTS_H
 
 /* Defined in main.c */
 extern int WIDTH, HEIGHT, DEBUG;
@@ -11,6 +11,6 @@ extern int WIDTH, HEIGHT, DEBUG;
 /* defined in scene.c */
 extern scene SCENE;
 
-#endif // GLOBAL_H
+#endif // !GLOBAL_H
 
 

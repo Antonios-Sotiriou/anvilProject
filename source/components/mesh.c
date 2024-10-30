@@ -63,7 +63,11 @@ static void loadMesh(mesh* m, const char type[]) {
     }
 
     m->vao_indexes = (f_indexes / 9) * 24;
-    m->vao = malloc(4 * m->vao_indexes);
+    m->faces_indexes = m->vao_indexes / 24;
+    m->vecs_indexes = m->faces_indexes * 3;
+    m->vao_size = m->vao_indexes * 4;
+
+    m->vao = malloc(m->vao_indexes * 4);
     if (!m->vao) {
         printf("Could not create mesh vao. loadMesh() - malloc()\n");
         return;
@@ -115,13 +119,14 @@ static float *loadVectors(const char type[]) {
             if ((ch = getc(fp)) == ' ')
                 if (fscanf(fp, "%f %f %f", &va, &vb, &vc) == 3) {
 
-                    v = realloc(v, 12 * dynamic_inc);
-                    if (!v) {
+                    float *temp = realloc(v, 12 * dynamic_inc);
+                    if (!temp) {
                         printf("Could not reallocate memory for vec4f struct array. loadMesh() -- realloc().\n");
                         fclose(fp);
                         free(v);
                         return NULL;
                     }
+                    v = temp;
                     v[index] = va;
                     v[index + 1] = vb;
                     v[index + 2] = vc;
@@ -158,13 +163,14 @@ static float *loadTexels(const char path[]) {
                 if ((ch = getc(fp)) == ' ')
                     if (fscanf(fp, "%f %f", &va, &vb) == 2) {
 
-                        t = realloc(t, 8 * dynamic_inc);
-                        if (!t) {
+                        float *temp = realloc(t, 8 * dynamic_inc);
+                        if (!temp) {
                             fprintf(stderr, "Could not reallocate memory for vec4f struct array. loadTexels() -- realloc().\n");
                             fclose(fp);
                             free(t);
                             return NULL;
                         }
+                        t = temp;
                         t[index] = va;
                         t[index + 1] = vb;
 
@@ -201,13 +207,14 @@ static float *loadNormals(const char path[]) {
                 if ((ch = getc(fp)) == ' ')
                     if (fscanf(fp, "%f %f %f", &va, &vb, &vc) == 3) {
 
-                        n = realloc(n, 12 * dynamic_inc);
-                        if (!n) {
+                        float *temp = realloc(n, 12 * dynamic_inc);
+                        if (!temp) {
                             fprintf(stderr, "Could not reallocate memory for vec4f struct array. loadMesh() -- realloc().\n");
                             fclose(fp);
                             free(n);
                             return NULL;
                         }
+                        n = temp;
                         n[index] = va;
                         n[index + 1] = vb;
                         n[index + 2] = vc;
@@ -245,13 +252,14 @@ static int* loadFaces(const char type[]) {
                 if (fscanf(fp, "%d/%d/%d %d/%d/%d %d/%d/%d",
                     &va, &vb, &vc, &vd, &ve, &vf, &vg, &vh, &vi) == 9) {
 
-                    f = realloc(f, 36 * dynamic_inc);
-                    if (!f) {
+                    int *temp = realloc(f, 36 * dynamic_inc);
+                    if (!temp) {
                         printf("Could not reallocate memory for Face struct array. loadMesh() -- realloc().\n");
                         fclose(fp);
                         free(f);
                         return NULL;
                     }
+                    f = temp;
                     f[index] = va - 1,     f[index + 1] = vb - 1, f[index + 2] = vc - 1,
                     f[index + 3] = vd - 1, f[index + 4] = ve - 1, f[index + 5] = vf - 1,
                     f[index + 6] = vg - 1, f[index + 7] = vh - 1, f[index + 8] = vi - 1;

@@ -75,14 +75,13 @@ void testShader(void) {
         rot += 1.f;
     }
 
-
     quat q1 = rotationQuat(rot, 1.f, 0.f, 0.f);
     vec4 t = { 0.f, 0.f, 50.f, 1.f };
     mat4x4 qm = modelMatfromQST(q1, 10.f, t);
 
-    mat4x4 lookat = lookatMatrix(SCENE.mesh[camera].coords.v[0], SCENE.mesh[1].coords.v[1], SCENE.mesh[1].coords.v[2], SCENE.mesh[1].coords.v[3]);
+    mat4x4 lookat = lookatMatrix(SCENE.mesh[camera].coords.v[0], SCENE.mesh[camera].coords.v[1], SCENE.mesh[camera].coords.v[2], SCENE.mesh[camera].coords.v[3]);
     mat4x4 ppM = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 1.f, _CRT_INT_MAX);
-    mat4x4 worldMatrix = matMulmat(transposeMatrix(lookat), ppM);
+    mat4x4 worldMatrix = matMulmat(inverseMatrix(lookat), ppM);
 
     GLfloat vpMatrix[16], modelMatrix[16];
     memcpy(&vpMatrix, &worldMatrix, 64);
@@ -93,19 +92,19 @@ void testShader(void) {
 
     /* Just for testing purposes code. ##################### */
 
-    glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[0].vao_indexes * 4, SCENE.mesh[0].vao, GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[0].vao_indexes / 8);
+    glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[0].vao_size, SCENE.mesh[0].vao, GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[0].vecs_indexes);
 
     //GLubyte data[4];
     //glReadBuffer(GL_COLOR_ATTACHMENT0);
     //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
     //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        fprintf(stderr, "project < %d >  ", err);
-        perror("OpenGL ERROR: ");
-    }
+    //GLenum err;
+    //while ((err = glGetError()) != GL_NO_ERROR) {
+    //    fprintf(stderr, "project < %d >  ", err);
+    //    perror("OpenGL ERROR: ");
+    //}
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

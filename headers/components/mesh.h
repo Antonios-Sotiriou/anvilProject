@@ -12,6 +12,6 @@
 void createMesh(mesh *m, const char type[]);
 void releaseMesh(mesh *m);
 
-#endif // MESH_H
+#endif // !MESH_H
 
 

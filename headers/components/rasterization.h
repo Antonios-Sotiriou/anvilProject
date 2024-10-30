@@ -13,12 +13,12 @@
 
 /* Global variables. */
 #ifndef GLOBAL_H
-    #include "headers/components/global.h"
+    #include "headers/global.h"
 #endif // !GLOBAL_H
 
 const void initRasterComponents(void);
 const void rasterize();
 
-#endif /* RASTERIZATION_H */
+#endif // !RASTERIZATION_H
 
 
