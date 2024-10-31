@@ -30,6 +30,8 @@ mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N);
 mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up);
 vec4 vec4Mulmat(const vec4 v, const mat4x4 m);
 void setvec4Mulmat(vec4* v, const mat4x4 m);
+vec4* vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m);
+void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m);
 mat4x4 matMulmat(const mat4x4 m1, const mat4x4 m2);
 mat4x4 transposeMatrix(const mat4x4 m);
 mat4x4 inverseMatrix(const mat4x4 m);

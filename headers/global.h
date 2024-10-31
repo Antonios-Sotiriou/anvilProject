@@ -7,6 +7,8 @@
 
 /* Defined in main.c */
 extern int WIDTH, HEIGHT, DEBUG;
+/* The global matrices, defined also in main.c. */
+extern mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
 /* defined in scene.c */
 extern scene SCENE;

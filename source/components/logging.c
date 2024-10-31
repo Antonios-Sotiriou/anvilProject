@@ -34,10 +34,25 @@ void logcoords(const coords c) {
 	logvec4(c.v[3]);
 	printf("}\n");
 }
+void logrigid(const rigid r) {
+	printf("rigid {\n");
+	printf("    state      : %d\n", r.state);
+	printf("    velocity   : ");
+	logvec4(r.velocity);
+	printf("    rot_angle  : %f\n", r.rot_angle);
+	printf("}\n");
+}
 void logmesh(const mesh m) {
 	logcoords(m.coords);
-	printf("vec4        :%p\n", m.vao);
-	printf("vec4_indexes:%d\n", m.vao_indexes);
+	printf("Quat           : ");
+	logvec4(m.q);
+	printf("scale          : %f\n", m.scale);
+	printf("vao            : %p\n", m.vao);
+	printf("vao_indexes    : %d\n", m.vao_indexes);
+	printf("faces_indexes  : %d\n", m.faces_indexes);
+	printf("vecs_indexes   : %d\n", m.vecs_indexes);
+	printf("vao_size       : %d\n", m.vao_size);
+	logrigid(m.rigid);
 }
 
 

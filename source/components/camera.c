@@ -1,19 +1,66 @@
 #include "headers/components/camera.h"
 
-#define FORCE 10.f
-static vec4 velocity;
+#define FORCE      0.1f    // Force to apply on rigid body when its state is enabled.
+#define SCALE_NR   100.f   // Scalar to scale the force of not enables rigid bodies.
+static vec4 velocity;      // Velocity vector for when rigid body state is disabled. Probably better to move in function for better readabillity.
 
 /* Moves camera forward along the N axis. */
 void moveForward(const int action) {
-    int enable = action > 0 ? 1 : 0;
-    velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[3], FORCE), enable);
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[3], FORCE), action);
+        return;
+    }
+    velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[3], (FORCE * SCALE_NR)), action);
     SCENE.mesh[camera].coords.v[0] = vecAddvec(SCENE.mesh[camera].coords.v[0], velocity);
-    printf("action: %d\n", action);
 }
+/* Moves camera Backward along the N axis. */
 void moveBackward(const int action) {
-    int enable = action > 0 ? 1 : 0;
-    velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[3], FORCE), enable);
-    SCENE.mesh[camera].coords.v[0] = vecSubvec(SCENE.mesh[camera].coords.v[0], velocity);
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[3], -FORCE), action);
+        return;
+    }
+    velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[3], (-FORCE * SCALE_NR)), action);
+    SCENE.mesh[camera].coords.v[0] = vecAddvec(SCENE.mesh[camera].coords.v[0], velocity);
+}
+/* Moves camera right along the U axis. */
+void moveRight(const int action) {
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[1], FORCE), action);
+        return;
+    }
+    velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[1], (FORCE * SCALE_NR)), action);
+    SCENE.mesh[camera].coords.v[0] = vecAddvec(SCENE.mesh[camera].coords.v[0], velocity);
+}
+/* Moves camera Left along the U axis. */
+void moveLeft(const int action) {
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[1], -FORCE), action);
+        return;
+    }
+    velocity = vecMulf32(vecMulf32(SCENE.mesh[camera].coords.v[1], (-FORCE * SCALE_NR)), action);
+    SCENE.mesh[camera].coords.v[0] = vecAddvec(SCENE.mesh[camera].coords.v[0], velocity);
+}
+/* Rotates camera right along the V axis. */
+void lookRight(const int action) {
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.rot_angle = action;
+        SCENE.mesh[camera].rigid.q = rotationQuat(-0.01f, 0.f, 1.f, 0.f);
+            return;
+    }
+
+    mat4x4 tr = matfromQuat(rotationQuat(-10.f * action, 0.f, 1.f, 0.f), SCENE.mesh[camera].coords.v[0]);
+    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tr);
+}
+/* Rotates camera Left along the V axis. */
+void lookLeft(const int action) {
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.rot_angle = action;
+        SCENE.mesh[camera].rigid.q = rotationQuat(0.01f, 0.f, 1.f, 0.f);
+        return;
+    }
+
+    mat4x4 tr = matfromQuat(rotationQuat(10.f * action, 0.f, 1.f, 0.f), SCENE.mesh[camera].coords.v[0]);
+    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tr);
 }
 
 

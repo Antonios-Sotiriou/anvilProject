@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H 1
+#ifndef PHYSICS_H
+#define PHYSICS_H 1
 
 /* Global variables. */
 #ifndef GLOBAL_H
@@ -15,13 +15,12 @@
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H
 
-void moveForward(const int action);
-void moveBackward(const int action);
-void moveRight(const int action);
-void moveLeft(const int action);
-void lookRight(const int action);
-void lookLeft(const int action);
+#ifndef MATRICES_H
+    #include "headers/components/matrices.h"
+#endif // !MATRICES_H
 
-#endif // !CAMERA_H
+void applyPhysics(void);
+
+#endif // !PHYSICS_H
 
 

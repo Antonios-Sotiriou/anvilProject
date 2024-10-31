@@ -2,6 +2,8 @@
 
 /* Window app Global variables. */
 int WIDTH, HEIGHT, DEBUG = 1;
+/* The global matrices which are not change so, or are change after specific input, or window events. */
+mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
 void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
 
@@ -9,17 +11,43 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
         case GLFW_KEY_W :
             if (action == GLFW_PRESS) {
                 moveForward(action);
-            }
-            else if (action == GLFW_RELEASE) {
+            } else if (action == GLFW_RELEASE) {
                 moveForward(action);
             }
             break;
         case GLFW_KEY_S :
             if (action == GLFW_PRESS) {
                 moveBackward(action);
-            }
-            else if (action == GLFW_RELEASE) {
+            } else if (action == GLFW_RELEASE) {
                 moveBackward(action);
+            }
+            break;
+        case GLFW_KEY_RIGHT:
+            if (action == GLFW_PRESS) {
+                moveRight(action);
+            } else if (action == GLFW_RELEASE) {
+                moveRight(action);
+            }
+            break;
+        case GLFW_KEY_LEFT:
+            if (action == GLFW_PRESS) {
+                moveLeft(action);
+            } else if (action == GLFW_RELEASE) {
+                moveLeft(action);
+            }
+            break;
+        case GLFW_KEY_D:
+            if (action == GLFW_PRESS) {
+                lookRight(action);
+            } else if (action == GLFW_RELEASE) {
+                lookRight(action);
+            }
+            break;
+        case GLFW_KEY_A:
+            if (action == GLFW_PRESS) {
+                lookLeft(action);
+            } else if (action == GLFW_RELEASE) {
+                lookLeft(action);
             }
             break;
     }
@@ -62,9 +90,16 @@ int main(int argc, char *argv[]) {
     /* Create and initialize the GLOBAL SCENE. */
     createScene();
 
+    /* Create the Perspective Matrix which is in most cases constant. Changes only with window resize events. */
+    PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 100.f, _CRT_INT_MAX);
+
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
-        /* Render here */
+
+        /* Apply physics */
+        applyPhysics();
+
+        /* Draw the Global SCENE. */
         rasterize();
 
         /* Poll for and process events */

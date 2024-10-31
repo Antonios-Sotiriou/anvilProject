@@ -102,7 +102,7 @@ quat multiplyQuats(const quat q1, const quat q2) {
     return _mm_add_ps(_mm_add_ps(_mm_add_ps(w, _mm_xor_ps(mqor1, x)), _mm_xor_ps(mqor2, y)), _mm_xor_ps(mqor3, z));
 }
 /* Creates a matrix from a given quaternion with translation x, y, z. */
-mat4x4 matfromQuat(const quat q, const float x, const float y, const float z) {
+mat4x4 matfromQuat(const quat q, const vec4 t) {
     mat4x4 m;
     vec4 r1 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 1, 1, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 2, 0)));
     vec4 r2 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 0, 0, 1)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 2, 3, 1)));
@@ -116,11 +116,10 @@ mat4x4 matfromQuat(const quat q, const float x, const float y, const float z) {
     r2 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 0, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 1, 2)));
     m.m[2] = _mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor3, r2)), twos), ones3);
 
-    vec4 xyz = _mm_setr_ps(x, y, z, 1.f);
-    vec4 x1 = _mm_mul_ps(_mm_shuffle_ps(xyz, xyz, _MM_SHUFFLE(3, 0, 0, 0)), m.m[0]);
-    vec4 y1 = _mm_mul_ps(_mm_shuffle_ps(xyz, xyz, _MM_SHUFFLE(3, 1, 1, 1)), m.m[1]);
-    vec4 z1 = _mm_mul_ps(_mm_shuffle_ps(xyz, xyz, _MM_SHUFFLE(3, 2, 2, 2)), m.m[2]);
-    m.m[3] = _mm_sub_ps(_mm_sub_ps(_mm_sub_ps(xyz, x1), y1), z1);
+    vec4 x1 = _mm_mul_ps(_mm_shuffle_ps(t, t, _MM_SHUFFLE(3, 0, 0, 0)), m.m[0]);
+    vec4 y1 = _mm_mul_ps(_mm_shuffle_ps(t, t, _MM_SHUFFLE(3, 1, 1, 1)), m.m[1]);
+    vec4 z1 = _mm_mul_ps(_mm_shuffle_ps(t, t, _MM_SHUFFLE(3, 2, 2, 2)), m.m[2]);
+    m.m[3] = _mm_sub_ps(_mm_sub_ps(_mm_sub_ps(t, x1), y1), z1);
 
     return m;
 }
@@ -265,8 +264,8 @@ quat multiplyQuats(const quat q1, const quat q2) {
         (q1.f32[0] * q2.f32[2]) + (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0])
     };
 }
-/* Creates a matrix from a given quaternion with translation x, y, z. */
-mat4x4 matfromQuat(const quat q, const float x, const float y, const float z) {
+/* Creates a matrix from a given quaternion with translation vector t. */
+mat4x4 matfromQuat(const quat q, const vec4 t) {
     mat4x4 m;
     m.m[0].f32[0] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[1] * q.f32[1])) - 1.0f);
     m.m[0].f32[1] = (2.0f * ((q.f32[1] * q.f32[2]) - (q.f32[0] * q.f32[3])));
@@ -283,9 +282,9 @@ mat4x4 matfromQuat(const quat q, const float x, const float y, const float z) {
     m.m[2].f32[2] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[3] * q.f32[3])) - 1.0);
     m.m[2].f32[3] = 0.0f;
 
-    m.m[3].f32[0] = x - x * m.m[0].f32[0] - y * m.m[1].f32[0] - z * m.m[2].f32[0];
-    m.m[3].f32[1] = y - x * m.m[0].f32[1] - y * m.m[1].f32[1] - z * m.m[2].f32[1];
-    m.m[3].f32[2] = z - x * m.m[0].f32[2] - y * m.m[1].f32[2] - z * m.m[2].f32[2];
+    m.m[3].f32[0] = t.f32[0] - t.f32[0] * m.m[0].f32[0] - t.f32[1] * m.m[1].f32[0] - t.f32[2] * m.m[2].f32[0];
+    m.m[3].f32[1] = t.f32[1] - t.f32[0] * m.m[0].f32[1] - t.f32[1] * m.m[1].f32[1] - t.f32[2] * m.m[2].f32[1];
+    m.m[3].f32[2] = t.f32[2] - t.f32[0] * m.m[0].f32[2] - t.f32[1] * m.m[1].f32[2] - t.f32[2] * m.m[2].f32[2];
     m.m[3].f32[3] = 1.0f;
 
     return m;

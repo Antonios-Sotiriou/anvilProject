@@ -177,7 +177,7 @@ mat4x4 inverseMatrix(const mat4x4 m) {
     const vec4 left = _mm_mul_ps(_mm_shuffle_ps(m.m[3], m.m[3], _MM_SHUFFLE(3, 0, 0, 0)), r.m[0]);
     const vec4 middle = _mm_mul_ps(_mm_shuffle_ps(m.m[3], m.m[3], _MM_SHUFFLE(3, 1, 1, 1)), r.m[1]);
     const vec4 right = _mm_mul_ps(_mm_shuffle_ps(m.m[3], m.m[3], _MM_SHUFFLE(3, 2, 2, 2)), r.m[2]);
-    r.m[3] = _mm_or_ps(invmor, _mm_add_ps(_mm_add_ps(left, middle), right));
+    r.m[3] = _mm_xor_ps(invmor, _mm_add_ps(_mm_add_ps(left, middle), right));
     r.m[3].m128_f32[3] = 1.f;
 
     return r;
@@ -305,6 +305,28 @@ void setvec4Mulmat(vec4* v, const mat4x4 m) {
     vec4 r = *v;
     for (int i = 0; i < 4; i++) {
         v->f32[i] = r.f32[0] * m.m[0].f32[i] + r.f32[1] * m.m[1].f32[i] + r.f32[2] * m.m[2].f32[i] + r.f32[3] * m.m[3].f32[i];
+    }
+}
+/* Multiplies a vec4 array with the given Matrix and returns a new array, which includes the original array information, leaving the original unmodified. */
+vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+    vec4 *r = malloc(16 * len);
+    for (int i = 0; i < len; i++) {
+        r[i].f32[0] = vecs[i].f32[0] * m.m[0].f32[0] + vecs[i].f32[1] * m.m[1].f32[0] + vecs[i].f32[2] * m.m[2].f32[0] + vecs[i].f32[3] * m.m[3].f32[0];
+        r[i].f32[1] = vecs[i].f32[0] * m.m[0].f32[1] + vecs[i].f32[1] * m.m[1].f32[1] + vecs[i].f32[2] * m.m[2].f32[1] + vecs[i].f32[3] * m.m[3].f32[1];
+        r[i].f32[2] = vecs[i].f32[0] * m.m[0].f32[2] + vecs[i].f32[1] * m.m[1].f32[2] + vecs[i].f32[2] * m.m[2].f32[2] + vecs[i].f32[3] * m.m[3].f32[2];
+        r[i].f32[3] = vecs[i].f32[0] * m.m[0].f32[3] + vecs[i].f32[1] * m.m[1].f32[3] + vecs[i].f32[2] * m.m[2].f32[3] + vecs[i].f32[3] * m.m[3].f32[3];
+    }
+    return r;
+}
+/* Multiplies a vec4 array with the given Matrix updating the array. */
+void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+    vec4 r;
+    for (int i = 0; i < len; i++) {
+        r = vecs[i];
+        vecs[i].f32[0] = r.f32[0] * m.m[0].f32[0] + r.f32[1] * m.m[1].f32[0] + r.f32[2] * m.m[2].f32[0] + r.f32[3] * m.m[3].f32[0];
+        vecs[i].f32[1] = r.f32[0] * m.m[0].f32[1] + r.f32[1] * m.m[1].f32[1] + r.f32[2] * m.m[2].f32[1] + r.f32[3] * m.m[3].f32[1];
+        vecs[i].f32[2] = r.f32[0] * m.m[0].f32[2] + r.f32[1] * m.m[1].f32[2] + r.f32[2] * m.m[2].f32[2] + r.f32[3] * m.m[3].f32[2];
+        vecs[i].f32[3] = r.f32[0] * m.m[0].f32[3] + r.f32[1] * m.m[1].f32[3] + r.f32[2] * m.m[2].f32[3] + r.f32[3] * m.m[3].f32[3];
     }
 }
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */

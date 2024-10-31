@@ -48,6 +48,12 @@ typedef struct {
     vec2 vt[3];
     vec4 vn[3];
 } face;
+typedef struct {
+    int state;                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
+    vec4 velocity;                       // Velocity of a mesh.
+    float rot_angle;                     // The rotation angle of the rigid body.
+    quat q;                              // Rotation quaternion W, X, Y, Z.
+} rigid;
 /* Base structure to represent a shape. */
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
@@ -58,6 +64,7 @@ typedef struct {
         faces_indexes,                   // Number of faces in vao. ( vao_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vao. ( vao_indexes / 8 or faces_indexes * 3).
         vao_size;                        // The size of the vao in bytes.( vao_indexes * 4 ).
+    rigid rigid;
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {

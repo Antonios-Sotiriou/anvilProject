@@ -29,6 +29,7 @@
 #include "headers/components/scene.h"
 #include "headers/components/rasterization.h"
 #include "headers/components/camera.h"
+#include "headers/components/physics.h"
 
 /* External Libraries. */
 #ifndef _glfw3_h_
