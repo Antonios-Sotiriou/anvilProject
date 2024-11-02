@@ -1,5 +1,5 @@
 #include "headers/components/mesh.h"
-
+#include "headers/components/quaternions.h"
 /* Usefull to initialize the starting mesh coordinates. */
 const static vec4 initCoords[4] = {
     { 0.f, 0.f, 0.f, 1.f },
@@ -20,7 +20,7 @@ void createMesh(mesh *m, const char type[]) {
 static void initMesh(mesh *m) {
     /* Assign starting coordinates for all meshes */
     memcpy(&m->coords, &initCoords, 64);
-    //m->q = unitQuat();
+    m->q = unitQuat();
     m->scale = 10.f;
 }
 /* Loads obj file data to a mesh. */

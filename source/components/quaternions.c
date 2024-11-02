@@ -54,7 +54,7 @@ void normalizeQuat(quat* q) {
 /* Conjugate quat's vector part, aka( switching the sign ). */
 quat conjugateQuat(const quat q) {
     quat r = _mm_setr_ps(0.f, -0.f, -0.f, -0.f);
-    return _mm_or_ps(q, r);
+    return _mm_xor_ps(q, r);
 }
 /* Creates a rotation quaternion with angle W and rotation axis X Y Z: */
 quat rotationQuat(const float angle, const float x, const float y, const float z) {
@@ -62,6 +62,18 @@ quat rotationQuat(const float angle, const float x, const float y, const float z
     const float sn = sinf(radius);
     const float cs = cosf(radius);
     return _mm_mul_ps(_mm_setr_ps(cs, x, y, z), _mm_setr_ps(1.f, sn, sn, sn));
+}
+/* Rotates vector v by the given quaternion.Returns a new vector. */
+vec4 vec4RotateQuat(const quat q, const vec4 v) {
+    quat r = _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 1, 0, 3));
+    r = multiplyQuats(multiplyQuats(conjugateQuat(q), r), q);
+    return _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 3, 2, 1));
+}
+/* Rotates vector v by the given quaternion. */
+void setvec4RotateQuat(const quat q, vec4 *v) {
+    quat r = _mm_shuffle_ps(*v, *v, _MM_SHUFFLE(2, 1, 0, 3));
+    r = multiplyQuats(multiplyQuats(conjugateQuat(q), r), q);
+    *v = _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 3, 2, 1));
 }
 /* Adds quats q1 and q2 together returning a new quat. */
 quat addQuats(const quat q1, const quat q2) {
@@ -94,10 +106,10 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
 }
 /* Multiplies two quats(q1, q2) with each other returning a new quat. */
 quat multiplyQuats(const quat q1, const quat q2) {
-    quat w = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(0, 0, 0, 0)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(2, 1, 0, 0)));
-    quat x = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(1, 1, 1, 1)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(1, 2, 0, 1)));
-    quat y = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(2, 2, 2, 2)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(0, 0, 2, 2)));
-    quat z = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(3, 3, 3, 3)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(0, 0, 1, 3)));
+    quat w = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(0, 0, 0, 0)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(3, 2, 1, 0)));
+    quat x = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(1, 1, 1, 1)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(2, 3, 0, 1)));
+    quat y = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(2, 2, 2, 2)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(1, 0, 3, 2)));
+    quat z = _mm_mul_ps(_mm_shuffle_ps(q1, q1, _MM_SHUFFLE(3, 3, 3, 3)), _mm_shuffle_ps(q2, q2, _MM_SHUFFLE(0, 1, 2, 3)));
 
     return _mm_add_ps(_mm_add_ps(_mm_add_ps(w, _mm_xor_ps(mqor1, x)), _mm_xor_ps(mqor2, y)), _mm_xor_ps(mqor3, z));
 }
@@ -222,6 +234,20 @@ quat rotationQuat(const float angle, const float x, const float y, const float z
         z * sn
     };
 }
+/* Rotates vector v by the given quaternion.Returns a new vector. */
+vec4 vec4RotateQuat(const quat q, const vec4 v) {
+    quat r = setQuat(0.f, v.f32[0], v.f32[1], v.f32[2]);
+    r = multiplyQuats(multiplyQuats(conjugateQuat(q), r), q);
+    return (vec4) { r.f32[1], r.f32[2], r.f32[3], v.f32[3] };
+}
+/* Rotates vector v by the given quaternion. */
+void setvec4RotateQuat(const quat q, vec4* v) {
+    quat r = setQuat(0.f, v->f32[0], v->f32[1], v->f32[2]);
+    r = multiplyQuats(multiplyQuats(conjugateQuat(q), r), q);
+    v->f32[0] = r.f32[1];
+    v->f32[1] = r.f32[2];
+    v->f32[2] = r.f32[3];
+}
 /* Adds quats q1 and q2 together returning a new quat. */
 quat addQuats(const quat q1, const quat q2) {
     return (quat) {
@@ -259,9 +285,9 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
 quat multiplyQuats(const quat q1, const quat q2) {
     return (quat) {
         (q1.f32[0] * q2.f32[0]) - (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[2]) - (q1.f32[3] * q2.f32[3]),
-        (q1.f32[0] * q2.f32[0]) + (q1.f32[1] * q2.f32[0]) + (q1.f32[2] * q2.f32[2]) - (q1.f32[3] * q2.f32[1]),
-        (q1.f32[0] * q2.f32[1]) - (q1.f32[1] * q2.f32[2]) + (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0]),
-        (q1.f32[0] * q2.f32[2]) + (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[0])
+        (q1.f32[0] * q2.f32[1]) + (q1.f32[1] * q2.f32[0]) + (q1.f32[2] * q2.f32[3]) - (q1.f32[3] * q2.f32[2]),
+        (q1.f32[0] * q2.f32[2]) - (q1.f32[1] * q2.f32[3]) + (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[1]),
+        (q1.f32[0] * q2.f32[3]) + (q1.f32[1] * q2.f32[2]) - (q1.f32[2] * q2.f32[1]) + (q1.f32[3] * q2.f32[0])
     };
 }
 /* Creates a matrix from a given quaternion with translation vector t. */

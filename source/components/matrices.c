@@ -129,6 +129,30 @@ void setvec4Mulmat(vec4* v, const mat4x4 m) {
     const vec4 w = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
     *v = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
 }
+/* Multiplies a vec4 array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
+vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+    vec4 *r = malloc(16 * len);
+    vec4 x, y, z, w;
+    for (int i = 0; i < len; i++) {
+        x = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
+        y = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
+        z = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
+        w = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
+        r[i] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
+    }
+    return r;
+}
+/* Multiplies a vec4 array with the given Matrix updating the array. */
+void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+    vec4 x, y, z, w;
+    for (int i = 0; i < len; i++) {
+        x = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
+        y = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
+        z = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
+        w = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
+        vecs[i] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
+    }
+}
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */
 mat4x4 matMulmat(const mat4x4 m1, const mat4x4 m2) {
     mat4x4 r;
@@ -311,10 +335,9 @@ void setvec4Mulmat(vec4* v, const mat4x4 m) {
 vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 *r = malloc(16 * len);
     for (int i = 0; i < len; i++) {
-        r[i].f32[0] = vecs[i].f32[0] * m.m[0].f32[0] + vecs[i].f32[1] * m.m[1].f32[0] + vecs[i].f32[2] * m.m[2].f32[0] + vecs[i].f32[3] * m.m[3].f32[0];
-        r[i].f32[1] = vecs[i].f32[0] * m.m[0].f32[1] + vecs[i].f32[1] * m.m[1].f32[1] + vecs[i].f32[2] * m.m[2].f32[1] + vecs[i].f32[3] * m.m[3].f32[1];
-        r[i].f32[2] = vecs[i].f32[0] * m.m[0].f32[2] + vecs[i].f32[1] * m.m[1].f32[2] + vecs[i].f32[2] * m.m[2].f32[2] + vecs[i].f32[3] * m.m[3].f32[2];
-        r[i].f32[3] = vecs[i].f32[0] * m.m[0].f32[3] + vecs[i].f32[1] * m.m[1].f32[3] + vecs[i].f32[2] * m.m[2].f32[3] + vecs[i].f32[3] * m.m[3].f32[3];
+        for (int j = 0; j < 4; j++) {
+            r[i].f32[j] = vecs[i].f32[0] * m.m[0].f32[j] + vecs[i].f32[1] * m.m[1].f32[j] + vecs[i].f32[2] * m.m[2].f32[j] + vecs[i].f32[3] * m.m[3].f32[j];
+        }
     }
     return r;
 }
@@ -323,10 +346,9 @@ void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 r;
     for (int i = 0; i < len; i++) {
         r = vecs[i];
-        vecs[i].f32[0] = r.f32[0] * m.m[0].f32[0] + r.f32[1] * m.m[1].f32[0] + r.f32[2] * m.m[2].f32[0] + r.f32[3] * m.m[3].f32[0];
-        vecs[i].f32[1] = r.f32[0] * m.m[0].f32[1] + r.f32[1] * m.m[1].f32[1] + r.f32[2] * m.m[2].f32[1] + r.f32[3] * m.m[3].f32[1];
-        vecs[i].f32[2] = r.f32[0] * m.m[0].f32[2] + r.f32[1] * m.m[1].f32[2] + r.f32[2] * m.m[2].f32[2] + r.f32[3] * m.m[3].f32[2];
-        vecs[i].f32[3] = r.f32[0] * m.m[0].f32[3] + r.f32[1] * m.m[1].f32[3] + r.f32[2] * m.m[2].f32[3] + r.f32[3] * m.m[3].f32[3];
+        for (int j = 0; j < 4; j++) {
+            vecs[i].f32[j] = r.f32[0] * m.m[0].f32[j] + r.f32[1] * m.m[1].f32[j] + r.f32[2] * m.m[2].f32[j] + r.f32[3] * m.m[3].f32[j];
+        }
     }
 }
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */

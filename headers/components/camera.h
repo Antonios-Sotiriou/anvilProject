@@ -19,6 +19,8 @@ void moveForward(const int action);
 void moveBackward(const int action);
 void moveRight(const int action);
 void moveLeft(const int action);
+void moveUp(const int action);
+void moveDown(const int action);
 void lookRight(const int action);
 void lookLeft(const int action);
 

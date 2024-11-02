@@ -36,6 +36,20 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
                 moveLeft(action);
             }
             break;
+        case GLFW_KEY_UP:
+            if (action == GLFW_PRESS) {
+                moveUp(action);
+            } else if (action == GLFW_RELEASE) {
+                moveUp(action);
+            }
+            break;
+        case GLFW_KEY_DOWN:
+            if (action == GLFW_PRESS) {
+                moveDown(action);
+            } else if (action == GLFW_RELEASE) {
+                moveDown(action);
+            }
+            break;
         case GLFW_KEY_D:
             if (action == GLFW_PRESS) {
                 lookRight(action);

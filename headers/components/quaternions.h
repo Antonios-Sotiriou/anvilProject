@@ -30,6 +30,8 @@ float magnitudeQuat(const quat q);
 void normalizeQuat(quat* q);
 quat conjugateQuat(const quat q);
 quat rotationQuat(const float angle, const float x, const float y, const float z);
+vec4 vec4RotateQuat(const quat q, const vec4 v);
+void setvec4RotateQuat(const quat q, vec4* v);
 quat addQuats(const quat q1, const quat q2);
 quat eulertoQuat(const float roll, const float yaw, const float pitch);
 quat multiplyQuats(const quat q1, const quat q2);

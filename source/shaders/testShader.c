@@ -1,7 +1,8 @@
 #include "headers/shaders/testShader.h"
 #include "headers/components/matrices.h"
 #include "headers/components/quaternions.h"
-
+int COUNT = 0;
+float rot = 1.f;
 const static char* vertexShaderSource = "#version 460 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
 "layout (location = 1) in vec2 vsTexels;\n"
@@ -81,6 +82,14 @@ void testShader(void) {
     PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
     memcpy(&vpMatrix, &PROJECTION_M, 64);
     glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
+
+    quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
+    SCENE.mesh[terrain].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
+    if ((COUNT % 1000) == 0) {
+        rot += 1.0f;
+        //logvec4(SCENE.mesh[terrain].q);
+    }
+    COUNT++;
 
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
         mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);

@@ -5,7 +5,7 @@
     #include "headers/cmake_variables.h"
 #endif // !anvil_VERSION_MAJOR
 
-//#define VECTORIZED_CODE
+#define VECTORIZED_CODE
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 
@@ -18,7 +18,7 @@
     #define OFF                 0
 
     /* Meshes paths. */
-	#define CUBE_FLAT           anvil_SOURCE_DIR "/meshes/cube/cube_flat.obj"
+	#define CUBE_FLAT           anvil_SOURCE_DIR "/meshes/cube/cube_smooth.obj"
 	#define CUBE_SMOOTH         anvil_SOURCE_DIR "/meshes/cube/cube_smooth.obj"
 
 #endif // !anvil_MAJOR_VERSION
