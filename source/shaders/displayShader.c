@@ -72,21 +72,23 @@ void displayTexture(const int textureIndex) {
 
     glUniform1i(0, textureIndex);
 
-    GLfloat quad[32] = {
-        1.f, -1.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f,
-        -1.f, -1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
-        1.f, 1.f, 0.f, 1.f, 1.f, 0.f, 0.f, 0.f,
-        -1.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f
-    };
+    //GLfloat quad[32] = {
+    //    1.f, -1.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f,
+    //    -1.f, -1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+    //    1.f, 1.f, 0.f, 1.f, 1.f, 0.f, 0.f, 0.f,
+    //    -1.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f
+    //};
+    glBindVertexArray(1);
+    //glBindBuffer(GL_ARRAY_BUFFER, 1);
 
-    glBufferData(GL_ARRAY_BUFFER, 32 * 4, quad, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, 32 * 4, quad, GL_STATIC_DRAW);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    //GLenum err;
-    //while ((err = glGetError()) != GL_NO_ERROR) {
-    //    fprintf(stderr, "displayTexture < %d >  ", err);
-    //    perror("OpenGL ERROR: ");
-    //}
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        fprintf(stderr, "displayTexture < %d >  ", err);
+        perror("OpenGL ERROR: ");
+    }
 }
 
 

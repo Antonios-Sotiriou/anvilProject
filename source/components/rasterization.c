@@ -2,25 +2,39 @@
 
 /* OpenGL Global veriables. */
 GLint mainShaderProgram, displayShaderProgram, testShaderProgram;
-GLint VBO, shadowDepthMap, shadowMapFBO, mainColorMap, mainDepthMap, mainInfoMap, mainFBO;
+GLint VBO, VAO, shadowDepthMap, shadowMapFBO, mainColorMap, mainDepthMap, mainInfoMap, mainFBO;
 const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
 /* Creates vertex buffers and vertex attribute Pointers. */
 const static void createBuffers(void) {
     /* Main Vertex Buffer Object buffer initiallization. */
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
+    printf("MAIN VAO: %d,   VBO: %d\n", VAO, VBO);
+
+    GLfloat quad[20] = {
+        1.f, -1.f, 0.f, 1.f, 0.f,
+        -1.f, -1.f, 0.f, 0.f, 0.f,
+        1.f, 1.f, 0.f, 1.f, 1.f,
+        -1.f, 1.f, 0.f, 0.f, 1.f
+    };
+
+    glBufferData(GL_ARRAY_BUFFER, 20 * 4, quad, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (void*)(3 * sizeof(float)));
+    //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
+
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
     /* Generate a framebuffer object to save the depth values for the shadow Map. */
-    glGenFramebuffers(1, &shadowMapFBO);
     glGenFramebuffers(1, &mainFBO);
+    glGenFramebuffers(1, &shadowMapFBO);
 }
 /* Creates user defined framebuffers and framebuffers textures. */
 const static void createTextures(void) {

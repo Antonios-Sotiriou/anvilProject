@@ -144,34 +144,46 @@ static void loadMesh(mesh *m, const char type[]) {
         }
     }
 
-    m->vao_indexes = (f_index / 9) * 24;
-    m->faces_indexes = m->vao_indexes / 24;
+    m->vbo_indexes = (f_index / 9) * 24;
+    m->faces_indexes = m->vbo_indexes / 24;
     m->vecs_indexes = m->faces_indexes * 3;
-    m->vao_size = m->vao_indexes * 4;
+    m->vbo_size = m->vbo_indexes * 4;
 
-    m->vao = malloc(m->vao_size);
-    if (!m->vao) {
-        printf("Could not create mesh vao. loadMesh() - malloc()\n");
+    m->vbo = malloc(m->vbo_size);
+    if (!m->vbo) {
+        printf("Could not create mesh vbo. loadMesh() - malloc()\n");
         return;
     }
 
     int index = 0, vpad, tpad;
     for (int i = 0; i < f_index; i++) {
         vpad = f[i] * 3;
-        m->vao[index] = v[vpad];
-        m->vao[index + 1] = v[vpad + 1];
-        m->vao[index + 2] = v[vpad + 2];
+        m->vbo[index] = v[vpad];
+        m->vbo[index + 1] = v[vpad + 1];
+        m->vbo[index + 2] = v[vpad + 2];
         i++;
         tpad = f[i] * 2;
-        m->vao[index + 3] = t[tpad];
-        m->vao[index + 4] = t[tpad + 1];
+        m->vbo[index + 3] = t[tpad];
+        m->vbo[index + 4] = t[tpad + 1];
         i++;
         vpad = f[i] * 3;
-        m->vao[index + 5] = n[vpad];
-        m->vao[index + 6] = n[vpad + 1];
-        m->vao[index + 7] = n[vpad + 2];
+        m->vbo[index + 5] = n[vpad];
+        m->vbo[index + 6] = n[vpad + 1];
+        m->vbo[index + 7] = n[vpad + 2];
         index += 8;
     }
+
+    //glGenVertexArrays(1, &m->VAO);
+    //glBindVertexArray(m->VAO);
+    glGenBuffers(1, &m->VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m->VBO);
+    glBufferData(GL_ARRAY_BUFFER, m->vbo_size, m->vbo, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
+
+    printf("MESH VAO: %d,   VBO: %d\n", m->VAO, m->VBO);
 
     free(v);
     free(t);
@@ -181,7 +193,9 @@ static void loadMesh(mesh *m, const char type[]) {
 }
 /* Releases allocated ressources of a mesh. */
 void releaseMesh(mesh* m) {
-    free(m->vao);
+    free(m->vbo);
+    glDeleteVertexArrays(1, &m->VAO);
+    glDeleteBuffers(1, &m->VBO);
 }
 
 
