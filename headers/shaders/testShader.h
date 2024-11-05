@@ -14,12 +14,9 @@
     #include "headers/global.h"
 #endif // !GLOBAL_H
 
-/* Global variables. Defined in rasterization.c. */
-extern GLint testShaderProgram;
-extern GLint mainFBO;
-
 const int initTestShader(void);
 void testShader(void);
 
 #endif // !TESTSHADER_H
+
 

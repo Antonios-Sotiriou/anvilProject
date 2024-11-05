@@ -12,14 +12,11 @@
 
 #ifndef GLOBAL_H
     #include "headers/global.h"
-#endif // GLOBAL_H
-
-/* Global variables. Defined in rasterization.c. */
-extern GLint displayShaderProgram;
+#endif // !GLOBAL_H
 
 const int initDisplayShader(void);
 void displayTexture(const int textureIndex);
 
-#endif /* DISPLAYSHADER_H */
+#endif // !DISPLAYSHADER_H
 
 

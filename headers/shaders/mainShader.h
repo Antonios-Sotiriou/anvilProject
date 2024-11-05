@@ -12,16 +12,11 @@
 
 #ifndef GLOBAL_H
     #include "headers/global.h"
-#endif // GLOBAL_H
-
-/* Global variables. Defined in rasterization.c. */
-extern GLint mainShaderProgram;
-extern GLint mainFBO;
-extern const GLenum drawBuffers[2];
+#endif // !GLOBAL_H
 
 const int initMainShader(void);
 void project(void);
 
-#endif /* MAINSHADER_H */
+#endif // !MAINSHADER_H
 
 

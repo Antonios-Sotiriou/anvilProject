@@ -173,8 +173,8 @@ static void loadMesh(mesh *m, const char type[]) {
         index += 8;
     }
 
-    //glGenVertexArrays(1, &m->VAO);
-    //glBindVertexArray(m->VAO);
+    glGenVertexArrays(1, &m->VAO);
+    glBindVertexArray(m->VAO);
     glGenBuffers(1, &m->VBO);
     glBindBuffer(GL_ARRAY_BUFFER, m->VBO);
     glBufferData(GL_ARRAY_BUFFER, m->vbo_size, m->vbo, GL_STATIC_DRAW);
@@ -182,6 +182,9 @@ static void loadMesh(mesh *m, const char type[]) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     printf("MESH VAO: %d,   VBO: %d\n", m->VAO, m->VBO);
 

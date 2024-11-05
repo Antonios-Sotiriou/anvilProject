@@ -92,14 +92,12 @@ void testShader(void) {
     COUNT++;
 
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
-        //glBindVertexArray(SCENE.mesh[i].VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, SCENE.mesh[i].VBO);
         mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
         memcpy(&modelMatrix, qm, 64);
         glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
         //glUniform1i(2, i + 1);
-
-        //glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[i].vbo_size, SCENE.mesh[i].vbo, GL_STATIC_DRAW);
+        
+        glBindVertexArray(SCENE.mesh[i].VAO);
         glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].vecs_indexes);
     }
     /* Just for testing purposes code. ##################### */
@@ -109,11 +107,11 @@ void testShader(void) {
     //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
     //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        fprintf(stderr, "project < %d >  ", err);
-        perror("OpenGL ERROR: ");
-    }
+    //GLenum err;
+    //while ((err = glGetError()) != GL_NO_ERROR) {
+    //    fprintf(stderr, "project < %d >  ", err);
+    //    perror("OpenGL ERROR: ");
+    //}
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

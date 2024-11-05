@@ -2,43 +2,15 @@
 
 /* OpenGL Global veriables. */
 GLint mainShaderProgram, displayShaderProgram, testShaderProgram;
-GLint VBO, VAO, shadowDepthMap, shadowMapFBO, mainColorMap, mainDepthMap, mainInfoMap, mainFBO;
+GLint mainFBO, shadowMapFBO;
+static GLint shadowDepthMap, mainColorMap, mainDepthMap, mainInfoMap;
 const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
-/* Creates vertex buffers and vertex attribute Pointers. */
-const static void createBuffers(void) {
-    /* Main Vertex Buffer Object buffer initiallization. */
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    printf("MAIN VAO: %d,   VBO: %d\n", VAO, VBO);
-
-    GLfloat quad[20] = {
-        1.f, -1.f, 0.f, 1.f, 0.f,
-        -1.f, -1.f, 0.f, 0.f, 0.f,
-        1.f, 1.f, 0.f, 1.f, 1.f,
-        -1.f, 1.f, 0.f, 0.f, 1.f
-    };
-
-    glBufferData(GL_ARRAY_BUFFER, 20 * 4, quad, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (void*)(3 * sizeof(float)));
-    //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    /* Generate a framebuffer object to save the depth values for the shadow Map. */
-    glGenFramebuffers(1, &mainFBO);
-    glGenFramebuffers(1, &shadowMapFBO);
-}
-/* Creates user defined framebuffers and framebuffers textures. */
-const static void createTextures(void) {
+/* Initializes user defined framebuffers and framebuffers textures. */
+const static void createFrameBuffers(void) {
     /* Create a user specific framebuffer to use it for rendering instead of the default framebuffer.*/
+    glGenFramebuffers(1, &mainFBO);
+
     glGenTextures(1, &mainColorMap);
     printf("mainColorMap: %d\n", mainColorMap);
     glActiveTexture(GL_TEXTURE0);
@@ -74,6 +46,8 @@ const static void createTextures(void) {
 
     /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
+    glGenFramebuffers(1, &shadowMapFBO);
 
     glGenTextures(1, &shadowDepthMap);
     printf("shadowDepthMap: %d\n", shadowDepthMap);
@@ -118,9 +92,8 @@ const void initRasterComponents(void) {
         glDebugMessageCallback(glErrorReportCallback, 0);
     }
 
-    /* Create user defined vertex array buffers, vertex Attribute pointers, user defined framebuffers and framebuffers textures. */
-    createBuffers();
-    createTextures();
+    /* Create user defined framebuffers and framebuffers textures. */
+    createFrameBuffers();
     
     /* Initialize the shaders. */
     mainShaderProgram = initMainShader();
