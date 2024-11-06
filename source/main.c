@@ -1,7 +1,7 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-int WIDTH, HEIGHT, DEBUG = 1;
+int WIDTH, HEIGHT, DEBUG = 0;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
 mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
@@ -68,20 +68,24 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
 }
 int main(int argc, char *argv[]) {
 
-    printf("anvil Version Major       : %d\n", anvil_VERSION_MAJOR);
-    printf("anvil Version Minor       : %d\n", anvil_VERSION_MINOR);
-    printf("Client Operating System   : %s\n", CLIENT_OS);
+    if (DEBUG) {
+        printf("anvil Version Major       : %d\n", anvil_VERSION_MAJOR);
+        printf("anvil Version Minor       : %d\n", anvil_VERSION_MINOR);
+        printf("Client Operating System   : %s\n", CLIENT_OS);
+    }
 
     /* Initialize the library */
     if ( !glfwInit() )
         return -1;
 
-    printf("GLFW Compile time config  : % s\n", glfwGetVersionString());
-    int vers[3];
-    glfwGetVersion(&vers[0], &vers[1], &vers[2]);
-    printf("GLFW Version Major        : %d\n", vers[0]);
-    printf("GLFW Version Minor        : %d\n", vers[1]);
-    printf("GLFW Version revision     : %d\n", vers[2]);
+    if (DEBUG) {
+        printf("GLFW Compile time config  : % s\n", glfwGetVersionString());
+        int vers[3];
+        glfwGetVersion(&vers[0], &vers[1], &vers[2]);
+        printf("GLFW Version Major        : %d\n", vers[0]);
+        printf("GLFW Version Minor        : %d\n", vers[1]);
+        printf("GLFW Version revision     : %d\n", vers[2]);
+    }
 
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = glfwCreateWindow(640, 480, "anvil", NULL, NULL);

@@ -47,8 +47,10 @@ const static void createFrameBuffers(void) {
     /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
+    /* Create a user specific framebuffer to use it as our ShadowMap Buffer.*/
     glGenFramebuffers(1, &shadowMapFBO);
 
+    /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
     glGenTextures(1, &shadowDepthMap);
     printf("shadowDepthMap: %d\n", shadowDepthMap);
     glActiveTexture(GL_TEXTURE3);
@@ -82,12 +84,13 @@ const void initRasterComponents(void) {
         /* Problem: glewInit failed, something is seriously wrong. */
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
-    printf("GLEW Version              : %s\n", glewGetString(GLEW_VERSION));
-    printf("openGL VERSION            : %s\n", glGetString(GL_VERSION));
-    printf("GLSL VERSION              : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-    printf("GL Renderer               : %s\n", glGetString(GL_RENDERER));
 
     if ( DEBUG ) {
+        printf("GLEW Version              : %s\n", glewGetString(GLEW_VERSION));
+        printf("openGL VERSION            : %s\n", glGetString(GL_VERSION));
+        printf("GLSL VERSION              : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+        printf("GL Renderer               : %s\n", glGetString(GL_RENDERER));
+
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(glErrorReportCallback, 0);
     }
@@ -104,7 +107,7 @@ const void initRasterComponents(void) {
 const void rasterize(void) {
     //project();
     testShader();
-    displayTexture(0);
+    displayTexture(1);
 }
 
 

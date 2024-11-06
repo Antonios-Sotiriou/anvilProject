@@ -1,8 +1,6 @@
 #ifndef QUATERNIONS_H
 #define QUATERNIONS_H 1
 
-//#include <string.h>
-
 #ifndef INC_MATH
     #include <math.h>
 #endif // !INC_MATH

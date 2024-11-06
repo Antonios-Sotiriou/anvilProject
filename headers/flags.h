@@ -18,8 +18,15 @@
     #define OFF                 0
 
     /* Meshes paths. */
+    // Primitive Meshes.
 	#define CUBE_FLAT           anvil_SOURCE_DIR "/meshes/cube/cube_smooth.obj"
 	#define CUBE_SMOOTH         anvil_SOURCE_DIR "/meshes/cube/cube_smooth.obj"
+
+    // Terrains.
+    #define GITANA10x10         anvil_SOURCE_DIR "/terrains/gitana/gitana10x10.bmp"
+    #define GITANA100x100       anvil_SOURCE_DIR "/terrains/gitana/gitana100x100.bmp"
+    #define GITANA128x128       anvil_SOURCE_DIR "/terrains/gitana/gitana128x128.bmp"
+    #define GITANA512x512       anvil_SOURCE_DIR "/terrains/gitana/gitana512x512.bmp"
 
 #endif // !anvil_MAJOR_VERSION
 

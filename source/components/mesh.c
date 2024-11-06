@@ -186,8 +186,6 @@ static void loadMesh(mesh *m, const char type[]) {
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
-    printf("MESH VAO: %d,   VBO: %d\n", m->VAO, m->VBO);
-
     free(v);
     free(t);
     free(n);

@@ -132,6 +132,8 @@ void setvec4Mulmat(vec4* v, const mat4x4 m) {
 /* Multiplies a vec4 array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
 vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 *r = malloc(16 * len);
+    if (!r)
+        return 0;
     vec4 x, y, z, w;
     for (int i = 0; i < len; i++) {
         x = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);

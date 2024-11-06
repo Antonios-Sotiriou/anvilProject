@@ -1,6 +1,6 @@
 #include "headers/shaders/displayShader.h"
 
-static GLint VBO, VAO;
+static GLint canvasVBO, canvasVAO;
 static void createCanvas(void);
 
 const static char* displayVertexShaderSource = "#version 450 core\n"
@@ -69,10 +69,10 @@ const int initDisplayShader(void) {
 }
 static void createCanvas(void) {
     /* Main Vertex Buffer Object buffer initiallization. */
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &canvasVAO);
+    glBindVertexArray(canvasVAO);
+    glGenBuffers(1, &canvasVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, canvasVBO);
 
     GLfloat quad[32] = {
         1.f, -1.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f,
@@ -99,7 +99,7 @@ void displayTexture(const int textureIndex) {
 
     glUniform1i(0, textureIndex);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(canvasVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     //GLenum err;

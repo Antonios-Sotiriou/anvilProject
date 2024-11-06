@@ -12,7 +12,7 @@ void createScene(void) {
 }
 /* Initializes the models and meshes than compose the GLOBAL SCENE. */
 static void initScene(void) {
-    createMesh(&SCENE.mesh[terrain], CUBE_FLAT);
+    createTerrain(&SCENE.mesh[terrain], GITANA100x100);
     createMesh(&SCENE.mesh[camera], CUBE_FLAT);
     SCENE.mesh[camera].rigid.state = ENABLE;
 }

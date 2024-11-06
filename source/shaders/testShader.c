@@ -1,6 +1,5 @@
 #include "headers/shaders/testShader.h"
-#include "headers/components/matrices.h"
-#include "headers/components/quaternions.h"
+
 int COUNT = 0;
 float rot = 1.f;
 const static char* vertexShaderSource = "#version 460 core\n"

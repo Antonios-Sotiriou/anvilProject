@@ -47,11 +47,13 @@ void logmesh(const mesh m) {
 	printf("Quat           : ");
 	logvec4(m.q);
 	printf("scale          : %f\n", m.scale);
-	printf("vao            : %p\n", m.vbo);
-	printf("vao_indexes    : %d\n", m.vbo_indexes);
+	printf("VAO            : %d\n", m.VAO);
+	printf("VBO            : %d\n", m.VBO);
+	printf("vbo            : %p\n", m.vbo);
+	printf("vbo_indexes    : %d\n", m.vbo_indexes);
 	printf("faces_indexes  : %d\n", m.faces_indexes);
 	printf("vecs_indexes   : %d\n", m.vecs_indexes);
-	printf("vao_size       : %d\n", m.vbo_size);
+	printf("vbo_size       : %d\n", m.vbo_size);
 	logrigid(m.rigid);
 }
 
