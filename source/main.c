@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     glfwMakeContextCurrent(window);
 
     /* Initialize openGL Rasterization components. (framebuffers, user defined textures, shaders) */
-    initRasterComponents();
+    initOpenGLComponents();
 
     /* Create and initialize the GLOBAL SCENE. */
     createScene();
@@ -130,6 +130,8 @@ int main(int argc, char *argv[]) {
 
     /* Releases GLOBAL SCENE resources. */
     releaseScene();
+    releaseOpenGLComponents();
+
     return 0;
 }
 

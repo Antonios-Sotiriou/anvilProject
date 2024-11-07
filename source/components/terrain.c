@@ -26,9 +26,9 @@ void createTerrain(mesh* m, const char type[]) {
     const int faces_per_row = quad_vrows * 2;
     const int num_of_faces = quads * 2 * 9;
 
-    vec4 *v = calloc(emvadon, 16);
-    vec4 *n = calloc(emvadon, 16);
-    vec2 *t = calloc(emvadon, 8);
+    float *v = calloc(emvadon, 12);
+    float *n = calloc(emvadon, 12);
+    float *t = calloc(emvadon, 8);
     int *f = calloc(num_of_faces, 4);
 
     /* Vectors initialization. ############################## */
@@ -41,6 +41,7 @@ void createTerrain(mesh* m, const char type[]) {
     float z_step_cache = start_z;
 
     int vcols_count = bmp.info.Width;
+    int v_index = 0;
 
     for (int x = 0; x < emvadon; x++) {
 
@@ -51,15 +52,16 @@ void createTerrain(mesh* m, const char type[]) {
             vcols_count += bmp.info.Width;
         }
 
-        v[x][0] += x_step_cache;
+        v[v_index] += x_step_cache;
         // v[x][1] = (float)rand() / (float)(RAND_MAX / 0.09f);
         // v[x][1] = 0.f;
-        v[x][1] = bmp.data[x] / 255.f;
-        v[x][2] = z_step_cache;
-        v[x][3] = 1.f;
+        v[v_index + 1] = bmp.data[x] / 255.f;
+        v[v_index + 2] = z_step_cache;
 
         x_step_cache += step_x;
+        v_index += 3;
     }
+    free(bmp.data);
 
     /* Textors initialization. ############################## */
     float step_tu = 1.f / quad_vrows;
@@ -70,7 +72,7 @@ void createTerrain(mesh* m, const char type[]) {
     float tv_step_cache = start_tv;
 
     int tx_count = bmp.info.Height;
-    for (int x = 0; x < emvadon; x++) {
+    for (int x = 0; x < emvadon; x += 2) {
 
         if (x == tx_count) {
             tu_step_cache = start_tu;
@@ -78,16 +80,17 @@ void createTerrain(mesh* m, const char type[]) {
 
             tx_count += bmp.info.Height;
         }
-        t[x][0] = tu_step_cache;
-        t[x][1] = tv_step_cache;
+        t[x] = tu_step_cache;
+        t[x + 1] = tv_step_cache;
 
         tu_step_cache += step_tu;
     }
 
     /* Normals initialization. ############################## */
-    vec4 normal = { 0.f, 1.f, 0.f, 0.f };
-    for (int x = 0; x < emvadon; x++) {
-        n[x] = normal;
+    for (int x = 0; x < emvadon; x += 3) {
+        n[x] = 0.f;
+        n[x + 1] = 1.f;
+        n[x + 2] = 0.f;
     }
 
     /* faces initialization. ############################## */
@@ -133,12 +136,41 @@ void createTerrain(mesh* m, const char type[]) {
         face_counter += 2;
     }
 
+    m->vbo_indexes = (num_of_faces / 9) * 24;
+    m->faces_indexes = m->vbo_indexes / 24;
+    m->vecs_indexes = m->faces_indexes * 3;
+    m->vbo_size = m->vbo_indexes * 4;
+
+    m->vbo = malloc(m->vbo_size);
+    if (!m->vbo) {
+        printf("Could not create mesh vbo. loadMesh() - malloc()\n");
+        return;
+    }
+
+    int index = 0, vpad, tpad;
+    for (int i = 0; i < num_of_faces; i++) {
+        vpad = f[i] * 3;
+        m->vbo[index] = v[vpad];
+        m->vbo[index + 1] = v[vpad + 1];
+        m->vbo[index + 2] = v[vpad + 2];
+        i++;
+        tpad = f[i] * 2;
+        m->vbo[index + 3] = t[tpad];
+        m->vbo[index + 4] = t[tpad + 1];
+        i++;
+        vpad = f[i] * 3;
+        m->vbo[index + 5] = n[vpad];
+        m->vbo[index + 6] = n[vpad + 1];
+        m->vbo[index + 7] = n[vpad + 2];
+        index += 8;
+    }
+
+    createMeshVAO(m);
+
     free(v);
     free(t);
     free(n);
     free(f);
-
-	free(bmp.data);
 }
 
 

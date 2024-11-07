@@ -1,5 +1,10 @@
-#ifndef RASTERIZATION_H
-#define RASTERIZATION_H 1
+#ifndef OPENGL_H
+#define OPENGL_H 1
+
+/* OpenGL headers. */
+#if !defined(__glew_h__) || !defined(__GLEW_H__)
+    #include "libraries/glew-2.1.0/include/GL/glew.h"
+#endif
 
 /* Shaders. */
 #ifndef MAINSHADER_H
@@ -14,8 +19,10 @@
     #include "headers/shaders/testShader.h"
 #endif // !TESTSHADER_H
 
-const void rasterize();
+void initOpenGLComponents(void);
+void createMeshVAO(mesh* m);
+void releaseOpenGLComponents(void);
 
-#endif // !RASTERIZATION_H
+#endif // !OPENGL_H
 
 

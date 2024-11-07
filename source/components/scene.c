@@ -2,6 +2,14 @@
 
 scene SCENE = { 0 };
 
+/* Usefull to initialize the starting mesh coordinates. */
+const static vec4 initCoords[4] = {
+    { 0.f, 0.f, 0.f, 1.f },
+    { 1.f, 0.f, 0.f, 0.f },
+    { 0.f, 1.f, 0.f, 0.f },
+    { 0.f, 0.f, 1.f, 0.f }
+};
+
 static void initScene(void);
 
 /* Allocates memory for the components of the GLOBAL SCENE. */
@@ -10,11 +18,21 @@ void createScene(void) {
     SCENE.mesh_indexes = initAssets;
     initScene();
 }
-/* Initializes the models and meshes than compose the GLOBAL SCENE. */
+/* Initializes the models and meshes that compose the GLOBAL SCENE. */
 static void initScene(void) {
+    /* Terrain mesh from Heightmap. Always the first mesh in the scene. */
     createTerrain(&SCENE.mesh[terrain], GITANA100x100);
+    SCENE.mesh[terrain].rigid.state = ENABLE;
+    memcpy(&SCENE.mesh[terrain].coords, &initCoords, 64);
+    SCENE.mesh[terrain].q = unitQuat();
+    SCENE.mesh[terrain].scale = 100.f;
+
+    /* Camera mesh. */
     createMesh(&SCENE.mesh[camera], CUBE_FLAT);
     SCENE.mesh[camera].rigid.state = ENABLE;
+    memcpy(&SCENE.mesh[camera], &initCoords, 64);
+    SCENE.mesh[camera].q = unitQuat();
+    SCENE.mesh[camera].scale = 10.f;
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {

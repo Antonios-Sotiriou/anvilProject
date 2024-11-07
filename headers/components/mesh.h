@@ -5,14 +5,13 @@
     #include <stdio.h>
 #endif // !_INC_STDIO
 
-/* OpenGL headers. */
-#if !defined(__glew_h__) || !defined(__GLEW_H__)
-    #include "libraries/glew-2.1.0/include/GL/glew.h"
-#endif
-
 #ifndef STRUCTS_H
     #include "headers/structs.h"
 #endif // !STRUCTS_H
+
+#ifndef OPENGL_H
+    #include "headers/components/openGL.h"
+#endif // !OPENGL_H
 
 void createMesh(mesh *m, const char type[]);
 void releaseMesh(mesh *m);

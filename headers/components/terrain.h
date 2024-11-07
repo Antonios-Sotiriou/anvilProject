@@ -9,6 +9,10 @@
     #include "headers/components/bmp.h"
 #endif // !BMP_H
 
+#ifndef OPENGL_H
+    #include "headers/components/openGL.h"
+#endif // !OPENGL_H
+
 void createTerrain(mesh *m, const char type[]);
 
 #endif // !TERRAIN_H

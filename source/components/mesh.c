@@ -1,27 +1,19 @@
 #include "headers/components/mesh.h"
-#include "headers/components/quaternions.h"
-/* Usefull to initialize the starting mesh coordinates. */
-const static vec4 initCoords[4] = {
-    { 0.f, 0.f, 0.f, 1.f },
-    { 1.f, 0.f, 0.f, 0.f },
-    { 0.f, 1.f, 0.f, 0.f },
-    { 0.f, 0.f, 1.f, 0.f }
-};
 
 static void initMesh(mesh* m);
 static void loadMesh(mesh* m, const char type[]);
 
 void createMesh(mesh *m, const char type[]) {
     /* Initializing data for all meshes */
-    initMesh(m);
+    //initMesh(m);
     /* Load obj file to mesh. */
     loadMesh(m, type);
 }
 static void initMesh(mesh *m) {
     /* Assign starting coordinates for all meshes */
-    memcpy(&m->coords, &initCoords, 64);
-    m->q = unitQuat();
-    m->scale = 10.f;
+    //memcpy(&m->coords, &initCoords, 64);
+    //m->q = unitQuat();
+    //m->scale = 10.f;
 }
 /* Loads obj file data to a mesh. */
 static void loadMesh(mesh *m, const char type[]) {
@@ -173,18 +165,7 @@ static void loadMesh(mesh *m, const char type[]) {
         index += 8;
     }
 
-    glGenVertexArrays(1, &m->VAO);
-    glBindVertexArray(m->VAO);
-    glGenBuffers(1, &m->VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, m->VBO);
-    glBufferData(GL_ARRAY_BUFFER, m->vbo_size, m->vbo, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+    createMeshVAO(m);
 
     free(v);
     free(t);
@@ -197,6 +178,9 @@ void releaseMesh(mesh* m) {
     free(m->vbo);
     glDeleteVertexArrays(1, &m->VAO);
     glDeleteBuffers(1, &m->VBO);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 }
 
 
