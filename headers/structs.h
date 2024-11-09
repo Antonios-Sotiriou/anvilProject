@@ -64,7 +64,7 @@ typedef struct {
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
-        VBO, VAO;
+        VBO, VAO, pk;
     rigid rigid;
 } mesh;
 /* Model structure to represent a collection of shapes. */

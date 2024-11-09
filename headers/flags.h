@@ -9,7 +9,15 @@
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 
-    enum { terrain, camera, initAssets };
+    enum { terrain, camera, light, initAssets };
+
+    /* Databases paths. */
+    #define GITANA_DB           anvil_SOURCE_DIR"/databases/gitana.db"
+
+    /* Database entries Types. */
+    #define MESH_TABLE                0
+    #define MODEL_TABLE               1
+    #define SCENE_TABLE               2
 
     /* Flags for states changing. */
     #define ENABLE              1

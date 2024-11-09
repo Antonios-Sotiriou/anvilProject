@@ -14,6 +14,7 @@ static void initScene(void);
 
 /* Allocates memory for the components of the GLOBAL SCENE. */
 void createScene(void) {
+    dbloadTable(GITANA_DB, MESH_TABLE, "SELECT * FROM mesh;");
     SCENE.mesh = calloc(initAssets, sizeof(mesh));
     SCENE.mesh_indexes = initAssets;
     initScene();
@@ -25,14 +26,21 @@ static void initScene(void) {
     SCENE.mesh[terrain].rigid.state = ENABLE;
     memcpy(&SCENE.mesh[terrain].coords, &initCoords, 64);
     SCENE.mesh[terrain].q = unitQuat();
-    SCENE.mesh[terrain].scale = 100.f;
+    SCENE.mesh[terrain].scale = 1000.f;
 
     /* Camera mesh. */
     createMesh(&SCENE.mesh[camera], CUBE_FLAT);
     SCENE.mesh[camera].rigid.state = ENABLE;
     memcpy(&SCENE.mesh[camera], &initCoords, 64);
     SCENE.mesh[camera].q = unitQuat();
-    SCENE.mesh[camera].scale = 10.f;
+    SCENE.mesh[camera].scale = 100.f;
+
+    /* Camera mesh. */
+    createMesh(&SCENE.mesh[light], CUBE_FLAT);
+    SCENE.mesh[light].rigid.state = ENABLE;
+    memcpy(&SCENE.mesh[light], &initCoords, 64);
+    SCENE.mesh[light].q = unitQuat();
+    SCENE.mesh[light].scale = 10.f;
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {

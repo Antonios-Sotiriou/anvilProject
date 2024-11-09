@@ -13,6 +13,10 @@
     #include "headers/components/mesh.h"
 #endif // !MESH_H
 
+#ifndef DBAPI_H
+    #include "headers/components/dbapi.h"
+#endif // !DBAPI_H
+
 #ifndef OPENGL_H
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H

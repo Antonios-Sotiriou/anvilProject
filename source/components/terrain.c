@@ -1,9 +1,13 @@
 #include "headers/components/terrain.h"
 
-void createTerrain(mesh* m, const char type[]) {
+void createTerrain(mesh *m, const char type[]) {
 	BMP bmp;
 	readBMP(&bmp, type);
-    const int emvadon = bmp.info.Width * bmp.info.Height;
+    const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height : 0;
+    if (!emvadon) {
+        fprintf(stderr, "Zero value for emvadon: %d. createTerrain() --> ERROR 1\n", emvadon);
+        exit(1);
+    }
 
     /* Populate the gloabal TerrainInfo struct with infos. */
     //tf->vecWidth = bmp.info.Width;
@@ -27,9 +31,25 @@ void createTerrain(mesh* m, const char type[]) {
     const int num_of_faces = quads * 2 * 9;
 
     float *v = calloc(emvadon, 12);
+    if (!v) {
+        printf("Failed to allocate memory for *v -- createTerrain()\n");
+        return;
+    }
+    float* t = calloc(emvadon, 8);
+    if (!v) {
+        printf("Failed to allocate memory for *t -- createTerrain()\n");
+        return;
+    }
     float *n = calloc(emvadon, 12);
-    float *t = calloc(emvadon, 8);
+    if (!v) {
+        printf("Failed to allocate memory for *n -- createTerrain()\n"); 
+        return;
+    }
     int *f = calloc(num_of_faces, 4);
+    if (!v) {
+        printf("Failed to allocate memory for *f -- createTerrain()\n"); 
+        return;
+    }
 
     /* Vectors initialization. ############################## */
     float step_x = 2.f / bmp.info.Width;
