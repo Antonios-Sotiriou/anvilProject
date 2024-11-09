@@ -2,9 +2,18 @@
 
 /* Reades bmp file on the given path and stores data in BMP f pointer. Data must be freed when no longer needed. */
 void readBMP(BMP *f, const char path[]) {
+    int path_length = strlen(path) + strlen(anvil_SOURCE_DIR) + 2; // Plus 2 here for the / between source dir and file location and a null termination \0.
+    char *dynamic_path = malloc(path_length);
+    if (!dynamic_path) {
+        printf("Could not Create bmp file Path: < %s >! readBMP() -- malloc().\n", path);
+        return;
+    }
+    sprintf_s(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
+
     int emvadon;
     FILE* fp;
-    fp = fopen(path, "rb");
+    fp = fopen(dynamic_path, "rb");
+    free(dynamic_path);
     if (!fp) {
         printf("Could not open file < %s >! readHeightmap() -- fopen().\n", path);
         return;

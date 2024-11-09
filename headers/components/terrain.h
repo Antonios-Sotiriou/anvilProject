@@ -13,7 +13,7 @@
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H
 
-void createTerrain(mesh *m, const char type[]);
+void createTerrain(mesh *m, const char path[]);
 
 #endif // !TERRAIN_H
 

@@ -5,9 +5,17 @@
     #include <stdio.h>
 #endif // !_INC_STDIO
 
+#ifndef _INC_STRING
+    #include <string.h>
+#endif // !_INC_STRING
+
 #ifndef _INC_STDLIB
     #include <stdlib.h>
 #endif //_INC_STDLIB
+
+#ifndef anvil_VERSION_MAJOR
+    #include "headers/cmake_variables.h"
+#endif // !anvil_VERSION_MAJOR
 
 /* BMP Image file reading structs. */
 typedef struct {

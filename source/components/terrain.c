@@ -1,8 +1,8 @@
 #include "headers/components/terrain.h"
 
-void createTerrain(mesh *m, const char type[]) {
+void createTerrain(mesh *m, const char path[]) {
 	BMP bmp;
-	readBMP(&bmp, type);
+	readBMP(&bmp, path);
     const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height : 0;
     if (!emvadon) {
         fprintf(stderr, "Zero value for emvadon: %d. createTerrain() --> ERROR 1\n", emvadon);

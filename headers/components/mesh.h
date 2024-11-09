@@ -13,7 +13,7 @@
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H
 
-void createMesh(mesh *m, const char type[]);
+void createMesh(mesh *m, const char path[]);
 void releaseMesh(mesh *m);
 
 #endif // !MESH_H

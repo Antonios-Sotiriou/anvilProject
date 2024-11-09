@@ -1,13 +1,13 @@
 #include "headers/components/mesh.h"
 
 static void initMesh(mesh* m);
-static void loadMesh(mesh* m, const char type[]);
+static void loadMesh(mesh* m, const char path[]);
 
-void createMesh(mesh *m, const char type[]) {
+void createMesh(mesh *m, const char path[]) {
     /* Initializing data for all meshes */
     //initMesh(m);
     /* Load obj file to mesh. */
-    loadMesh(m, type);
+    loadMesh(m, path);
 }
 static void initMesh(mesh *m) {
     /* Assign starting coordinates for all meshes */
@@ -16,10 +16,19 @@ static void initMesh(mesh *m) {
     //m->scale = 10.f;
 }
 /* Loads obj file data to a mesh. */
-static void loadMesh(mesh *m, const char type[]) {
-    FILE *fp = fopen(type, "r");
+static void loadMesh(mesh *m, const char path[]) {
+    int path_length = strlen(path) + strlen(anvil_SOURCE_DIR) + 2; // Plus 2 here for the / between source dir and file location and a null termination \0.
+    char* dynamic_path = malloc(path_length);
+    if (!dynamic_path) {
+        printf("Could not Create bmp file Path: < %s >! loadMesh() -- malloc().\n", path);
+        return;
+    }
+    sprintf_s(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
+
+    FILE *fp = fopen(dynamic_path, "r");
+    free(dynamic_path);
     if (!fp) {
-        printf("Could not open file : %s.\n", type);
+        printf("Could not open file : %s. loadMesh() -- fopen().\n", path);
         return;
     }
     float *v = malloc(4);
