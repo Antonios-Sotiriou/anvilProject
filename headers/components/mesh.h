@@ -9,6 +9,10 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
+#ifndef OBJ_H
+    #include "headers/components/obj.h"
+#endif // !OBJ_H
+
 #ifndef OPENGL_H
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H
