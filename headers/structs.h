@@ -38,6 +38,25 @@ typedef union {
 } mat4x4;
 #endif // VECTORIZED_CODE ######################################################
 
+/* Struct to save infos about a point on the terrain. */
+typedef struct {
+    vec4 pos, normal;
+    int quad_index;
+} TerrainPointInfo;
+/* Struct to hold infos about a terrain quad. */
+typedef struct {
+    int *m_pks, m_indexes; // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
+} Quad;
+/* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
+typedef struct {
+    Quad *quad;            // Quads pointer to save info about each quad of the terrain.
+    int vecWidth,          // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
+        vecHeight,         // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
+        quad_indexes,      // Emvadon of the Terrain quads.
+        quadRows,          // Number os quads in rows direction. They are always vectors Width - 1.
+        quadCols;          // Number os quads in columns direction. They are always vectors Height - 1.
+} TerrainInfo;
+
 /* Cordinate system structure with components represented as P: position, U: up, V: right(vertical), N: front. */
 typedef struct {
     vec4 v[4];
@@ -67,7 +86,9 @@ typedef struct {
         VAO,
         VBO,
         pk,
-        type;
+        type,
+        quadInit,
+        quadIndex;
     rigid rigid;
 } mesh;
 /* Model structure to represent a collection of shapes. */
@@ -81,6 +102,7 @@ typedef struct {
     //int model_indexes;
     mesh *mesh;
     int mesh_indexes;
+    TerrainInfo t;
 } scene;
 
 #endif // !STRUCTS_H

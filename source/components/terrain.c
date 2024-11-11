@@ -9,14 +9,6 @@ void createTerrain(mesh *m, const char path[]) {
         exit(1);
     }
 
-    /* Populate the gloabal TerrainInfo struct with infos. */
-    //tf->vecWidth = bmp.info.Width;
-    //tf->vecHeight = bmp.info.Height;
-    //tf->quadCols = tf->vecWidth - 1;
-    //tf->quadRows = tf->vecHeight - 1;
-    //tf->quadsArea = tf->quadRows * tf->quadCols;
-    //tf->quads = calloc(tf->quadsArea, sizeof(Quad));
-
     /* Quads. */
     const int quad_vcols = bmp.info.Width - 1;
     const int quad_vrows = bmp.info.Height - 1;
@@ -25,6 +17,14 @@ void createTerrain(mesh *m, const char path[]) {
         fprintf(stderr, "Zero value for Quads: %d. createTerrain() --> ERROR 1\n", emvadon);
         exit(1);
     }
+
+    /* Populate the gloabal SCENE TerrainInfo struct with infos. */
+    SCENE.t.vecWidth = bmp.info.Width;
+    SCENE.t.vecHeight = bmp.info.Height;
+    SCENE.t.quadCols = quad_vcols;
+    SCENE.t.quadRows = quad_vrows;
+    SCENE.t.quad_indexes = quads;
+    SCENE.t.quad = calloc(SCENE.t.quad_indexes, sizeof(Quad));
 
     /* Faces. */
     const int faces_per_row = quad_vrows * 2;
@@ -36,17 +36,17 @@ void createTerrain(mesh *m, const char path[]) {
         return;
     }
     float* t = calloc(emvadon, 8);
-    if (!v) {
+    if (!t) {
         printf("Failed to allocate memory for *t -- createTerrain()\n");
         return;
     }
     float *n = calloc(emvadon, 12);
-    if (!v) {
+    if (!n) {
         printf("Failed to allocate memory for *n -- createTerrain()\n"); 
         return;
     }
     int *f = calloc(num_of_faces, 4);
-    if (!v) {
+    if (!f) {
         printf("Failed to allocate memory for *f -- createTerrain()\n"); 
         return;
     }
@@ -73,8 +73,8 @@ void createTerrain(mesh *m, const char path[]) {
         }
 
         v[v_index] += x_step_cache;
-        // v[x][1] = (float)rand() / (float)(RAND_MAX / 0.09f);
-        // v[x][1] = 0.f;
+         //v[v_index + 1] = (float)rand() / (float)(RAND_MAX / 0.09f);
+        // v[v_index + 1] = 0.f;
         v[v_index + 1] = bmp.data[x] / 255.f;
         v[v_index + 2] = z_step_cache;
 
@@ -191,6 +191,138 @@ void createTerrain(mesh *m, const char path[]) {
     free(t);
     free(n);
     free(f);
+}
+/* Assigns the Terrain quad index to the given mesh. */
+void initMeshQuadInfo(mesh* m) {
+    const int quad_index = getTerrainQuadIndex(m->coords.v[0]);
+    /* Set meshes m quadIndex to index. */
+    if (m->quadIndex != quad_index && m->quadInit) {
+        //printf("Remove mesh from quad -- initMeshQuadInfo().\n");
+        removeMeshFromQuad(m);
+    }
+
+    m->quadIndex = quad_index;
+    m->quadInit = 1;
+    addMeshToQuad(m);
+    //printf("Initialized mesh quad info -- initMeshQuadInfo().\n");
+}
+/* Adds a Mesh to the Quad that is standing on to, if its not already a member of this Quad. */
+void addMeshToQuad(mesh* m) {
+    const int quad_index = m->quadIndex;
+
+    if ((quad_index < 0 || !m->pk)) {
+        /* Mesh is out of terrain if its quadIndex is less than Zero or it is the terrain if its ID is 0. */
+        //printf("Outside of terrain limits -- addMeshToQuad().\n");
+        return;
+    }
+
+    if (!SCENE.t.quad[quad_index].m_pks) {
+        /* Quad had not previous members in it so we must allocate memory for the new member. */
+        SCENE.t.quad[quad_index].m_pks = calloc(1, 4);
+        SCENE.t.quad[quad_index].m_indexes = 1;
+        SCENE.t.quad[quad_index].m_pks[0] = m->pk;
+        //printf("Allocating memory for new quad memmbers array -- addMeshToQuad().\n");
+        return;
+    }
+
+    for (int i = 0; i < SCENE.t.quad[quad_index].m_indexes; i++) {
+        if (SCENE.t.quad[quad_index].m_pks[i] == m->pk) {
+            /* Mesh is already a member of the Quad. */
+            //printf("Mesh already quad member -- addMeshToQuad().\n");
+            return;
+        }
+    }
+
+    /* Increase the size of Quad members pointer to add the new member.Increment the necessery values also. */
+    int *temp = realloc(SCENE.t.quad[quad_index].m_pks, (SCENE.t.quad[quad_index].m_indexes + 1) * 4);
+    if (!temp) {
+        free(SCENE.t.quad[quad_index].m_pks);
+        return;
+    }
+    SCENE.t.quad[quad_index].m_pks = temp;
+    SCENE.t.quad[quad_index].m_pks[SCENE.t.quad[quad_index].m_indexes] = m->pk;
+    SCENE.t.quad[quad_index].m_indexes += 1;
+}
+/* Removes a mesh id from the TerrainInfo global Quad memmbers array. */
+void removeMeshFromQuad(mesh* m) {
+    const int quad_index = m->quadIndex;
+
+    if (quad_index < 0) {
+        /* Mesh is out of terrain if its quadIndex is less than Zero. */
+        //printf("Outside of terrain limits -- removeMeshFromQuad().\n");
+        return;
+    }
+    const int num_of_indexes = SCENE.t.quad[quad_index].m_indexes - 1;
+
+    int *new_array = calloc(num_of_indexes, 4);
+    if (!new_array) {
+        //printf("Zero number of indexes -- removeMeshFromQuad().\n");
+        return;
+    }
+
+    int inc = 0;
+    for (int i = 0; i < SCENE.t.quad[quad_index].m_indexes; i++) {
+        if (SCENE.t.quad[quad_index].m_pks[i] != m->pk) {
+            new_array[inc] = SCENE.t.quad[quad_index].m_pks[i];
+            inc++;
+        }
+    }
+    free(SCENE.t.quad[quad_index].m_pks);
+    SCENE.t.quad[quad_index].m_pks = realloc(new_array, (num_of_indexes * 4));
+    SCENE.t.quad[quad_index].m_indexes = num_of_indexes;
+}
+/* Retrieves Terrain Quad index at given coords. */
+const int getTerrainQuadIndex(vec4 coords) {
+    const float t_scale = SCENE.mesh[terrain].scale * 2.f;
+    float quad_len = t_scale / SCENE.t.vecWidth;
+    const int t_limit = t_scale - quad_len;
+
+    vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.mesh[terrain].coords.v[0], SCENE.mesh[terrain].scale));
+#ifdef VECTORIZED_CODE // ######################################################
+    if ((t_coords.m128_f32[0] >= t_limit || t_coords.m128_f32[0] < 0) || (t_coords.m128_f32[2] >= t_limit || t_coords.m128_f32[2] < 0)) {
+        //printf("Out of terrain Limits -- getTerrainQuadIndex().\n");
+        return -1;
+    }
+    /* Function to get t quads indexes. */
+    vec4 pos = vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vecWidth);
+    const int quad_index = ((int)_mm_cvtss_f32(_mm_shuffle_ps(pos, pos, _MM_SHUFFLE(0, 0, 0, 2))) * SCENE.t.quadRows) + (int)_mm_cvtss_f32(pos);
+#else // ITERATIVE_CODE ########################################################
+    if ((t_coords.f32[0] >= t_limit || t_coords.f32[0] < 0) || (t_coords.f32[2] >= t_limit || t_coords.f32[2] < 0)) {
+        //printf("Out of terrain Limits -- getTerrainQuadIndex().\n");
+        return -1;
+    }
+    vec4 pos = vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vecWidth);
+    const int quad_index = ((int)pos.f32[2] * SCENE.t.quadRows) + (int)pos.f32[0];
+#endif // VECTORIZED_CODE // ######################################################
+
+    return quad_index;
+}
+/* Prints the members of given Quad index. */
+void logTerrainQuad(const int quad_index) {
+    if (quad_index < 0) {
+        /* Mesh is out of terrain if its quadIndex is less than Zero. */
+        return;
+    }
+
+    printf("Quad: %d\n", quad_index);
+    printf("indexes: %d\n", SCENE.t.quad[quad_index].m_indexes);
+    if (!SCENE.t.quad[quad_index].m_pks) {
+        fprintf(stderr, "Quad %d has no members.\n", quad_index);
+        return;
+    }
+    printf("members ids: ");
+    for (int i = 0; i < SCENE.t.quad[quad_index].m_indexes; i++) {
+        printf("%d, ", SCENE.t.quad[quad_index].m_pks[i]);
+    }
+    printf("\n");
+}
+/* Prints the TerrainInfo struct. */
+void logTerrainInfo(void) {
+    printf("vecWidth : %d\n", SCENE.t.vecWidth);
+    printf("vecHeight: %d\n", SCENE.t.vecHeight);
+    printf("quadRows : %d\n", SCENE.t.quadRows);
+    printf("quadCols : %d\n", SCENE.t.quadCols);
+    printf("quadsArea: %d\n", SCENE.t.quad_indexes);
 }
 
 

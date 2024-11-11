@@ -54,6 +54,8 @@ void logmesh(const mesh m) {
 	printf("faces_indexes  : %d\n", m.faces_indexes);
 	printf("vecs_indexes   : %d\n", m.vecs_indexes);
 	printf("vbo_size       : %d\n", m.vbo_size);
+	printf("quadInit       : %d\n", m.quadInit);
+	printf("quadIndex      : %d\n", m.quadIndex);
 	logrigid(m.rigid);
 }
 

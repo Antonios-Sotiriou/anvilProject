@@ -108,3 +108,5 @@ void dbloadTable(const char path[], const int type, const char sql_cmd[]) {
     sqlite3_close(db);
     return;
 }
+
+

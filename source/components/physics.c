@@ -4,6 +4,9 @@
 void applyPhysics(void) {
 	for (int i = 0; i < SCENE.mesh_indexes; i++) {
 		if (SCENE.mesh[i].rigid.state == ENABLE) {
+
+			initMeshQuadInfo(&SCENE.mesh[i]);
+
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
 
 			if (SCENE.mesh[i].rigid.rot_angle) {

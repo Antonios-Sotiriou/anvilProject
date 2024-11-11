@@ -7,6 +7,11 @@
 #endif // !GLOBAL_H
 
 // Local created headers
+#ifndef TERRAIN_H
+    #include "headers/components/terrain.h"
+#endif // !TERRAIN_H
+
+// Local created headers
 #ifndef VEC_MATH_H
     #include "headers/components/vec_math.h"
 #endif // !VEC_MATH_H

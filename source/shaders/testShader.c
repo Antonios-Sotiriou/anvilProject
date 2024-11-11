@@ -83,7 +83,7 @@ void testShader(void) {
     glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
 
     quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
-    SCENE.mesh[terrain].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
+    SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
     if ((COUNT % 1000) == 0) {
         rot += 1.0f;
         //logvec4(SCENE.mesh[terrain].q);

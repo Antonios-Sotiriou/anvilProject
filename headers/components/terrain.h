@@ -14,6 +14,12 @@
 #endif // !OPENGL_H
 
 void createTerrain(mesh *m, const char path[]);
+void initMeshQuadInfo(mesh* m);
+void addMeshToQuad(mesh* m);
+void removeMeshFromQuad(mesh* m);
+const int getTerrainQuadIndex(vec4 coords);
+void logTerrainInfo(void);
+void logTerrainQuad(const int quad_index);
 
 #endif // !TERRAIN_H
 

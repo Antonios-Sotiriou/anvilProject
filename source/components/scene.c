@@ -17,6 +17,11 @@ void releaseScene(void) {
         releaseMesh(&SCENE.mesh[i]);
     }
     free(SCENE.mesh);
+    for (int i = 0; i < SCENE.t.quad_indexes; i++) {
+        if (SCENE.t.quad[i].m_pks)
+            free(SCENE.t.quad[i].m_pks);
+    }
+    free(SCENE.t.quad);
 }
 
 
