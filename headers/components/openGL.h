@@ -19,9 +19,10 @@
     #include "headers/shaders/testShader.h"
 #endif // !TESTSHADER_H
 
-void initOpenGLComponents(void);
+const int initOpenGLComponents(void);
 void createMeshVAO(mesh* m);
 void releaseOpenGLComponents(void);
+void glErrorReport(void);
 
 #endif // !OPENGL_H
 

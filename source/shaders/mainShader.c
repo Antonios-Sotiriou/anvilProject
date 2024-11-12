@@ -184,11 +184,8 @@ void project(void) {
     //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
     //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
-    //GLenum err;
-    //while ((err = glGetError()) != GL_NO_ERROR) {
-    //    fprintf(stderr, "project < %d >  ", err);
-    //    perror("OpenGL ERROR: ");
-    //}
+    if (DEBUG_LVL_4)
+        glErrorReport();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

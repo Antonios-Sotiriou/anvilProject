@@ -11,7 +11,7 @@
 #endif // !STRUCTS_H
 
 /* Defined in main.c */
-extern int WIDTH, HEIGHT, DEBUG;
+extern int WIDTH, HEIGHT, EYEPOINT;
 /* The global matrices, defined also in main.c. */
 extern mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 

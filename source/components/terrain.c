@@ -5,17 +5,19 @@ void createTerrain(mesh *m, const char path[]) {
 	readBMP(&bmp, path);
     const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height : 0;
     if (!emvadon) {
-        fprintf(stderr, "Zero value for emvadon: %d. createTerrain() --> ERROR 1\n", emvadon);
-        exit(1);
+        debug_log_critical(stdout, "Null value for Emvadon");
+        releaseBMP(&bmp);
+        exit(-1);
     }
 
     /* Quads. */
     const int quad_vcols = bmp.info.Width - 1;
     const int quad_vrows = bmp.info.Height - 1;
     const int quads = quad_vrows * quad_vcols;
-    if (!quads) {
-        fprintf(stderr, "Zero value for Quads: %d. createTerrain() --> ERROR 1\n", emvadon);
-        exit(1);
+    if (quads <= 0) {
+        debug_log_critical(stdout, "Null value for quads");
+        releaseBMP(&bmp);
+        exit(-1);
     }
 
     /* Populate the gloabal SCENE TerrainInfo struct with infos. */
@@ -31,25 +33,9 @@ void createTerrain(mesh *m, const char path[]) {
     const int num_of_faces = quads * 2 * 9;
 
     float *v = calloc(emvadon, 12);
-    if (!v) {
-        printf("Failed to allocate memory for *v -- createTerrain()\n");
-        return;
-    }
-    float* t = calloc(emvadon, 8);
-    if (!t) {
-        printf("Failed to allocate memory for *t -- createTerrain()\n");
-        return;
-    }
+    float *t = calloc(emvadon, 8);
     float *n = calloc(emvadon, 12);
-    if (!n) {
-        printf("Failed to allocate memory for *n -- createTerrain()\n"); 
-        return;
-    }
     int *f = calloc(num_of_faces, 4);
-    if (!f) {
-        printf("Failed to allocate memory for *f -- createTerrain()\n"); 
-        return;
-    }
 
     /* Vectors initialization. ############################## */
     float step_x = 2.f / bmp.info.Width;
@@ -81,7 +67,7 @@ void createTerrain(mesh *m, const char path[]) {
         x_step_cache += step_x;
         v_index += 3;
     }
-    free(bmp.data);
+    releaseBMP(&bmp);
 
     /* Textors initialization. ############################## */
     float step_tu = 1.f / quad_vrows;
@@ -163,8 +149,12 @@ void createTerrain(mesh *m, const char path[]) {
 
     m->vbo = malloc(m->vbo_size);
     if (!m->vbo) {
-        printf("Could not create mesh vbo. loadMesh() - malloc()\n");
-        return;
+        debug_log_critical(stdout, "malloc()");
+        free(v);
+        free(t);
+        free(n);
+        free(f);
+        exit(-1);
     }
 
     int index = 0, vpad, tpad;
@@ -197,14 +187,14 @@ void initMeshQuadInfo(mesh* m) {
     const int quad_index = getTerrainQuadIndex(m->coords.v[0]);
     /* Set meshes m quadIndex to index. */
     if (m->quadIndex != quad_index && m->quadInit) {
-        //printf("Remove mesh from quad -- initMeshQuadInfo().\n");
         removeMeshFromQuad(m);
+    } else if (m->quadIndex == quad_index && m->quadInit) {
+        /* Mesh is already a memmber of this quad. */
+        return;
     }
-
     m->quadIndex = quad_index;
     m->quadInit = 1;
     addMeshToQuad(m);
-    //printf("Initialized mesh quad info -- initMeshQuadInfo().\n");
 }
 /* Adds a Mesh to the Quad that is standing on to, if its not already a member of this Quad. */
 void addMeshToQuad(mesh* m) {
@@ -212,7 +202,7 @@ void addMeshToQuad(mesh* m) {
 
     if ((quad_index < 0 || !m->pk)) {
         /* Mesh is out of terrain if its quadIndex is less than Zero or it is the terrain if its ID is 0. */
-        //printf("Outside of terrain limits -- addMeshToQuad().\n");
+        debug_log_warning(stdout, "Out of terrain boundaries");
         return;
     }
 
@@ -221,16 +211,8 @@ void addMeshToQuad(mesh* m) {
         SCENE.t.quad[quad_index].m_pks = calloc(1, 4);
         SCENE.t.quad[quad_index].m_indexes = 1;
         SCENE.t.quad[quad_index].m_pks[0] = m->pk;
-        //printf("Allocating memory for new quad memmbers array -- addMeshToQuad().\n");
+        debug_log_message(stdout, "Adding 1st quad member");
         return;
-    }
-
-    for (int i = 0; i < SCENE.t.quad[quad_index].m_indexes; i++) {
-        if (SCENE.t.quad[quad_index].m_pks[i] == m->pk) {
-            /* Mesh is already a member of the Quad. */
-            //printf("Mesh already quad member -- addMeshToQuad().\n");
-            return;
-        }
     }
 
     /* Increase the size of Quad members pointer to add the new member.Increment the necessery values also. */
@@ -244,19 +226,19 @@ void addMeshToQuad(mesh* m) {
     SCENE.t.quad[quad_index].m_indexes += 1;
 }
 /* Removes a mesh id from the TerrainInfo global Quad memmbers array. */
-void removeMeshFromQuad(mesh* m) {
+void removeMeshFromQuad(mesh *m) {
     const int quad_index = m->quadIndex;
 
     if (quad_index < 0) {
         /* Mesh is out of terrain if its quadIndex is less than Zero. */
-        //printf("Outside of terrain limits -- removeMeshFromQuad().\n");
+        debug_log_warning(stdout, "Out of terrain boundaries");
         return;
     }
     const int num_of_indexes = SCENE.t.quad[quad_index].m_indexes - 1;
 
     int *new_array = calloc(num_of_indexes, 4);
     if (!new_array) {
-        //printf("Zero number of indexes -- removeMeshFromQuad().\n");
+        debug_log_warning(stdout, "new_array");
         return;
     }
 
@@ -270,6 +252,7 @@ void removeMeshFromQuad(mesh* m) {
     free(SCENE.t.quad[quad_index].m_pks);
     SCENE.t.quad[quad_index].m_pks = realloc(new_array, (num_of_indexes * 4));
     SCENE.t.quad[quad_index].m_indexes = num_of_indexes;
+    debug_log_message(stdout, "Removed mesh from quad members");
 }
 /* Retrieves Terrain Quad index at given coords. */
 const int getTerrainQuadIndex(vec4 coords) {
@@ -279,7 +262,11 @@ const int getTerrainQuadIndex(vec4 coords) {
 
     vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.mesh[terrain].coords.v[0], SCENE.mesh[terrain].scale));
 #ifdef VECTORIZED_CODE // ######################################################
-    if ((t_coords.m128_f32[0] >= t_limit || t_coords.m128_f32[0] < 0) || (t_coords.m128_f32[2] >= t_limit || t_coords.m128_f32[2] < 0)) {
+    vec4 test_limits = _mm_set_ps1(t_limit);   // Probably must be declared as globals because are the same for every iteration.
+    vec4 test_zero = _mm_setzero_ps();         // Probably must be declared as globals because are the same for every iteration.
+    vec4 test_res = _mm_shuffle_ps(_mm_cmplt_ps(t_coords, test_zero), _mm_cmpgt_ps(t_coords, test_limits), _MM_SHUFFLE(2, 0, 2, 0));
+
+    if (_mm_movemask_ps(test_res)) {
         //printf("Out of terrain Limits -- getTerrainQuadIndex().\n");
         return -1;
     }

@@ -1,7 +1,7 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-int WIDTH, HEIGHT, DEBUG = 0;
+int WIDTH, HEIGHT, EYEPOINT = camera;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
 mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
@@ -64,32 +64,42 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
                 lookLeft(action);
             }
             break;
+        case GLFW_KEY_C:
+            if (action == GLFW_PRESS) {
+                if (EYEPOINT == camera)
+                    EYEPOINT = light;
+                else
+                    EYEPOINT = camera;
+            }
+            break;
     }
+}
+void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
+    printf("button: %d    action: %d    mods: %d\n", button, action, mods);
 }
 int main(int argc, char *argv[]) {
 
-    if (DEBUG) {
-        printf("anvil Version Major       : %d\n", anvil_VERSION_MAJOR);
-        printf("anvil Version Minor       : %d\n", anvil_VERSION_MINOR);
-        printf("Client Operating System   : %s\n", CLIENT_OS);
-    }
+    debug_log_info(stdout, "anvil Version Major       : %d\n", anvil_VERSION_MAJOR);
+    debug_log_info(stdout, "anvil Version Minor       : %d\n", anvil_VERSION_MINOR);
+    debug_log_info(stdout, "Client Operating System   : %s\n", CLIENT_OS);
 
     /* Initialize the library */
-    if ( !glfwInit() )
+    if ( !glfwInit() ) {
+        debug_log_critical(stdout, "glfwInit()");
         return -1;
-
-    if (DEBUG) {
-        printf("GLFW Compile time config  : % s\n", glfwGetVersionString());
-        int vers[3];
-        glfwGetVersion(&vers[0], &vers[1], &vers[2]);
-        printf("GLFW Version Major        : %d\n", vers[0]);
-        printf("GLFW Version Minor        : %d\n", vers[1]);
-        printf("GLFW Version revision     : %d\n", vers[2]);
     }
+
+    int vers[3];
+    glfwGetVersion(&vers[0], &vers[1], &vers[2]);
+    debug_log_info(stdout, "GLFW Compile time config  : %s\n", glfwGetVersionString());
+    debug_log_info(stdout, "GLFW Version Major        : %d\n", vers[0]);
+    debug_log_info(stdout, "GLFW Version Minor        : %d\n", vers[1]);
+    debug_log_info(stdout, "GLFW Version revision     : %d\n", vers[2]);
 
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = glfwCreateWindow(640, 480, "anvil", NULL, NULL);
     if ( !window ) {
+        debug_log_critical(stdout, "glfwCreateWindow()");
         glfwTerminate();
         return -1;
     }
@@ -99,11 +109,17 @@ int main(int argc, char *argv[]) {
     /* Register a keyboarb callback function. */
     glfwSetKeyCallback(window, key_callback);
 
+    /* Register a mouse click callback function. */
+    glfwSetMouseButtonCallback(window, mouse_callback);
+
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
     /* Initialize openGL Rasterization components. (framebuffers, user defined textures, shaders) */
-    initOpenGLComponents();
+    if ( initOpenGLComponents() ) {
+        debug_log_critical(stdout, "initOpenGLComponents()");
+        return -1;
+    }
 
     /* Create and initialize the GLOBAL SCENE. */
     createScene();

@@ -5,38 +5,40 @@ void readBMP(BMP *f, const char path[]) {
     int path_length = strlen(path) + strlen(anvil_SOURCE_DIR) + 2; // Plus 2 here for the / between source dir and file location and a null termination \0.
     char *dynamic_path = malloc(path_length);
     if (!dynamic_path) {
-        printf("Could not Create bmp file Path: < %s >! readBMP() -- malloc().\n", path);
+        debug_log_error(stdout, "malloc()");
+        debug_log_info(stdout, "%s\n", path);
         return;
     }
     sprintf_s(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
 
-    int emvadon;
     FILE* fp;
     fp = fopen(dynamic_path, "rb");
     free(dynamic_path);
     if (!fp) {
-        printf("Could not open file < %s >! readHeightmap() -- fopen().\n", path);
+        debug_log_error(stdout, "fopen()");
         return;
-    } else {
-        fread(&f->header, sizeof(BMP_Header), 1, fp);
-        fseek(fp, 14, SEEK_SET);
-        fread(&f->info, sizeof(BMP_Info), 1, fp);
-        fseek(fp, f->header.Res2, SEEK_SET);
+    }
 
-        emvadon = f->info.Height * f->info.Width;
-        if (!emvadon) {
-            printf("Zero value for Height map Size: %d. createTerrain() --> ERROR 1\n", emvadon);
-            fclose(fp);
-            return;
-        }
+    fread(&f->header, sizeof(BMP_Header), 1, fp);
+    fseek(fp, 14, SEEK_SET);
+    fread(&f->info, sizeof(BMP_Info), 1, fp);
+    fseek(fp, f->header.Res2, SEEK_SET);
+
+    int emvadon = f->info.Height * f->info.Width;
+    if (emvadon) {
         f->data = malloc(emvadon * 4);
-        if (!f->data) {
-            fclose(fp);
-            return;
+        if (f->data) {
+            fread(f->data, emvadon, 1, fp);
+        } else {
+            debug_log_error(stdout, "malloc()");
         }
-        fread(f->data, emvadon, 1, fp);
+    } else {
+        debug_log_error(stdout, "NULL value for emvadon");
     }
     fclose(fp);
+}
+void releaseBMP(BMP* f) {
+    free(f->data);
 }
 /* Loggs BMP file header. */
 void logBMP_Header(const BMP_Header bmp_h) {

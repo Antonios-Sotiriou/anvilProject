@@ -76,7 +76,7 @@ void testShader(void) {
     /* Just for testing purposes code. ##################### */
 
     GLfloat vpMatrix[16], modelMatrix[16];
-    LOOKAT_M = lookatMatrix(SCENE.mesh[camera].coords.v[0], SCENE.mesh[camera].coords.v[1], SCENE.mesh[camera].coords.v[2], SCENE.mesh[camera].coords.v[3]);
+    LOOKAT_M = lookatMatrix(SCENE.mesh[EYEPOINT].coords.v[0], SCENE.mesh[EYEPOINT].coords.v[1], SCENE.mesh[EYEPOINT].coords.v[2], SCENE.mesh[EYEPOINT].coords.v[3]);
     VIEW_M = inverseMatrix(LOOKAT_M);
     PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
     memcpy(&vpMatrix, &PROJECTION_M, 64);
@@ -106,11 +106,8 @@ void testShader(void) {
     //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
     //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
-    //GLenum err;
-    //while ((err = glGetError()) != GL_NO_ERROR) {
-    //    fprintf(stderr, "project < %d >  ", err);
-    //    perror("OpenGL ERROR: ");
-    //}
+    if (DEBUG_LVL_4)
+        glErrorReport();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

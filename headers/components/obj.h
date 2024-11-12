@@ -9,6 +9,10 @@
     #include <stdlib.h>
 #endif //_INC_STDLIB
 
+#ifndef FLAGS_H
+    #include "headers/flags.h"
+#endif // !FLAGS_H
+
 #ifndef anvil_VERSION_MAJOR
     #include "headers/cmake_variables.h"
 #endif // !anvil_VERSION_MAJOR

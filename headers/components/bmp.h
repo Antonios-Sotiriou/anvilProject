@@ -13,6 +13,10 @@
     #include <stdlib.h>
 #endif //_INC_STDLIB
 
+#ifndef FLAGS_H
+    #include "headers/flags.h"
+#endif // !FLAGS_H
+
 #ifndef anvil_VERSION_MAJOR
     #include "headers/cmake_variables.h"
 #endif // !anvil_VERSION_MAJOR
@@ -78,6 +82,7 @@ typedef struct {
 } BMP;
 
 void readBMP(BMP *f, const char path[]);
+void releaseBMP(BMP* f);
 void logBMP_Header(const BMP_Header bmp_h);
 void logBMP_EndPoints(const CS_EndPoints cse);
 void logBMP_Info(const BMP_Info bmp_i);

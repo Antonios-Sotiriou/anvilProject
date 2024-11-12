@@ -10,7 +10,7 @@ const static void createFrameBuffers(void);
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 /* Initializing all rasterizing importand Global components. */
-void initOpenGLComponents(void) {
+const int initOpenGLComponents(void) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
@@ -18,17 +18,18 @@ void initOpenGLComponents(void) {
 
     /* Initialize Glew and check for Errors. */
     const GLenum err = glewInit();
-    if (GLEW_OK != err) {
-        /* Problem: glewInit failed, something is seriously wrong. */
-        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    if ( GLEW_OK != err ) {
+        debug_log_critical(stdout, "glewInit()");
+        debug_log_info(stdout, "%s\n", glewGetErrorString(3));
+        return -1;
     }
 
-    if (DEBUG) {
-        printf("GLEW Version              : %s\n", glewGetString(GLEW_VERSION));
-        printf("openGL VERSION            : %s\n", glGetString(GL_VERSION));
-        printf("GLSL VERSION              : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        printf("GL Renderer               : %s\n", glGetString(GL_RENDERER));
+    debug_log_info(stdout, "GLEW Version              : %s\n", glewGetString(GLEW_VERSION));
+    debug_log_info(stdout, "openGL VERSION            : %s\n", glGetString(GL_VERSION));
+    debug_log_info(stdout, "GLSL VERSION              : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    debug_log_info(stdout, "GL Renderer               : %s\n", glGetString(GL_RENDERER));
 
+    if ( DEBUG_LVL_1 ) {
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(glErrorReportCallback, 0);
     }
@@ -40,6 +41,8 @@ void initOpenGLComponents(void) {
     mainShaderProgram = initMainShader();
     displayShaderProgram = initDisplayShader();
     testShaderProgram = initTestShader();
+
+    return 0;
 }
 /* Initializes user defined framebuffers and framebuffers textures. */
 const static void createFrameBuffers(void) {
@@ -75,9 +78,11 @@ const static void createFrameBuffers(void) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainColorMap, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mainDepthMap, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mainInfoMap, 0);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        perror("Incomplete mainFBO ");
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        debug_log_error(stdout, "glCheckFramebufferStatus()");
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
     /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
@@ -99,8 +104,9 @@ const static void createFrameBuffers(void) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowDepthMap, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        perror("Incomplete shadowMapFBO ");
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        debug_log_error(stdout, "glCheckFramebufferStatus()");
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
@@ -129,6 +135,13 @@ void releaseOpenGLComponents(void) {
 }
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     printf("%s type = %d, severity = %d, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
+}
+void glErrorReport(void) {
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        debug_log_error(stdout, "glGetError()");
+        perror("OpenGL ERROR: ");
+    }
 }
 
 

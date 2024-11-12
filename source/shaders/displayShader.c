@@ -102,11 +102,8 @@ void displayTexture(const int textureIndex) {
     glBindVertexArray(canvasVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    //GLenum err;
-    //while ((err = glGetError()) != GL_NO_ERROR) {
-    //    fprintf(stderr, "displayTexture < %d >  ", err);
-    //    perror("OpenGL ERROR: ");
-    //}
+    if (DEBUG_LVL_4)
+        glErrorReport();
 }
 
 
