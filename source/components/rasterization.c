@@ -4,7 +4,7 @@
 const void rasterize(void) {
     //project();
     testShader();
-    displayTexture(1);
+    displayTexture(0);
 }
 
 

@@ -2,12 +2,16 @@
 
 /* Responsible to apply all the forces that act on the rigid body and orginise the appropriate Collision detection functions steps. */
 void applyPhysics(void) {
+	printf("\x1b[H\x1b[J");
 	for (int i = 0; i < SCENE.mesh_indexes; i++) {
 		if (SCENE.mesh[i].rigid.state == ENABLE) {
 
 			initMeshQuadInfo(&SCENE.mesh[i]);
 
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
+
+			if (SCENE.mesh[i].pk == camera)
+			    checkOBBCollision(&SCENE.mesh[i]);
 
 			if (SCENE.mesh[i].rigid.rot_angle) {
 				/* At this point apply rotationColision. */

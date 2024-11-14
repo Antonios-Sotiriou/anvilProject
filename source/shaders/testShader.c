@@ -69,6 +69,8 @@ void testShader(void) {
 
     glUseProgram(testShaderProgram);
 
+    glPolygonMode(GL_FRONT, GL_LINE);
+
     glViewport(0, 0, WIDTH, HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -110,4 +112,7 @@ void testShader(void) {
         glErrorReport();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glPolygonMode(GL_FRONT, GL_FILL);
 }
+
+

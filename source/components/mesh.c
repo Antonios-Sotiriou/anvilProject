@@ -4,7 +4,7 @@ void createMesh(mesh *m, const char path[]) {
     OBJ obj;
     readOBJ(&obj, path);
 
-    m->vbo_indexes = (obj.f_inx / 9) * 24;
+    m->vbo_indexes = (obj.f_indexes / 9) * 24;
     m->faces_indexes = m->vbo_indexes / 24;
     m->vecs_indexes = m->faces_indexes * 3;
     m->vbo_size = m->vbo_indexes * 4;
@@ -16,7 +16,7 @@ void createMesh(mesh *m, const char path[]) {
     }
 
     int index = 0, vpad, tpad;
-    for (int i = 0; i < obj.f_inx; i++) {
+    for (int i = 0; i < obj.f_indexes; i++) {
         vpad = obj.f[i] * 3;
         m->vbo[index] = obj.v[vpad];
         m->vbo[index + 1] = obj.v[vpad + 1];
@@ -44,6 +44,7 @@ void releaseMesh(mesh* m) {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
+    releaseRigid(m);
 }
 
 

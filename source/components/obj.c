@@ -1,6 +1,8 @@
 #include "headers/components/obj.h"
 
-/* Reades obj file on the given path and stores data in OBJ o pointer. Data must be freed when no longer needed. */
+/* Reads RAW obj file data from the given path and stores them in OBJ o pointer.
+It's the programmer's responsibillity to rearange the data according to hes needs.
+Data must be freed when no longer needed. */
 void readOBJ(OBJ *o, const char path[]) {
     int path_length = strlen(path) + strlen(anvil_SOURCE_DIR) + 2; // Plus 2 here for the / between source dir and file location and a null termination \0.
     char *dynamic_path = malloc(path_length);
@@ -109,10 +111,10 @@ void readOBJ(OBJ *o, const char path[]) {
         }
     }
     fclose(fp);
-    o->v_inx = v_index;
-    o->n_inx = n_index;
-    o->t_inx = t_index;
-    o->f_inx = f_index;
+    o->v_indexes = v_index;
+    o->n_indexes = n_index;
+    o->t_indexes = t_index;
+    o->f_indexes = f_index;
 }
 /* Frees OBJ allocated data releasing sources. */
 void releaseOBJ(OBJ *o) {

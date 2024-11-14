@@ -75,7 +75,18 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
     }
 }
 void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
-    printf("button: %d    action: %d    mods: %d\n", button, action, mods);
+
+    if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
+        double x, y;
+        glfwGetCursorPos(win, &x, &y);
+        printf("x: %d    y: %d\n", (int)x, (int)y);
+
+        GLint data[2];
+        glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
+        glReadBuffer(GL_COLOR_ATTACHMENT1);
+        glReadPixels(x, HEIGHT - y, 1, 1, GL_RG_INTEGER, GL_INT, &data);
+        printf("colour: %d %d\n", data[0], data[1]);
+    }
 }
 int main(int argc, char *argv[]) {
 

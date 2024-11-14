@@ -17,6 +17,10 @@
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H
 
+#ifndef RIGID_H
+    #include "headers/components/rigid.h"
+#endif // !RIGID_H
+
 void createMesh(mesh *m, const char path[]);
 void releaseMesh(mesh *m);
 

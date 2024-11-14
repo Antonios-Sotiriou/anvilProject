@@ -163,7 +163,7 @@ void project(void) {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     GLfloat vpMatrix[16], modelMatrix[16];
-    LOOKAT_M = lookatMatrix(SCENE.mesh[camera].coords.v[0], SCENE.mesh[camera].coords.v[1], SCENE.mesh[camera].coords.v[2], SCENE.mesh[camera].coords.v[3]);
+    LOOKAT_M = lookatMatrix(SCENE.mesh[EYEPOINT].coords.v[0], SCENE.mesh[EYEPOINT].coords.v[1], SCENE.mesh[EYEPOINT].coords.v[2], SCENE.mesh[EYEPOINT].coords.v[3]);
     VIEW_M = inverseMatrix(LOOKAT_M);
     PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
     memcpy(&vpMatrix, &PROJECTION_M, 64);
@@ -173,16 +173,11 @@ void project(void) {
         mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
         memcpy(&modelMatrix, qm, 64);
         glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
-        //glUniform1i(2, i + 1);
+        glUniform1i(3, SCENE.mesh[i].pk);
 
         glBindVertexArray(SCENE.mesh[i].VAO);
         glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].vecs_indexes);
     }
-
-    //GLubyte data[4];
-    //glReadBuffer(GL_COLOR_ATTACHMENT0);
-    //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-    //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
     if (DEBUG_LVL_4)
         glErrorReport();

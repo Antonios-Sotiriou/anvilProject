@@ -24,11 +24,11 @@ typedef union {
 #else // ITERATIVE_CODE ########################################################
 /* Vector's internal format is X Y Z W. */
 typedef union {
-    float f32[4];
+    float m128_f32[4];
 } vec4;
 /* vectors internal format is X Y: */
 typedef union {
-    float f32[2];
+    float m64_f32[2];
 } vec2;
 /* Quaternion's internal format is W X Y Z. */
 typedef vec4 quat;
@@ -38,6 +38,11 @@ typedef union {
 } mat4x4;
 #endif // VECTORIZED_CODE ######################################################
 
+/* Vector's internal format is X Y Z. Can't be used for intrinsics SSE, because it's size is 12 bytes. Not a power multiplier of 2. */
+typedef struct {
+    float m96_f32[3];
+} vec3;
+
 /* Struct to save infos about a point on the terrain. */
 typedef struct {
     vec4 pos, normal;
@@ -45,7 +50,8 @@ typedef struct {
 } TerrainPointInfo;
 /* Struct to hold infos about a terrain quad. */
 typedef struct {
-    int *m_pks, m_indexes; // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
+    int *mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
+        mpks_indexes;       // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
 } Quad;
 /* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
 typedef struct {
@@ -68,7 +74,11 @@ typedef struct {
     vec4 vn[3];
 } face;
 typedef struct {
-    int state;                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
+    vec4 *v;                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
+    face *f;                             // Faces array to be used for collisions. Thats the minimum low Poly represantation of the model, with texels and normals also included.
+    int v_indexes,
+        f_indexes,
+        state;                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
     vec4 velocity;                       // Velocity of a mesh.
     float rot_angle;                     // The rotation angle of the rigid body.
     quat q;                              // Rotation quaternion W, X, Y, Z.

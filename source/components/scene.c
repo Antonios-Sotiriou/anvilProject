@@ -10,6 +10,9 @@ void createScene(void) {
     SCENE.mesh_indexes = mesh_entries;
 
     dbloadTable(GITANA_DB, MESH_TABLE, "SELECT * FROM mesh;");
+
+    loadRigid(&SCENE.mesh[camera], "meshes/cube/cube_flat.obj");
+    loadRigid(&SCENE.mesh[3], "meshes/cube/cube_flat.obj");
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {
@@ -18,8 +21,8 @@ void releaseScene(void) {
     }
     free(SCENE.mesh);
     for (int i = 0; i < SCENE.t.quad_indexes; i++) {
-        if (SCENE.t.quad[i].m_pks)
-            free(SCENE.t.quad[i].m_pks);
+        if (SCENE.t.quad[i].mpks)
+            free(SCENE.t.quad[i].mpks);
     }
     free(SCENE.t.quad);
 }

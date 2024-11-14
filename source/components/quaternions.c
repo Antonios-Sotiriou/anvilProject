@@ -200,27 +200,27 @@ quat setQuat(const float angle, const float x, const float y, const float z) {
 }
 /* Computes the magnitude aka length of a given quat. */
 float magnitudeQuat(const quat q) {
-    quat r = { q.f32[0] * q.f32[0], q.f32[1] * q.f32[1], q.f32[2] * q.f32[2], q.f32[3] * q.f32[3] };
-    return sqrtf(r.f32[0] + r.f32[1] + r.f32[2] + r.f32[3]);
+    quat r = { q.m128_f32[0] * q.m128_f32[0], q.m128_f32[1] * q.m128_f32[1], q.m128_f32[2] * q.m128_f32[2], q.m128_f32[3] * q.m128_f32[3] };
+    return sqrtf(r.m128_f32[0] + r.m128_f32[1] + r.m128_f32[2] + r.m128_f32[3]);
 }
 /* Normalizes given quat if its not already. */
 void normalizeQuat(quat* q) {
-    float check = (q->f32[0] * q->f32[0]) + (q->f32[1] * q->f32[1]) + (q->f32[2] * q->f32[2]) + (q->f32[3] * q->f32[3]);
+    float check = (q->m128_f32[0] * q->m128_f32[0]) + (q->m128_f32[1] * q->m128_f32[1]) + (q->m128_f32[2] * q->m128_f32[2]) + (q->m128_f32[3] * q->m128_f32[3]);
     if (check > 1.000001f) {
         float magnitude = sqrtf(check);
-        q->f32[0] /= magnitude;
-        q->f32[1] /= magnitude;
-        q->f32[2] /= magnitude;
-        q->f32[3] /= magnitude;
+        q->m128_f32[0] /= magnitude;
+        q->m128_f32[1] /= magnitude;
+        q->m128_f32[2] /= magnitude;
+        q->m128_f32[3] /= magnitude;
     }
 }
 /* Conjugate quat's vector part, aka( negating the sign ). */
 quat conjugateQuat(const quat q) {
     return (quat) {
-        q.f32[0],
-        -q.f32[1],
-        -q.f32[2],
-        -q.f32[3]
+        q.m128_f32[0],
+        -q.m128_f32[1],
+        -q.m128_f32[2],
+        -q.m128_f32[3]
     };
 }
 /* Creates a rotation quaternion with angle W and rotation axis X Y Z: */
@@ -236,25 +236,25 @@ quat rotationQuat(const float angle, const float x, const float y, const float z
 }
 /* Rotates vector v by the given quaternion.Returns a new vector. */
 vec4 vec4RotateQuat(const quat q, const vec4 v) {
-    quat r = setQuat(0.f, v.f32[0], v.f32[1], v.f32[2]);
+    quat r = setQuat(0.f, v.m128_f32[0], v.m128_f32[1], v.m128_f32[2]);
     r = multiplyQuats(multiplyQuats(conjugateQuat(q), r), q);
-    return (vec4) { r.f32[1], r.f32[2], r.f32[3], v.f32[3] };
+    return (vec4) { r.m128_f32[1], r.m128_f32[2], r.m128_f32[3], v.m128_f32[3] };
 }
 /* Rotates vector v by the given quaternion. */
 void setvec4RotateQuat(const quat q, vec4* v) {
-    quat r = setQuat(0.f, v->f32[0], v->f32[1], v->f32[2]);
+    quat r = setQuat(0.f, v->m128_f32[0], v->m128_f32[1], v->m128_f32[2]);
     r = multiplyQuats(multiplyQuats(conjugateQuat(q), r), q);
-    v->f32[0] = r.f32[1];
-    v->f32[1] = r.f32[2];
-    v->f32[2] = r.f32[3];
+    v->m128_f32[0] = r.m128_f32[1];
+    v->m128_f32[1] = r.m128_f32[2];
+    v->m128_f32[2] = r.m128_f32[3];
 }
 /* Adds quats q1 and q2 together returning a new quat. */
 quat addQuats(const quat q1, const quat q2) {
     return (quat) {
-        q1.f32[0] + q2.f32[0],
-        q1.f32[1] + q2.f32[1],
-        q1.f32[2] + q2.f32[2],
-        q1.f32[3] + q2.f32[3]
+        q1.m128_f32[0] + q2.m128_f32[0],
+        q1.m128_f32[1] + q2.m128_f32[1],
+        q1.m128_f32[2] + q2.m128_f32[2],
+        q1.m128_f32[3] + q2.m128_f32[3]
     };
 }
 /* Creates a quaternion from the given euler angles. */
@@ -284,66 +284,66 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
 /* Multiplies two quats(q1, q2) with each other returning a new quat. */
 quat multiplyQuats(const quat q1, const quat q2) {
     return (quat) {
-        (q1.f32[0] * q2.f32[0]) - (q1.f32[1] * q2.f32[1]) - (q1.f32[2] * q2.f32[2]) - (q1.f32[3] * q2.f32[3]),
-        (q1.f32[0] * q2.f32[1]) + (q1.f32[1] * q2.f32[0]) + (q1.f32[2] * q2.f32[3]) - (q1.f32[3] * q2.f32[2]),
-        (q1.f32[0] * q2.f32[2]) - (q1.f32[1] * q2.f32[3]) + (q1.f32[2] * q2.f32[0]) + (q1.f32[3] * q2.f32[1]),
-        (q1.f32[0] * q2.f32[3]) + (q1.f32[1] * q2.f32[2]) - (q1.f32[2] * q2.f32[1]) + (q1.f32[3] * q2.f32[0])
+        (q1.m128_f32[0] * q2.m128_f32[0]) - (q1.m128_f32[1] * q2.m128_f32[1]) - (q1.m128_f32[2] * q2.m128_f32[2]) - (q1.m128_f32[3] * q2.m128_f32[3]),
+        (q1.m128_f32[0] * q2.m128_f32[1]) + (q1.m128_f32[1] * q2.m128_f32[0]) + (q1.m128_f32[2] * q2.m128_f32[3]) - (q1.m128_f32[3] * q2.m128_f32[2]),
+        (q1.m128_f32[0] * q2.m128_f32[2]) - (q1.m128_f32[1] * q2.m128_f32[3]) + (q1.m128_f32[2] * q2.m128_f32[0]) + (q1.m128_f32[3] * q2.m128_f32[1]),
+        (q1.m128_f32[0] * q2.m128_f32[3]) + (q1.m128_f32[1] * q2.m128_f32[2]) - (q1.m128_f32[2] * q2.m128_f32[1]) + (q1.m128_f32[3] * q2.m128_f32[0])
     };
 }
 /* Creates a matrix from a given quaternion with translation vector t. */
 mat4x4 matfromQuat(const quat q, const vec4 t) {
     mat4x4 m;
-    m.m[0].f32[0] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[1] * q.f32[1])) - 1.0f);
-    m.m[0].f32[1] = (2.0f * ((q.f32[1] * q.f32[2]) - (q.f32[0] * q.f32[3])));
-    m.m[0].f32[2] = (2.0f * ((q.f32[1] * q.f32[3]) + (q.f32[0] * q.f32[2])));
-    m.m[0].f32[3] = 0.0f;
+    m.m[0].m128_f32[0] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[1] * q.m128_f32[1])) - 1.0f);
+    m.m[0].m128_f32[1] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) - (q.m128_f32[0] * q.m128_f32[3])));
+    m.m[0].m128_f32[2] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[2])));
+    m.m[0].m128_f32[3] = 0.0f;
 
-    m.m[1].f32[0] = (2.0f * ((q.f32[1] * q.f32[2]) + (q.f32[0] * q.f32[3])));
-    m.m[1].f32[1] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[2] * q.f32[2])) - 1.0);
-    m.m[1].f32[2] = (2.0f * ((q.f32[2] * q.f32[3]) - (q.f32[0] * q.f32[1])));
-    m.m[1].f32[3] = 0.0f;
+    m.m[1].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) + (q.m128_f32[0] * q.m128_f32[3])));
+    m.m[1].m128_f32[1] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[2] * q.m128_f32[2])) - 1.0);
+    m.m[1].m128_f32[2] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[1])));
+    m.m[1].m128_f32[3] = 0.0f;
 
-    m.m[2].f32[0] = (2.0f * ((q.f32[1] * q.f32[3]) - (q.f32[0] * q.f32[2])));
-    m.m[2].f32[1] = (2.0f * ((q.f32[2] * q.f32[3]) + (q.f32[0] * q.f32[1])));
-    m.m[2].f32[2] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[3] * q.f32[3])) - 1.0);
-    m.m[2].f32[3] = 0.0f;
+    m.m[2].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[2])));
+    m.m[2].m128_f32[1] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[1])));
+    m.m[2].m128_f32[2] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[3] * q.m128_f32[3])) - 1.0);
+    m.m[2].m128_f32[3] = 0.0f;
 
-    m.m[3].f32[0] = t.f32[0] - t.f32[0] * m.m[0].f32[0] - t.f32[1] * m.m[1].f32[0] - t.f32[2] * m.m[2].f32[0];
-    m.m[3].f32[1] = t.f32[1] - t.f32[0] * m.m[0].f32[1] - t.f32[1] * m.m[1].f32[1] - t.f32[2] * m.m[2].f32[1];
-    m.m[3].f32[2] = t.f32[2] - t.f32[0] * m.m[0].f32[2] - t.f32[1] * m.m[1].f32[2] - t.f32[2] * m.m[2].f32[2];
-    m.m[3].f32[3] = 1.0f;
+    m.m[3].m128_f32[0] = t.m128_f32[0] - t.m128_f32[0] * m.m[0].m128_f32[0] - t.m128_f32[1] * m.m[1].m128_f32[0] - t.m128_f32[2] * m.m[2].m128_f32[0];
+    m.m[3].m128_f32[1] = t.m128_f32[1] - t.m128_f32[0] * m.m[0].m128_f32[1] - t.m128_f32[1] * m.m[1].m128_f32[1] - t.m128_f32[2] * m.m[2].m128_f32[1];
+    m.m[3].m128_f32[2] = t.m128_f32[2] - t.m128_f32[0] * m.m[0].m128_f32[2] - t.m128_f32[1] * m.m[1].m128_f32[2] - t.m128_f32[2] * m.m[2].m128_f32[2];
+    m.m[3].m128_f32[3] = 1.0f;
 
     return m;
 }
 /* Creates a model matrix from a given quaternion (q), s scale value (s) and a translation vector (t). */
 mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t) {
     mat4x4 m;
-    m.m[0].f32[0] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[1] * q.f32[1])) - 1.0f) * s;
-    m.m[0].f32[1] = (2.0f * ((q.f32[1] * q.f32[2]) - (q.f32[0] * q.f32[3]))) * s;
-    m.m[0].f32[2] = (2.0f * ((q.f32[1] * q.f32[3]) + (q.f32[0] * q.f32[2]))) * s;
-    m.m[0].f32[3] = 0.0f;
+    m.m[0].m128_f32[0] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[1] * q.m128_f32[1])) - 1.0f) * s;
+    m.m[0].m128_f32[1] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) - (q.m128_f32[0] * q.m128_f32[3]))) * s;
+    m.m[0].m128_f32[2] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[2]))) * s;
+    m.m[0].m128_f32[3] = 0.0f;
 
-    m.m[1].f32[0] = (2.0f * ((q.f32[1] * q.f32[2]) + (q.f32[0] * q.f32[3]))) * s;
-    m.m[1].f32[1] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[2] * q.f32[2])) - 1.0) * s;
-    m.m[1].f32[2] = (2.0f * ((q.f32[2] * q.f32[3]) - (q.f32[0] * q.f32[1]))) * s;
-    m.m[1].f32[3] = 0.0f;
+    m.m[1].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) + (q.m128_f32[0] * q.m128_f32[3]))) * s;
+    m.m[1].m128_f32[1] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[2] * q.m128_f32[2])) - 1.0) * s;
+    m.m[1].m128_f32[2] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[1]))) * s;
+    m.m[1].m128_f32[3] = 0.0f;
 
-    m.m[2].f32[0] = (2.0f * ((q.f32[1] * q.f32[3]) - (q.f32[0] * q.f32[2]))) * s;
-    m.m[2].f32[1] = (2.0f * ((q.f32[2] * q.f32[3]) + (q.f32[0] * q.f32[1]))) * s;
-    m.m[2].f32[2] = (2.0f * ((q.f32[0] * q.f32[0]) + (q.f32[3] * q.f32[3])) - 1.0) * s;
-    m.m[2].f32[3] = 0.0f;
+    m.m[2].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[2]))) * s;
+    m.m[2].m128_f32[1] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[1]))) * s;
+    m.m[2].m128_f32[2] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[3] * q.m128_f32[3])) - 1.0) * s;
+    m.m[2].m128_f32[3] = 0.0f;
 
-    m.m[3].f32[0] = t.f32[0];
-    m.m[3].f32[1] = t.f32[1];
-    m.m[3].f32[2] = t.f32[2];
-    m.m[3].f32[3] = 1.0f;
+    m.m[3].m128_f32[0] = t.m128_f32[0];
+    m.m[3].m128_f32[1] = t.m128_f32[1];
+    m.m[3].m128_f32[2] = t.m128_f32[2];
+    m.m[3].m128_f32[3] = 1.0f;
 
     return m;
 }
 /* Spherical interpolates between two quaternions at coefficient t. */
 quat slerp(const quat q1, const quat q2, const float t) {
     // Calculate angle between q1 and q2.
-    const float cosHalfTheta = (q1.f32[0] * q2.f32[0]) + (q1.f32[1] * q2.f32[1]) + (q1.f32[2] * q2.f32[2]) + (q1.f32[3] * q2.f32[3]);
+    const float cosHalfTheta = (q1.m128_f32[0] * q2.m128_f32[0]) + (q1.m128_f32[1] * q2.m128_f32[1]) + (q1.m128_f32[2] * q2.m128_f32[2]) + (q1.m128_f32[3] * q2.m128_f32[3]);
     // if q1 = q2 or q1 = -q2 then theta = 0 and we can return q1;
     if (fabs(cosHalfTheta) >= 1.f)
         return q1;
@@ -353,10 +353,10 @@ quat slerp(const quat q1, const quat q2, const float t) {
     // if theta = 180 degrees then result is not fully defined.We could rotate arround any axis normal to q1 or q2.
     if (fabs(sinHalfTheta) < 0.001f) {
         return (quat) {
-            (q1.f32[0] * 0.5f) + (q2.f32[0] * 0.5f),
-            (q1.f32[1] * 0.5f) + (q2.f32[1] * 0.5f),
-            (q1.f32[2] * 0.5f) + (q2.f32[2] * 0.5f),
-            (q1.f32[3] * 0.5f) + (q2.f32[3] * 0.5f)
+            (q1.m128_f32[0] * 0.5f) + (q2.m128_f32[0] * 0.5f),
+            (q1.m128_f32[1] * 0.5f) + (q2.m128_f32[1] * 0.5f),
+            (q1.m128_f32[2] * 0.5f) + (q2.m128_f32[2] * 0.5f),
+            (q1.m128_f32[3] * 0.5f) + (q2.m128_f32[3] * 0.5f)
         };
     }
 
@@ -365,20 +365,20 @@ quat slerp(const quat q1, const quat q2, const float t) {
     const float ratioB = sinf(t * halfTheta) / sinHalfTheta;
     // Calculate the quaternion.
     return (quat) {
-        (q1.f32[0] * ratioA) + (q2.f32[0] * ratioB),
-        (q1.f32[1] * ratioA) + (q2.f32[1] * ratioB),
-        (q1.f32[2] * ratioA) + (q2.f32[2] * ratioB),
-        (q1.f32[3] * ratioA) + (q2.f32[3] * ratioB)
+        (q1.m128_f32[0] * ratioA) + (q2.m128_f32[0] * ratioB),
+        (q1.m128_f32[1] * ratioA) + (q2.m128_f32[1] * ratioB),
+        (q1.m128_f32[2] * ratioA) + (q2.m128_f32[2] * ratioB),
+        (q1.m128_f32[3] * ratioA) + (q2.m128_f32[3] * ratioB)
     };
 }
 /* Linearly interpolates between two quaternions at coefficient t. */
 quat lerp(const quat q1, const quat q2, const float t) {
     const float scale = 1.f - t;
     return (quat) {
-        (q1.f32[0] * scale) + (q2.f32[0] * t),
-        (q1.f32[1] * scale) + (q2.f32[1] * t),
-        (q1.f32[2] * scale) + (q2.f32[2] * t),
-        (q1.f32[3] * scale) + (q2.f32[3] * t)
+        (q1.m128_f32[0] * scale) + (q2.m128_f32[0] * t),
+        (q1.m128_f32[1] * scale) + (q2.m128_f32[1] * t),
+        (q1.m128_f32[2] * scale) + (q2.m128_f32[2] * t),
+        (q1.m128_f32[3] * scale) + (q2.m128_f32[3] * t)
     };
 }
 #endif // VECTORIZED_CODE #######################################################################################

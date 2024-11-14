@@ -29,6 +29,7 @@
     #define TYPE_TERRAIN             0
     #define TYPE_CAMERA              1
     #define TYPE_LIGHT               2
+    #define TYPE_OBJECT              3
 
 #endif // !anvil_MAJOR_VERSION
 

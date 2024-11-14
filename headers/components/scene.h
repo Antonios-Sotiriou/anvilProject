@@ -29,6 +29,11 @@
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H
 
+#ifndef RIGID_H
+    #include "headers/components/rigid.h"
+#endif // !RIGID_H
+
+
 void createScene(void);
 void releaseScene(void);
 

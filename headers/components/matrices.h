@@ -32,6 +32,7 @@ vec4 vec4Mulmat(const vec4 v, const mat4x4 m);
 void setvec4Mulmat(vec4* v, const mat4x4 m);
 vec4* vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m);
 void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m);
+face* facearrayMulmat(face f[], const int len, const mat4x4 m);
 mat4x4 matMulmat(const mat4x4 m1, const mat4x4 m2);
 mat4x4 transposeMatrix(const mat4x4 m);
 mat4x4 inverseMatrix(const mat4x4 m);
