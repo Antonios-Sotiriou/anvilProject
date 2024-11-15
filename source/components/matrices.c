@@ -122,7 +122,7 @@ vec4 vec4Mulmat(const vec4 v, const mat4x4 m) {
     return _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
 }
 /* Multiplies a Vector with the given Matrix and change its values. */
-void setvec4Mulmat(vec4* v, const mat4x4 m) {
+void setvec4Mulmat(vec4 *v, const mat4x4 m) {
     const vec4 x = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
     const vec4 y = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
     const vec4 z = _mm_mul_ps(_mm_shuffle_ps(*v, *v, _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
@@ -155,7 +155,7 @@ void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
         vecs[i] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
     }
 }
-/* Multiplies a vec4 array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
+/* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
 face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
     face *r = malloc(sizeof(face) * len);
     if (!r)
@@ -177,6 +177,25 @@ face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
         }
     }
     return r;
+}
+/* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
+void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
+    vec4 x, y, z, w;
+    for (int i = 0; i < len; i++) {
+        for (int j = 0; j < 3; j++) {
+            x = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
+            y = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
+            z = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
+            w = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
+            f[i].v[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
+
+            x = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
+            y = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
+            z = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
+            w = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
+            f[i].vn[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
+        }
+    }
 }
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */
 mat4x4 matMulmat(const mat4x4 m1, const mat4x4 m2) {
@@ -350,7 +369,7 @@ vec4 vec4Mulmat(const vec4 v, const mat4x4 m) {
     return r;
 }
 /* Multiplies a Vector with the given Matrix and change its values. */
-void setvec4Mulmat(vec4* v, const mat4x4 m) {
+void setvec4Mulmat(vec4 *v, const mat4x4 m) {
     vec4 r = *v;
     for (int i = 0; i < 4; i++) {
         v->m128_f32[i] = r.m128_f32[0] * m.m[0].m128_f32[i] + r.m128_f32[1] * m.m[1].m128_f32[i] + r.m128_f32[2] * m.m[2].m128_f32[i] + r.m128_f32[3] * m.m[3].m128_f32[i];
@@ -373,6 +392,44 @@ void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
         r = vecs[i];
         for (int j = 0; j < 4; j++) {
             vecs[i].m128_f32[j] = r.m128_f32[0] * m.m[0].m128_f32[j] + r.m128_f32[1] * m.m[1].m128_f32[j] + r.m128_f32[2] * m.m[2].m128_f32[j] + r.m128_f32[3] * m.m[3].m128_f32[j];
+        }
+    }
+}
+/* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
+face* facearrayMulmat(face f[], const int len, const mat4x4 m) {
+    face* r = malloc(sizeof(face) * len);
+    if (!r)
+        return 0;
+    for (int i = 0; i < len; i++) {
+        for (int j = 0; j < 3; j++) {
+            r[i].v[j].m128_f32[0] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[0] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[0] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[0] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[0];
+            r[i].v[j].m128_f32[1] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[1] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[1] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[1] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[1];
+            r[i].v[j].m128_f32[2] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[2] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[2] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[2] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[2];
+            r[i].v[j].m128_f32[3] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[3] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[3] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[3] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[3];
+
+            r[i].vn[j].m128_f32[0] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[0] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[0] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[0] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[0];
+            r[i].vn[j].m128_f32[1] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[1] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[1] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[1] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[1];
+            r[i].vn[j].m128_f32[2] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[2] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[2] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[2] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[2];
+            r[i].vn[j].m128_f32[3] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[3] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[3] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[3] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[3];
+        }
+    }
+    return r;
+}
+/* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
+void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
+    face r;
+    for (int i = 0; i < len; i++) {
+        r = f[i];
+        for (int j = 0; j < 3; j++) {
+            f[i].v[j].m128_f32[0] = r.v[j].m128_f32[0] * m.m[0].m128_f32[0] + r.v[j].m128_f32[1] * m.m[1].m128_f32[0] + r.v[j].m128_f32[2] * m.m[2].m128_f32[0] + r.v[j].m128_f32[3] * m.m[3].m128_f32[0];
+            f[i].v[j].m128_f32[1] = r.v[j].m128_f32[0] * m.m[0].m128_f32[1] + r.v[j].m128_f32[1] * m.m[1].m128_f32[1] + r.v[j].m128_f32[2] * m.m[2].m128_f32[1] + r.v[j].m128_f32[3] * m.m[3].m128_f32[1];
+            f[i].v[j].m128_f32[2] = r.v[j].m128_f32[0] * m.m[0].m128_f32[2] + r.v[j].m128_f32[1] * m.m[1].m128_f32[2] + r.v[j].m128_f32[2] * m.m[2].m128_f32[2] + r.v[j].m128_f32[3] * m.m[3].m128_f32[2];
+            f[i].v[j].m128_f32[3] = r.v[j].m128_f32[0] * m.m[0].m128_f32[3] + r.v[j].m128_f32[1] * m.m[1].m128_f32[3] + r.v[j].m128_f32[2] * m.m[2].m128_f32[3] + r.v[j].m128_f32[3] * m.m[3].m128_f32[3];
+
+            f[i].vn[j].m128_f32[0] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[0] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[0] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[0] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[0];
+            f[i].vn[j].m128_f32[1] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[1] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[1] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[1] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[1];
+            f[i].vn[j].m128_f32[2] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[2] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[2] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[2] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[2];
+            f[i].vn[j].m128_f32[3] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[3] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[3] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[3] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[3];
         }
     }
 }

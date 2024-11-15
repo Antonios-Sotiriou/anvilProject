@@ -27,12 +27,16 @@ void loadRigid(mesh *m, const char path[]) {
 
 			npad = obj.f[fpad + 2] * 3;
 			memcpy(&m->rigid.f[f_index].vn[j], &obj.n[npad], 12);
-			m->rigid.f[f_index].v[j].m128_f32[3] = 0.f;
+			m->rigid.f[f_index].vn[j].m128_f32[3] = 0.f;
 
 			fpad += 3;
 		}
 		f_index++;
 	}
+
+	/* Initialize the world starting position of the rigid body. */
+	mat4x4 qm = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
+	setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, qm);
 
 	releaseOBJ(&obj);
 }

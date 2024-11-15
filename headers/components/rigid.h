@@ -13,6 +13,14 @@
     #include "headers/components/obj.h"
 #endif // !OBJ_H
 
+#ifndef QUATERNIONS_H
+    #include "headers/components/quaternions.h"
+#endif // !QUATERNIONS_H
+
+#ifndef MATRICES_H
+    #include "headers/components/matrices.h"
+#endif // !MATRICES_H
+
 void loadRigid(mesh* m, const char path[]);
 void releaseRigid(mesh* m);
 

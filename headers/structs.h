@@ -79,7 +79,9 @@ typedef struct {
     int v_indexes,
         f_indexes,
         state;                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
-    vec4 velocity;                       // Velocity of a mesh.
+    vec4 min,                            // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
+        max,                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
+        velocity;                        // Velocity of a mesh.
     float rot_angle;                     // The rotation angle of the rigid body.
     quat q;                              // Rotation quaternion W, X, Y, Z.
 } rigid;
