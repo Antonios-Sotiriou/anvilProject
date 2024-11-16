@@ -7,7 +7,8 @@
 
 void swap(void* a, void* b, unsigned long size);
 const float radians(const float value);
-void getRigidLimits(mesh *m, const int len);
+void getmeshRigidLimits(mesh *m);
+void getvec4ArrayRigidLimits(vec4 v[], vec4 *min, vec4 *max);
 
 #endif // !GENERAL_H
 
