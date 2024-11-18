@@ -11,7 +11,7 @@
 #endif // !STRUCTS_H
 
 /* Defined in main.c */
-extern int WIDTH, HEIGHT, EYEPOINT;
+extern int WIDTH, HEIGHT, EYEPOINT, DISPLAY_RIGID;
 /* The global matrices, defined also in main.c. */
 extern mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
@@ -19,7 +19,7 @@ extern mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 extern scene SCENE;
 
 /* defined in rasterization.c. */
-extern GLint mainShaderProgram, displayShaderProgram, testShaderProgram;
+extern GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
 extern GLint mainFBO, shadowMapFBO;
 extern const GLenum drawBuffers[2];
 

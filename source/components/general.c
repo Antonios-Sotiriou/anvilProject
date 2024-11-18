@@ -13,54 +13,21 @@ const float radians(const float value) {
     return value * (3.14159 / 180.0);
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
-/* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
-void getmeshRigidLimits(mesh *m) {
-    m->rigid.min = m->rigid.v[0];
-    m->rigid.max = m->rigid.v[0];
-    for (int i = 0; i < 20; i++) {
-        m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
-        m->rigid.min = _mm_max_ps(m->rigid.min, m->rigid.v[i]);
-    }
-}
 /* Find how much in each direction the vectors array extends. Populate with values the (min) and (max) vec4 values */
-void getvec4ArrayRigidLimits(vec4 v[], vec4 *min, vec4 *max) {
-    *min = _mm_load_ps(&v[0]);
-    *max = _mm_load_ps(&v[0]);
-    for (int i = 0; i < 20; i++) {
+void getvec4ArrayLimits(vec4 v[], const int array_len, vec4* min, vec4* max) {
+    *min = v[0];
+    *max = v[0];
+    for (int i = 0; i < array_len; i++) {
         *min = _mm_min_ps(*min, v[i]);
         *max = _mm_max_ps(*max, v[i]);
     }
 }
 #else // ITERATIVE_CODE #########################################################################################
-/* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
-void getmeshRigidLimits(mesh *m) {
-    m->rigid.min = m->rigid.v[0];
-    m->rigid.max = m->rigid.v[0];
-    for (int i = 0; i < 20; i++) {
-        if (m->rigid.min->m128_f32[0] > m->rigid.v[i].m128_f32[0])
-            m->rigid.min->m128_f32[0] = m->rigid.v[i].m128_f32[0];
-
-        if (m->rigid.max->m128_f32[0] < m->rigid.v[i].m128_f32[0])
-            m->rigid.max->m128_f32[0] = m->rigid.v[i].m128_f32[0];
-
-        if (m->rigid.min->m128_f32[1] > m->rigid.v[i].m128_f32[1])
-            m->rigid.min->m128_f32[1] = m->rigid.v[i].m128_f32[1];
-
-        if (m->rigid.max->m128_f32[1] < m->rigid.v[i].m128_f32[1])
-            m->rigid.max->m128_f32[1] = m->rigid.v[i].m128_f32[1];
-
-        if (m->rigid.min->m128_f32[2] > m->rigid.v[i].m128_f32[2])
-            m->rigid.min->m128_f32[2] = m->rigid.v[i].m128_f32[2];
-
-        if (m->rigid.max->m128_f32[2] < m->rigid.v[i].m128_f32[2])
-            m->rigid.max->m128_f32[2] = m->rigid.v[i].m128_f32[2];
-    }
-}
 /* Find how much in each direction the vectors array extends. Populate with values the (min) and (max) vec4 values */
-void getvec4ArayRigidLimits(vec4 v[], vec4 *min, vec4 *max) {
+void getvec4ArrayLimits(vec4 v[], const int array_len, vec4 *min, vec4 *max) {
     *min = v[0];
     *max = v[0];
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < array_len; i++) {
         if (min->m128_f32[0] > v[i].m128_f32[0])
             min->m128_f32[0] = v[i].m128_f32[0];
 

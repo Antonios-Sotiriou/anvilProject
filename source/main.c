@@ -1,7 +1,7 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-int WIDTH, HEIGHT, EYEPOINT = camera;
+int WIDTH, HEIGHT, EYEPOINT = camera, DISPLAY_RIGID = 0;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
 mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
@@ -65,12 +65,12 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
             }
             break;
         case GLFW_KEY_C:
-            if (action == GLFW_PRESS) {
-                if (EYEPOINT == camera)
-                    EYEPOINT = light;
-                else
-                    EYEPOINT = camera;
-            }
+            if (action == GLFW_PRESS)
+                EYEPOINT = EYEPOINT == camera ? light : camera;
+            break;
+        case GLFW_KEY_B:
+            if (action == GLFW_PRESS)
+                DISPLAY_RIGID = DISPLAY_RIGID == 0 ? 1 : 0;
             break;
     }
 }

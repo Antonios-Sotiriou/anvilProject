@@ -4,6 +4,8 @@
 const void rasterize(void) {
     //project();
     testShader();
+    if (DISPLAY_RIGID)
+        rigidShader();
     displayTexture(0);
 }
 

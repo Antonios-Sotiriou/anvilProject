@@ -123,7 +123,7 @@ const int initMainShader(void) {
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR::SHADER::VERTEX::COMPILATION_FAILED.\n%s\n", infoLog);
+        debug_log_error(stdout, infoLog);
     }
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -132,7 +132,7 @@ const int initMainShader(void) {
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED.\n%s\n", infoLog);
+        debug_log_error(stdout, infoLog);
     }
 
     /* Shaders programm creation and linking. */
@@ -143,7 +143,7 @@ const int initMainShader(void) {
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR::SHADER::PROGRAMM::LINKING_FAILED.\n%s\n", infoLog);
+        debug_log_error(stdout, infoLog);
     }
 
     glDetachShader(shaderProgram, vertexShader);
@@ -179,8 +179,7 @@ void project(void) {
         glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].vecs_indexes);
     }
 
-    if (DEBUG_LVL_4)
-        glErrorReport();
+    debug_log_OpenGL();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

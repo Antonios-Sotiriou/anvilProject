@@ -30,6 +30,9 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
             memcpy(&SCENE.mesh[idx].rigid.q, q, 16);
         } else if (strncmp(azColName[i], "scale", 5) == 0) {
             SCENE.mesh[idx].scale = strtof(argv[i], NULL);
+        } else if (strncmp(azColName[i], "outer_radius", 12) == 0) {
+            float rad2 = SCENE.mesh[idx].scale * SCENE.mesh[idx].scale;
+            SCENE.mesh[idx].outer_radius = sqrtf(rad2 + rad2);
         } else if (strncmp(azColName[i], "state", 5) == 0) {
             SCENE.mesh[idx].rigid.state = atoi(argv[i]);
         } else if (strncmp(azColName[i], "velocity", 8) == 0) {

@@ -1,32 +1,25 @@
-#include "headers/shaders/testShader.h"
+#include "headers/shaders/rigidShader.h"
+#include <string.h>
+static GLint rigidVBO, rigidVAO;
+static void createRigidVAO(void);
 
-int COUNT = 0;
-float rot = 1.f;
 const static char *vertexShaderSource = "#version 460 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
-"layout (location = 1) in vec2 vsTexels;\n"
-"layout (location = 2) in vec3 vsNormal;\n"
 
 "uniform mat4 vpMatrix;\n"
-"uniform mat4 modelMatrix;\n"
-//"uniform int mesh_id;\n"
-
-//"layout (location = 0) out int id;\n"
 
 "void main() {\n"
-"    gl_Position = (vpMatrix * modelMatrix) * vec4(vsPos, 1.f);\n"
-//"    id = mesh_id;\n"
+"    gl_Position = vpMatrix * vec4(vsPos, 1.f);\n"
 "}\n\0";
 const static char *fragmentShaderSource = "#version 460 core\n"
-//"layout (location = 0) in flat int id;\n"
 
 "layout (location = 0) out vec4 FragColor;\n"
 
 "void main() {\n"
-"    FragColor = vec4(1.f, 0.f, 0.5f, 1.f);\n"
+"    FragColor = vec4(0.f, 1.f, 0.f, 1.f);\n"
 "}\n\0";
 
-const int initTestShader(void) {
+const int initRigidShader(void) {
     int success, vertexShader, fragmentShader, shaderProgram;
     char infoLog[512];
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -63,55 +56,72 @@ const int initTestShader(void) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    createRigidVAO();
+
     return shaderProgram;
 }
-void testShader(void) {
+static void createRigidVAO(void) {
+    /* Main Vertex Buffer Object buffer initiallization. */
+    glGenVertexArrays(1, &rigidVAO);
+    glBindVertexArray(rigidVAO);
+    glGenBuffers(1, &rigidVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, rigidVBO);
 
-    glUseProgram(testShaderProgram);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, (void*)0);
+    glEnableVertexAttribArray(0);
+}
+void rigidShader(void) {
+
+    glUseProgram(rigidShaderProgram);
 
     glPolygonMode(GL_FRONT, GL_LINE);
 
     glViewport(0, 0, WIDTH, HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+    //glClear(GL_DEPTH_BUFFER_BIT);
 
-    /* Just for testing purposes code. ##################### */
-
-    GLfloat vpMatrix[16], modelMatrix[16];
-    LOOKAT_M = lookatMatrix(SCENE.mesh[EYEPOINT].coords.v[0], SCENE.mesh[EYEPOINT].coords.v[1], SCENE.mesh[EYEPOINT].coords.v[2], SCENE.mesh[EYEPOINT].coords.v[3]);
-    VIEW_M = inverseMatrix(LOOKAT_M);
-    PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
+    GLfloat vpMatrix[16];
     memcpy(&vpMatrix, &PROJECTION_M, 64);
     glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
 
-    quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
-    SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
-    if ((COUNT % 1000) == 0) {
-        rot += 1.0f;
-        //logvec4(SCENE.mesh[terrain].q);
-    }
-    COUNT++;
+    //glBindVertexArray(rigidVAO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, (void*)0);
+    glEnableVertexAttribArray(0);
 
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
-        mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
-        memcpy(&modelMatrix, qm, 64);
-        glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
-        //glUniform1i(2, i + 1);
-        
-        glBindVertexArray(SCENE.mesh[i].VAO);
-        glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].vecs_indexes);
-    }
-    /* Just for testing purposes code. ##################### */
 
-    //GLubyte data[4];
-    //glReadBuffer(GL_COLOR_ATTACHMENT0);
-    //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-    //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
+        if (SCENE.mesh[i].rigid.state == ENABLE) {
+
+            int len = SCENE.mesh[i].rigid.f_indexes * 3, inx = 0;
+            float *arr = malloc(len * 12);
+            if (!arr)
+                continue;
+
+            for (int x = 0; x < SCENE.mesh[i].rigid.f_indexes; x++) {
+
+                memcpy(&arr[inx], &SCENE.mesh[i].rigid.f[x].v[0], 12);
+                inx += 3;
+                memcpy(&arr[inx], &SCENE.mesh[i].rigid.f[x].v[1], 12);
+                inx += 3;
+                memcpy(&arr[inx], &SCENE.mesh[i].rigid.f[x].v[2], 12);
+                inx += 3;
+            }
+
+            glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[i].rigid.f_indexes * 36, arr, GL_DYNAMIC_DRAW);
+            glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].rigid.f_indexes * 3);
+            free(arr);
+        }
+    }
 
     debug_log_OpenGL();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisableVertexAttribArray(0);
+
     glPolygonMode(GL_FRONT, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
 }
 
 

@@ -14,6 +14,11 @@
     #include "headers/components/matrices.h"
 #endif // !MATRICES_H
 
+#ifndef QUATERNIONS_H
+    #include "headers/components/quaternions.h"
+#endif // !QUATERNIONS_H
+
+const int outerRadiusCollision(mesh* m);
 const int checkOBBCollision(mesh* m);
 
 #endif // !COLLISIONS_H

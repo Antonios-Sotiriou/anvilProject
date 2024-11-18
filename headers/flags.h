@@ -38,7 +38,7 @@
 #define DEBUG_LVL_2         0    // DEBUG LVL MESSAGE : information about specific parts of code and variables.
 #define DEBUG_LVL_3         0    // DEBUG LVL WARNING : program possible will produce wrong values but continues execution.
 #define DEBUG_LVL_4         0    // DEBUG LVL ERROR   : program will crash possibly or it will produce wrong values.
-#define DEBUG_LVL_5         0    // DEBUG LVL CRITICAL: program stops execution and exits with an error code.
+#define DEBUG_LVL_5         1    // DEBUG LVL CRITICAL: program stops execution and exits with an error code.
 
 // ENABLE DEBUG LVL ACCORDING TO WHICH LVL IS ENABLED.
 #if DEBUG_LVL_2 == 1
@@ -106,6 +106,10 @@
 #define debug_log_critical(out, ...)\
         do { if (DEBUG_LVL_5) fprintf(stderr, "CRITICAL %s %s %d %s()\n", __VA_ARGS__, __FILE__,\
                                         __LINE__, __func__); } while (0)
+
+/* OpenGL debug macro function. */
+#define debug_log_OpenGL()\
+        if (DEBUG_LVL_4) glErrorReport();
 /* DEBUG SECTOR ################################################################################### */
 
 #endif // !FLAGS_H

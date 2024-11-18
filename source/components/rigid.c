@@ -6,9 +6,12 @@ void loadRigid(mesh *m, const char path[]) {
 
 	m->rigid.v_indexes = (obj.v_indexes / 3);
 	m->rigid.v = malloc(m->rigid.v_indexes * 16);
+	if (!m->rigid.v) {
+		debug_log_critical(stdout, "m->rigid.v");
+		exit(0);
+	}
 	int v_index = 0;
 	for (int i = 0; i < obj.v_indexes; i += 3) {
-
 		memcpy(&m->rigid.v[v_index], &obj.v[i], 12);
 		m->rigid.v[v_index].m128_f32[3] = 1.f;
 		v_index++;
@@ -16,6 +19,10 @@ void loadRigid(mesh *m, const char path[]) {
 
 	m->rigid.f_indexes = (obj.f_indexes / 9);
 	m->rigid.f = malloc(m->rigid.f_indexes * sizeof(face));
+	if (!m->rigid.f) {
+		debug_log_critical(stdout, "m->rigid.f");
+		exit(0);
+	}
 	int f_index = 0, fpad = 0, npad, tpad;
 	for (int i = 0; i < obj.f_indexes; i += 9) {
 		for (int j = 0; j < 3; j++) {
@@ -37,9 +44,46 @@ void loadRigid(mesh *m, const char path[]) {
 	/* Initialize the world starting position of the rigid body. */
 	mat4x4 qm = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
 	setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, qm);
+	getmeshRigidLimits(m);
 
 	releaseOBJ(&obj);
 }
+#ifdef VECTORIZED_CODE // #######################################################################################
+/* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
+void getmeshRigidLimits(mesh *m) {
+	m->rigid.min = m->rigid.v[0];
+	m->rigid.max = m->rigid.v[0];
+	for (int i = 0; i < 20; i++) {
+		m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
+		m->rigid.min = _mm_max_ps(m->rigid.min, m->rigid.v[i]);
+	}
+}
+#else // ITERATIVE_CODE #########################################################################################
+/* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
+void getmeshRigidLimits(mesh *m) {
+    m->rigid.min = m->rigid.v[0];
+    m->rigid.max = m->rigid.v[0];
+    for (int i = 0; i < 20; i++) {
+        if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
+            m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];
+
+        if (m->rigid.max.m128_f32[0] < m->rigid.v[i].m128_f32[0])
+            m->rigid.max.m128_f32[0] = m->rigid.v[i].m128_f32[0];
+
+        if (m->rigid.min.m128_f32[1] > m->rigid.v[i].m128_f32[1])
+            m->rigid.min.m128_f32[1] = m->rigid.v[i].m128_f32[1];
+
+        if (m->rigid.max.m128_f32[1] < m->rigid.v[i].m128_f32[1])
+            m->rigid.max.m128_f32[1] = m->rigid.v[i].m128_f32[1];
+
+        if (m->rigid.min.m128_f32[2] > m->rigid.v[i].m128_f32[2])
+            m->rigid.min.m128_f32[2] = m->rigid.v[i].m128_f32[2];
+
+        if (m->rigid.max.m128_f32[2] < m->rigid.v[i].m128_f32[2])
+            m->rigid.max.m128_f32[2] = m->rigid.v[i].m128_f32[2];
+    }
+}
+#endif // VECTORIZED_CODE #######################################################################################
 void releaseRigid(mesh *m) {
 	free(m->rigid.v);
 	free(m->rigid.f);

@@ -8,14 +8,20 @@ void applyPhysics(void) {
 
 			initMeshQuadInfo(&SCENE.mesh[i]);
 
+			/* 1st Collision Detection lvl. */
 			//if (SCENE.mesh[i].pk == camera)
-			//    checkOBBCollision(&SCENE.mesh[i]);
+			//    outerRadiusCollision(&SCENE.mesh[i]);
 
+			/* 3rd Collision Detection lvl. */
+			if (SCENE.mesh[i].pk == camera)
+			    checkOBBCollision(&SCENE.mesh[i]);
+
+			/* 4th Collision Detection lvl. */
 			if (SCENE.mesh[i].rigid.rot_angle) {
 				/* At this point apply rotationColision. */
-				//mat4x4 tr = matfromQuat(SCENE.mesh[i].rigid.q, SCENE.mesh[i].coords.v[0]);
+				mat4x4 tr = matfromQuat(SCENE.mesh[i].rigid.q, SCENE.mesh[i].coords.v[0]);
 				//setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tr);
-				//facearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tr);
+				setfacearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tr);
 
 				//setvec4RotateQuat(SCENE.mesh[i].rigid.q, &SCENE.mesh[i].coords.v[0]);
 				setvec4RotateQuat(SCENE.mesh[i].rigid.q, &SCENE.mesh[i].coords.v[1]);

@@ -19,6 +19,10 @@
     #include "headers/shaders/testShader.h"
 #endif // !TESTSHADER_H
 
+#ifndef RIGIDSHADER_H
+    #include "headers/shaders/rigidShader.h"
+#endif // !RIGIDSHADER_H
+
 const int initOpenGLComponents(void);
 void createMeshVAO(mesh* m);
 void releaseOpenGLComponents(void);

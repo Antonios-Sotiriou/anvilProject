@@ -1,7 +1,7 @@
 #include "headers/components/openGL.h"
 
 /* OpenGL Global veriables. */
-GLint mainShaderProgram, displayShaderProgram, testShaderProgram;
+GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
 GLint mainFBO, shadowMapFBO;
 static GLint shadowDepthMap, mainColorMap, mainDepthMap, mainInfoMap;
 const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
@@ -41,6 +41,7 @@ const int initOpenGLComponents(void) {
     mainShaderProgram = initMainShader();
     displayShaderProgram = initDisplayShader();
     testShaderProgram = initTestShader();
+    rigidShaderProgram = initRigidShader();
 
     return 0;
 }
@@ -140,7 +141,6 @@ void glErrorReport(void) {
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
         debug_log_error(stdout, "glGetError()");
-        perror("OpenGL ERROR: ");
     }
 }
 

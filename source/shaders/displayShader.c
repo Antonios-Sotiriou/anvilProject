@@ -35,7 +35,7 @@ const int initDisplayShader(void) {
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR::SHADER::VERTEX::COMPILATION_FAILED.\n%s\n", infoLog);
+        debug_log_error(stdout, infoLog);
     }
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -44,7 +44,7 @@ const int initDisplayShader(void) {
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED.\n%s\n", infoLog);
+        debug_log_error(stdout, infoLog);
     }
 
     /* Shaders programm creation and linking. */
@@ -55,7 +55,7 @@ const int initDisplayShader(void) {
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR::SHADER::PROGRAMM::LINKING_FAILED.\n%s\n", infoLog);
+        debug_log_error(stdout, infoLog);
     }
 
     glDetachShader(shaderProgram, vertexShader);
@@ -102,8 +102,7 @@ void displayTexture(const int textureIndex) {
     glBindVertexArray(canvasVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    if (DEBUG_LVL_4)
-        glErrorReport();
+    debug_log_OpenGL();
 }
 
 

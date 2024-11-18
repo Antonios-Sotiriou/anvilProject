@@ -14,6 +14,10 @@
     #include "headers/shaders/testShader.h"
 #endif // !TESTSHADER_H
 
+#ifndef RIGIDSHADER_H
+    #include "headers/shaders/rigidShader.h"
+#endif // !RIGIDSHADER_H
+
 const void rasterize();
 
 #endif // !RASTERIZATION_H

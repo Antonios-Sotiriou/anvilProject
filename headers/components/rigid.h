@@ -22,6 +22,7 @@
 #endif // !MATRICES_H
 
 void loadRigid(mesh* m, const char path[]);
+void getmeshRigidLimits(mesh* m);
 void releaseRigid(mesh* m);
 
 #endif // !RIGID_H
