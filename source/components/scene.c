@@ -10,9 +10,6 @@ void createScene(void) {
     SCENE.mesh_indexes = mesh_entries;
 
     dbloadTable(GITANA_DB, MESH_TABLE, "SELECT * FROM mesh;");
-
-    loadRigid(&SCENE.mesh[camera], "meshes/cube/cube_flat.obj");
-    loadRigid(&SCENE.mesh[3], "meshes/cube/cube_flat.obj");
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {

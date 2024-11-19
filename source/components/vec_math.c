@@ -1,6 +1,10 @@
 #include "headers/components/vec_math.h"
 
 #ifdef VECTORIZED_CODE // #######################################################################################
+/* Initializes a vec4 with the given values. */
+vec4 setvec4(const float x, const float y, const float z, const float w) {
+    return _mm_setr_ps(x, y, z, w);
+}
 /* Computes the Dot Product of two given Vectors. */
 float dotProduct(const vec4 v1, const vec4 v2) {
     vec4 r = _mm_mul_ps(v1, v2);
@@ -59,7 +63,16 @@ vec4 vecSubf32(const vec4 v1, const float num) {
 vec4 vecSubvec(const vec4 v1, const vec4 v2) {
     return _mm_sub_ps(v1, v2);
 }
+/* Returns an integer FLAG value, which intigates which bits are set, meaning they don't fulfill the comparison. */
+const int checkAllZeros(vec4 v) {
+    vec4 vz = _mm_setzero_ps();
+    return _mm_movemask_ps(_mm_cmpneq_ps(vz, v));
+}
 #else // ITERATIVE_CODE #########################################################################################
+/* Initializes a vec4 with the given values. */
+vec4 setvec4(const float x, const float y, const float z, const float w) {
+    return (vec4) { x, y, z, w };
+}
 /* Computes the Dot Product of two given Vectors. */
 float dotProduct(const vec4 v1, const vec4 v2) {
     return v1.m128_f32[0] * v2.m128_f32[0] + v1.m128_f32[1] * v2.m128_f32[1] + v1.m128_f32[2] * v2.m128_f32[2];
@@ -113,6 +126,10 @@ vec4 vecSubf32(const vec4 v1, const float num) {
 /* Substructs two Vectors from each other.Returns a new Vector. */
 vec4 vecSubvec(const vec4 v1, const vec4 v2) {
     return (vec4) { v1.m128_f32[0] - v2.m128_f32[0], v1.m128_f32[1] - v2.m128_f32[1], v1.m128_f32[2] - v2.m128_f32[2], v1.m128_f32[3] - v2.m128_f32[3] };
+}
+/* Returns an integer FLAG value, which intigates which bits are set, meaning they don't fulfill the comparison. */
+const int checkAllZeros(vec4 v) {
+    return (v.m128_f32[0] + v.m128_f32[1] + v.m128_f32[2] + v.m128_f32[3] != 0);
 }
 #endif // VECTORIZED_CODE #######################################################################################
 

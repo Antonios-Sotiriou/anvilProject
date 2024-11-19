@@ -1,8 +1,38 @@
 #include "headers/components/rigid.h"
 
-void loadRigid(mesh *m, const char path[]) {
+static char* composemeshRigidPath(mesh* m, const char name[]);
+
+/* Create the rigid file path according to the type of the mesh. Different types of meshes may have diferent file paths. Thats why we must generalize them. */
+static char *composemeshRigidPath(mesh *m, const char name[]) {
+	char* dynamic_path = { 0 };
+	if (m->type == MESH_TYPE_TERRAIN) {
+		int path_length = (strlen(name) * 2) + 21; // Plus 1 here for the null termination \0.
+		dynamic_path = malloc(path_length);
+		if (!dynamic_path) {
+			debug_log_error(stdout, "malloc()");
+			debug_log_info(stdout, "%s\n", name);
+			return 0;
+		}
+		sprintf_s(dynamic_path, path_length, "terrains/%s/%s_rigid.obj", name, name);
+	} else {
+		int path_length = (strlen(name) * 2) + 19; // Plus 1 here for the null termination \0.
+		dynamic_path = malloc(path_length);
+		if (!dynamic_path) {
+			debug_log_error(stdout, "malloc()");
+			debug_log_info(stdout, "%s\n", name);
+			return 0;
+		}
+		sprintf_s(dynamic_path, path_length, "meshes/%s/%s_rigid.obj", name, name);
+	}
+
+	return dynamic_path;
+}
+
+void loadmeshRigid(mesh *m, const char name[]) {
 	OBJ obj;
-	readOBJ(&obj, path);
+	char *dynamic_path = composemeshRigidPath(m, name);
+	readOBJ(&obj, dynamic_path);
+	free(dynamic_path);
 
 	m->rigid.v_indexes = (obj.v_indexes / 3);
 	m->rigid.v = malloc(m->rigid.v_indexes * 16);
@@ -84,7 +114,7 @@ void getmeshRigidLimits(mesh *m) {
     }
 }
 #endif // VECTORIZED_CODE #######################################################################################
-void releaseRigid(mesh *m) {
+void releasemeshRigid(mesh *m) {
 	free(m->rigid.v);
 	free(m->rigid.f);
 

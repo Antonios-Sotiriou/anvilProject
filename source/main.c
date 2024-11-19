@@ -5,7 +5,7 @@ int WIDTH, HEIGHT, EYEPOINT = camera, DISPLAY_RIGID = 0;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
 mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
-void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
+static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
 
     switch (key) {
         case GLFW_KEY_W :
@@ -74,7 +74,7 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) 
             break;
     }
 }
-void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
+static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
     if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
         double x, y;

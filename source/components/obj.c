@@ -15,8 +15,10 @@ void readOBJ(OBJ *o, const char path[]) {
 
     FILE *fp = fopen(dynamic_path, "r");
     free(dynamic_path);
-    if (!fp)
+    if (!fp) {
         debug_log_error(stdout, "fopen()");
+        return;
+    }
 
     o->v = malloc(4);
     o->n = malloc(4);

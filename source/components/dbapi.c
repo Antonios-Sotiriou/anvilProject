@@ -41,12 +41,14 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
             memcpy(&SCENE.mesh[idx].rigid.velocity, v, 16);
         } else if (strncmp(azColName[i], "rot_angle", 9) == 0) {
             SCENE.mesh[idx].rigid.rot_angle = strtof(argv[i], NULL);
-        } else if (strncmp(azColName[i], "file_location", 13) == 0) {
-             if (SCENE.mesh[idx].type == TYPE_TERRAIN) {
+        } else if (strncmp(azColName[i], "name", 4) == 0) {
+             if (SCENE.mesh[idx].type == MESH_TYPE_TERRAIN) {
                  createTerrain(&SCENE.mesh[idx], argv[i]);
              } else {
                  createMesh(&SCENE.mesh[idx], argv[i]);
              }
+             if (SCENE.mesh[idx].rigid.state == ENABLE)
+                 loadmeshRigid(&SCENE.mesh[idx], argv[i]);
         }
     }
 

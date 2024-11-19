@@ -1,8 +1,18 @@
 #include "headers/components/mesh.h"
 
-void createMesh(mesh *m, const char path[]) {
+void createMesh(mesh *m, const char name[]) {
+    int path_length = (strlen(name) * 2) + 13; // Plus 1 here for the null termination \0.
+    char* dynamic_path = malloc(path_length);
+    if (!dynamic_path) {
+        debug_log_error(stdout, "malloc()");
+        debug_log_info(stdout, "%s\n", name);
+        return;
+    }
+    sprintf_s(dynamic_path, path_length, "meshes/%s/%s.obj", name, name);
+
     OBJ obj;
-    readOBJ(&obj, path);
+    readOBJ(&obj, dynamic_path);
+    free(dynamic_path);
 
     m->vbo_indexes = (obj.f_indexes / 9) * 24;
     m->faces_indexes = m->vbo_indexes / 24;
@@ -44,7 +54,7 @@ void releaseMesh(mesh* m) {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
-    releaseRigid(m);
+    releasemeshRigid(m);
 }
 
 

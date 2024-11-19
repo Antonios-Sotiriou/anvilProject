@@ -13,7 +13,7 @@
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H
 
-void createTerrain(mesh *m, const char path[]);
+void createTerrain(mesh *m, const char name[]);
 void initMeshQuadInfo(mesh* m);
 void addMeshToQuad(mesh* m);
 void removeMeshFromQuad(mesh* m);

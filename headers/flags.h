@@ -25,11 +25,15 @@
     #define ON                  1
     #define OFF                 0
 
+    /* Assets Types types. */
+    #define ASSET_TYPE_MESH          0
+    #define ASSET_TYPE_MODEL         1
+
     /* Meshes types. */
-    #define TYPE_TERRAIN             0
-    #define TYPE_CAMERA              1
-    #define TYPE_LIGHT               2
-    #define TYPE_OBJECT              3
+    #define MESH_TYPE_TERRAIN             0
+    #define MESH_TYPE_CAMERA              1
+    #define MESH_TYPE_LIGHT               2
+    #define MESH_TYPE_GENERAL             3
 
 #endif // !anvil_MAJOR_VERSION
 

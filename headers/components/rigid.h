@@ -21,9 +21,9 @@
     #include "headers/components/matrices.h"
 #endif // !MATRICES_H
 
-void loadRigid(mesh* m, const char path[]);
+void loadmeshRigid(mesh* m, const char name[]);
 void getmeshRigidLimits(mesh* m);
-void releaseRigid(mesh* m);
+void releasemeshRigid(mesh* m);
 
 #endif // !RIGID_H
 

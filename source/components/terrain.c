@@ -1,8 +1,19 @@
 #include "headers/components/terrain.h"
 
-void createTerrain(mesh *m, const char path[]) {
-	BMP bmp;
-	readBMP(&bmp, path);
+void createTerrain(mesh *m, const char name[]) {
+    int path_length = (strlen(name) * 2) + 22; // Plus 1 here for the null termination \0.
+    char *dynamic_path = malloc(path_length);
+    if (!dynamic_path) {
+        debug_log_error(stdout, "malloc()");
+        debug_log_info(stdout, "%s\n", name);
+        return;
+    }
+    sprintf_s(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", name, name);
+
+    BMP bmp;
+	readBMP(&bmp, dynamic_path);
+    free(dynamic_path);
+
     const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height : 0;
     if (!emvadon) {
         debug_log_critical(stdout, "Null value for Emvadon");

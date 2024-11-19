@@ -14,6 +14,7 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
+vec4 setvec4(const float x, const float y, const float z, const float w);
 float dotProduct(const vec4 v1, const vec4 v2);
 vec4 crossProduct(const vec4 v1, const vec4 v2);
 float vecLength(const vec4 v);
@@ -26,6 +27,7 @@ vec4 vecAddf32(const vec4 v1, const float num);
 vec4 vecAddvec(const vec4 v1, const vec4 v2);
 vec4 vecSubf32(const vec4 v1, const float num);
 vec4 vecSubvec(const vec4 v1, const vec4 v2);
+const int checkAllZeros(vec4 v);
 
 #endif // !VEC_MATH_H
 
