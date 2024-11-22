@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+extern void swap(void *a, void *b, unsigned long size);
+/* Checks for collisions whithin a radius sourounding the mesh. */
 const int outerRadiusCollision(mesh* m) {
     //vec4 newPos = vecAddvec(m->coords.v[0], m->rigid.velocity);
     int pk;
@@ -17,17 +19,140 @@ const int outerRadiusCollision(mesh* m) {
     }
     return 0;
 }
+/* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
+const int checkAABBCollision(mesh *m, const int pks[]) {
+
+    if (m->quadIndex < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quadIndex);
+        return 0;
+    }
+
+    getmeshRigidLimits(m);
+    vec4 tnear, tfar;
+
+    const int num_of_members = 1;
+
+    for (int i = 0; i < num_of_members; i++) {
+
+        int pk = pks[i];
+
+        if (pk != m->pk) {
+
+            vec4 min = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            vec4 max = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+
+            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->rigid.velocity);
+            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->rigid.velocity);
+
+            //logvec4(tnear);
+            //logvec4(tfar);
+
+            if (!vecEqualvec(tnear, tnear) || !vecEqualvec(tfar, tfar)) {
+                //logvec4(_mm_cmpeq_ps(tnear, tnear));
+                continue;
+            }
+
+            //printf("f_nx: %d    f_ny: %d    f_nz: %d\n", f_nx, f_ny, f_nz);
+            //printf("f_fx: %d    f_fy: %d    f_fz: %d\n", f_fx, f_fy, f_fz);
+            //logvec4(tnear);
+            //logvec4(tfar);
+
+            if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
+            if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
+            if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
+
+            if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
+                continue;
+
+            float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
+            float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
+
+            /* ##################### Y ############################ */
+            if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
+                continue;
+
+            if (tnear.m128_f32[1] > t_near)
+                t_near = tnear.m128_f32[1];
+            if (tfar.m128_f32[1] < t_far)
+                t_far = tfar.m128_f32[1];
+            /* ##################### Y ############################ */
+
+            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+                continue;
+
+            vec4 normal = { 0.f };
+            if (tnear.m128_f32[0] >= tnear.m128_f32[1] && tnear.m128_f32[0] >= tnear.m128_f32[2]) {
+                if (m->rigid.velocity.m128_f32[0] < 0) {
+                    normal.m128_f32[0] = 1.f;
+                }
+                else if (m->rigid.velocity.m128_f32[0] > 0) {
+                    normal.m128_f32[0] = -1.f;
+                }
+            }
+            else if (tnear.m128_f32[1] >= tnear.m128_f32[0] && tnear.m128_f32[1] >= tnear.m128_f32[2]) {
+                if (m->rigid.velocity.m128_f32[1] < 0) {
+                    normal.m128_f32[1] = 1.f;
+                }
+                else if (m->rigid.velocity.m128_f32[1] > 0) {
+                    normal.m128_f32[1] = -1.f;
+                }
+            }
+            else if (tnear.m128_f32[2] >= tnear.m128_f32[0] && tnear.m128_f32[2] >= tnear.m128_f32[1]) {
+                if (m->rigid.velocity.m128_f32[2] < 0) {
+                    normal.m128_f32[2] = 1.f;
+                }
+                else if (m->rigid.velocity.m128_f32[2] > 0) {
+                    normal.m128_f32[2] = -1.f;
+                }
+            }
+
+            if (t_near == 0.f) {
+                printf("Sliding.... %f\n", t_near);
+
+                float dot = dotProduct(normal, m->rigid.velocity);
+                m->rigid.velocity = vecSubvec(m->rigid.velocity, vecMulf32(normal, dot));
+
+                //if (tnear.m128_f32[1] == 0) {
+                //    //obj->falling_time = 0.f;
+                //    //m->rigid.velocity = vecMulvec(m->rigid.velocity,  m->rigid.momentum);
+                //}
+                //else {
+                //    m->rigid.velocity = (gravity_epicenter * (98.1f * (m->rigid.falling_time * 2.f))) + (m->rigid.velocity * m->rigid.momentum);
+                //}
+                return 2;
+
+            }
+            else if (((t_near > 0.f) && (t_near <= 1.f))) {
+                printf("COLLISION  ######################### : %f    mesh.id: %d\n", t_near, pk);
+
+                m->rigid.velocity = vecMulf32(m->rigid.velocity, t_near);
+
+                mat4x4 trans = translationMatrix(m->rigid.velocity.m128_f32[0], m->rigid.velocity.m128_f32[1], m->rigid.velocity.m128_f32[2]);
+
+                setvec4arrayMulmat(m->coords.v, 4, trans);
+                setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, trans);
+
+                //obj->momentum *= cache->fr_coef;
+                //float dot = dot_product(normal, obj->mvdir);
+                //obj->mvdir = obj->mvdir - (dot * normal);
+                //obj->velocity = (obj->mvdir * obj->momentum);
+                float col_dot = dotProduct(m->rigid.velocity, normal);
+                m->rigid.velocity = vecSubvec(m->rigid.velocity, vecMulf32(normal, col_dot));
+
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+/* Check for collisions between rotated meshes. */
 const int checkOBBCollision(mesh *m) {
     /* Implement Oriented bounding boxes collision detection. */
-    //printf("\x1b[H\x1b[J");
-    //system("cls\n");
-    //mat4x4 tm = modelMatfromQST(m->rigid.q, 1.f, m->rigid.velocity);
-    //mat4x4 tm = matfromQuat(m->rigid.q, m->coords.v[0]);
     mat4x4 tm = translationMatrix(m->rigid.velocity.m128_f32[0], m->rigid.velocity.m128_f32[1], m->rigid.velocity.m128_f32[2]);
     face *temp1 = facearrayMulmat(m->rigid.f, m->rigid.f_indexes, tm);
-    //setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, tm);
 
-    int collision = 0;
+    float depth = (float)_CRT_INT_MAX;
+    vec4 normal = { 0 };
     float dot = 0.f, min_outer,  min_inner, max_outer, max_inner;
     for (int i = 0; i < m->rigid.f_indexes; i++) {
         min_outer = (float)_CRT_INT_MAX, min_inner = (float)_CRT_INT_MAX, max_outer = (float)-_CRT_INT_MAX, max_inner = (float)-_CRT_INT_MAX;
@@ -46,9 +171,17 @@ const int checkOBBCollision(mesh *m) {
         }
 
         if ( (min_outer > max_inner) || (max_outer < min_inner) ) {
-            memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
+            //memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
             free(temp1);
             return 0;
+        }
+
+        float da = (max_outer - min_inner);
+        float db = (max_inner - min_outer);
+        float axisDepth = da < db ? da : db;
+        if (axisDepth < depth) {
+            depth = axisDepth;
+            normal = temp1[i].vn[0];
         }
     }
 
@@ -69,14 +202,32 @@ const int checkOBBCollision(mesh *m) {
         }
 
         if ( (min_outer > max_inner) || (max_outer < min_inner) ) {
-            memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
+            //memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
             free(temp1);
             return 0;
         }
-    }
-    printf("Collision Detected... %d\n", collision);
 
-    memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
+        float da = (max_outer - min_inner);
+        float db = (max_inner - min_outer);
+        float axisDepth = da < db ? da : db;
+        if (axisDepth < depth) {
+            depth = axisDepth;
+            normal = SCENE.mesh[3].rigid.f[i].vn[0];
+        }
+    }
+
+    depth /= vecLength(normal);
+    if (dotProduct(vecSubvec(m->coords.v[0], SCENE.mesh[3].coords.v[0]), normal) < 0) {
+        normal = vecMulf32(normal, -1.f);
+    }
+    normal = vecNormalize(normal);
+
+    float col_dot = dotProduct(m->rigid.velocity, normal);
+    m->rigid.velocity = vecSubvec(m->rigid.velocity, vecMulf32(normal, col_dot));
+    //logvec4(normal);
+    //printf("Collision Detected...depth: %f\n", depth);
+
+    //memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
     free(temp1);
     return 1;
 }

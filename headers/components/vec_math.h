@@ -1,6 +1,10 @@
 #ifndef VEC_MATH_H
 #define VEC_MATH_H 1
 
+#ifndef _INCLUDED_SMM
+    #include <smmintrin.h>
+#endif // !_INCLUDED_SMM
+
 #ifndef INC_MATH
     #include <math.h>
 #endif // !INC_MATH
@@ -27,7 +31,10 @@ vec4 vecAddf32(const vec4 v1, const float num);
 vec4 vecAddvec(const vec4 v1, const vec4 v2);
 vec4 vecSubf32(const vec4 v1, const float num);
 vec4 vecSubvec(const vec4 v1, const vec4 v2);
-const int checkAllZeros(vec4 v);
+const int checkAllZeros(const vec4 v);
+const int vecEqualvec(const vec4 v1, const vec4 v2);
+vec4 roundvec4(const vec4 v);
+vec4 floorvec4(const vec4 v);
 
 #endif // !VEC_MATH_H
 

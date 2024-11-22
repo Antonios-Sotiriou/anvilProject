@@ -83,9 +83,15 @@ void loadmeshRigid(mesh *m, const char name[]) {
 void getmeshRigidLimits(mesh *m) {
 	m->rigid.min = m->rigid.v[0];
 	m->rigid.max = m->rigid.v[0];
-	for (int i = 0; i < 20; i++) {
-		m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
-		m->rigid.min = _mm_max_ps(m->rigid.min, m->rigid.v[i]);
+	//for (int i = 0; i < m->rigid.v_indexes; i++) {
+	//	m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
+	//	m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.v[i]);
+	//}
+	for (int i = 0; i < m->rigid.f_indexes; i++) {
+		for (int j = 0; j < 3; j++) {
+			m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.f[i].v[j]);
+			m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.f[i].v[j]);
+		}
 	}
 }
 #else // ITERATIVE_CODE #########################################################################################
@@ -93,25 +99,46 @@ void getmeshRigidLimits(mesh *m) {
 void getmeshRigidLimits(mesh *m) {
     m->rigid.min = m->rigid.v[0];
     m->rigid.max = m->rigid.v[0];
-    for (int i = 0; i < 20; i++) {
-        if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
-            m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];
+    //for (int i = 0; i < m->rigid.v_indexes; i++) {
+    //    if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
+    //        m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];
 
-        if (m->rigid.max.m128_f32[0] < m->rigid.v[i].m128_f32[0])
-            m->rigid.max.m128_f32[0] = m->rigid.v[i].m128_f32[0];
+    //    if (m->rigid.max.m128_f32[0] < m->rigid.v[i].m128_f32[0])
+    //        m->rigid.max.m128_f32[0] = m->rigid.v[i].m128_f32[0];
 
-        if (m->rigid.min.m128_f32[1] > m->rigid.v[i].m128_f32[1])
-            m->rigid.min.m128_f32[1] = m->rigid.v[i].m128_f32[1];
+    //    if (m->rigid.min.m128_f32[1] > m->rigid.v[i].m128_f32[1])
+    //        m->rigid.min.m128_f32[1] = m->rigid.v[i].m128_f32[1];
 
-        if (m->rigid.max.m128_f32[1] < m->rigid.v[i].m128_f32[1])
-            m->rigid.max.m128_f32[1] = m->rigid.v[i].m128_f32[1];
+    //    if (m->rigid.max.m128_f32[1] < m->rigid.v[i].m128_f32[1])
+    //        m->rigid.max.m128_f32[1] = m->rigid.v[i].m128_f32[1];
 
-        if (m->rigid.min.m128_f32[2] > m->rigid.v[i].m128_f32[2])
-            m->rigid.min.m128_f32[2] = m->rigid.v[i].m128_f32[2];
+    //    if (m->rigid.min.m128_f32[2] > m->rigid.v[i].m128_f32[2])
+    //        m->rigid.min.m128_f32[2] = m->rigid.v[i].m128_f32[2];
 
-        if (m->rigid.max.m128_f32[2] < m->rigid.v[i].m128_f32[2])
-            m->rigid.max.m128_f32[2] = m->rigid.v[i].m128_f32[2];
-    }
+    //    if (m->rigid.max.m128_f32[2] < m->rigid.v[i].m128_f32[2])
+    //        m->rigid.max.m128_f32[2] = m->rigid.v[i].m128_f32[2];
+    //}
+	for (int i = 0; i < m->rigid.f_indexes; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (m->rigid.min.m128_f32[0] > m->rigid.f[i].v[j].m128_f32[0])
+				m->rigid.min.m128_f32[0] = m->rigid.f[i].v[j].m128_f32[0];
+
+			if (m->rigid.max.m128_f32[0] < m->rigid.f[i].v[j].m128_f32[0])
+				m->rigid.max.m128_f32[0] = m->rigid.f[i].v[j].m128_f32[0];
+
+			if (m->rigid.min.m128_f32[1] > m->rigid.f[i].v[j].m128_f32[1])
+				m->rigid.min.m128_f32[1] = m->rigid.f[i].v[j].m128_f32[1];
+
+			if (m->rigid.max.m128_f32[1] < m->rigid.f[i].v[j].m128_f32[1])
+				m->rigid.max.m128_f32[1] = m->rigid.f[i].v[j].m128_f32[1];
+
+			if (m->rigid.min.m128_f32[2] > m->rigid.f[i].v[j].m128_f32[2])
+				m->rigid.min.m128_f32[2] = m->rigid.f[i].v[j].m128_f32[2];
+
+			if (m->rigid.max.m128_f32[2] < m->rigid.f[i].v[j].m128_f32[2])
+				m->rigid.max.m128_f32[2] = m->rigid.f[i].v[j].m128_f32[2];
+		}
+	}
 }
 #endif // VECTORIZED_CODE #######################################################################################
 void releasemeshRigid(mesh *m) {

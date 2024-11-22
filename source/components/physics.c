@@ -12,9 +12,15 @@ void applyPhysics(void) {
 			//if (SCENE.mesh[i].pk == camera)
 			//    outerRadiusCollision(&SCENE.mesh[i]);
 
+			/* 2nd Collision Detection lvl. */
+			if (SCENE.mesh[i].pk == camera) {
+				int colls[1] = { 3 };
+				checkAABBCollision(&SCENE.mesh[i], &colls);
+			}
+
 			/* 3rd Collision Detection lvl. */
-			if (SCENE.mesh[i].pk == camera)
-			    checkOBBCollision(&SCENE.mesh[i]);
+			//if (SCENE.mesh[i].pk == camera)
+			//    checkOBBCollision(&SCENE.mesh[i]);
 
 			/* 4th Collision Detection lvl. */
 			if (SCENE.mesh[i].rigid.rot_angle) {
@@ -32,6 +38,9 @@ void applyPhysics(void) {
 				//SCENE.mesh[i].q = SCENE.mesh[i].rigid.q;
 			}
 
+			mat4x4 tm = translationMatrix(SCENE.mesh[i].rigid.velocity.m128_f32[0], SCENE.mesh[i].rigid.velocity.m128_f32[1], SCENE.mesh[i].rigid.velocity.m128_f32[2]);
+			setfacearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tm);
+			/* Update the position pivot of the mesh. */
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
 		}
 	}

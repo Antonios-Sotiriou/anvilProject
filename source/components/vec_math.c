@@ -64,9 +64,18 @@ vec4 vecSubvec(const vec4 v1, const vec4 v2) {
     return _mm_sub_ps(v1, v2);
 }
 /* Returns an integer FLAG value, which intigates which bits are set, meaning they don't fulfill the comparison. */
-const int checkAllZeros(vec4 v) {
+const int checkAllZeros(const vec4 v) {
     vec4 vz = _mm_setzero_ps();
     return _mm_movemask_ps(_mm_cmpneq_ps(vz, v));
+}
+const int vecEqualvec(const vec4 v1, const vec4 v2) {
+    return _mm_movemask_ps(_mm_cmpeq_ps(v1, v2));
+}
+vec4 roundvec4(const vec4 v) {
+    return _mm_ceil_ps(_mm_add_ps(v, _mm_set_ps1(0.5f)));
+}
+vec4 floorvec4(const vec4 v) {
+    return _mm_round_ps(v, _MM_FROUND_FLOOR);
 }
 #else // ITERATIVE_CODE #########################################################################################
 /* Initializes a vec4 with the given values. */
@@ -128,8 +137,17 @@ vec4 vecSubvec(const vec4 v1, const vec4 v2) {
     return (vec4) { v1.m128_f32[0] - v2.m128_f32[0], v1.m128_f32[1] - v2.m128_f32[1], v1.m128_f32[2] - v2.m128_f32[2], v1.m128_f32[3] - v2.m128_f32[3] };
 }
 /* Returns an integer FLAG value, which intigates which bits are set, meaning they don't fulfill the comparison. */
-const int checkAllZeros(vec4 v) {
+const int checkAllZeros(const vec4 v) {
     return (v.m128_f32[0] + v.m128_f32[1] + v.m128_f32[2] + v.m128_f32[3] != 0);
+}
+const int vecEqualvec(const vec4 v1, const vec4 v2) {
+    return ( (v1.m128_f32[0] == v2.m128_f32[0]) && (v1.m128_f32[1] == v2.m128_f32[1]) && (v1.m128_f32[2] == v2.m128_f32[2]) );
+}
+vec4 roundvec4(const vec4 v) {
+    return (vec4) { (int)(v.m128_f32[0] + 0.5f), (int)(v.m128_f32[1] + 0.5f), (int)(v.m128_f32[2] + 0.5f), (int)(v.m128_f32[3] + 0.5f) };
+}
+vec4 floorvec4(const vec4 v) {
+    return (vec4) { (int)v.m128_f32[0], (int)v.m128_f32[1], (int)v.m128_f32[2], (int)v.m128_f32[3] };
 }
 #endif // VECTORIZED_CODE #######################################################################################
 

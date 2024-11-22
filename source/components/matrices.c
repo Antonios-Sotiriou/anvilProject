@@ -180,21 +180,19 @@ face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
 }
 /* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
 void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
-    face r;
     vec4 x, y, z, w;
     for (int i = 0; i < len; i++) {
-        r = f[i];
         for (int j = 0; j < 3; j++) {
-            x = _mm_mul_ps(_mm_shuffle_ps(r.v[j], r.v[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
-            y = _mm_mul_ps(_mm_shuffle_ps(r.v[j], r.v[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
-            z = _mm_mul_ps(_mm_shuffle_ps(r.v[j], r.v[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
-            w = _mm_mul_ps(_mm_shuffle_ps(r.v[j], r.v[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
+            x = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
+            y = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
+            z = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
+            w = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
             f[i].v[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
 
-            x = _mm_mul_ps(_mm_shuffle_ps(r.vn[j], r.vn[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
-            y = _mm_mul_ps(_mm_shuffle_ps(r.vn[j], r.vn[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
-            z = _mm_mul_ps(_mm_shuffle_ps(r.vn[j], r.vn[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
-            w = _mm_mul_ps(_mm_shuffle_ps(r.vn[j], r.vn[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
+            x = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
+            y = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
+            z = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
+            w = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
             f[i].vn[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
         }
     }

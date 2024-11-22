@@ -67,6 +67,7 @@ static void createRigidVAO(void) {
     glGenBuffers(1, &rigidVBO);
     glBindBuffer(GL_ARRAY_BUFFER, rigidVBO);
 
+    glBufferData(GL_ARRAY_BUFFER, 12, 0, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, (void*)0);
     glEnableVertexAttribArray(0);
@@ -87,6 +88,7 @@ void rigidShader(void) {
     glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
 
     //glBindVertexArray(rigidVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, rigidVBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -109,7 +111,8 @@ void rigidShader(void) {
                 inx += 3;
             }
 
-            glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[i].rigid.f_indexes * 36, arr, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, SCENE.mesh[i].rigid.f_indexes * 36, arr, GL_STATIC_DRAW);
+            //glBufferSubData(GL_ARRAY_BUFFER, 0, SCENE.mesh[i].rigid.f_indexes * 36, arr);
             glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].rigid.f_indexes * 3);
             free(arr);
         }
@@ -118,7 +121,10 @@ void rigidShader(void) {
     debug_log_OpenGL();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisableVertexAttribArray(0);
+    //glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDeleteBuffers(1, &rigidVBO),
+    //glDisableVertexAttribArray(0);
 
     glPolygonMode(GL_FRONT, GL_FILL);
     glEnable(GL_DEPTH_TEST);
