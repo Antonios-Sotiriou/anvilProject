@@ -72,17 +72,21 @@ void loadmeshRigid(mesh *m, const char name[]) {
 	}
 
 	/* Initialize the world starting position of the rigid body. */
-	mat4x4 qm = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
-	setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, qm);
+	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
+	setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, qm1);
+	mat4x4 qm2 = matfromQuat(m->rigid.q, m->coords.v[0]);
+	setvec4arrayMulmat(m->coords.v, 4, qm2);
+
 	getmeshRigidLimits(m);
+	initMeshQuadInfo(m);
 
 	releaseOBJ(&obj);
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getmeshRigidLimits(mesh *m) {
-	m->rigid.min = m->rigid.v[0];
-	m->rigid.max = m->rigid.v[0];
+	m->rigid.min = _mm_set_ps1(INT_MAX);
+	m->rigid.max = _mm_set_ps1(-INT_MAX);
 	//for (int i = 0; i < m->rigid.v_indexes; i++) {
 	//	m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
 	//	m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.v[i]);
@@ -97,8 +101,8 @@ void getmeshRigidLimits(mesh *m) {
 #else // ITERATIVE_CODE #########################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getmeshRigidLimits(mesh *m) {
-    m->rigid.min = m->rigid.v[0];
-    m->rigid.max = m->rigid.v[0];
+	m->rigid.min = setvec4(INT_MAX, INT_MAX, INT_MAX, INT_MAX);
+    m->rigid.max = setvec4(-INT_MAX, -INT_MAX, -INT_MAX, -INT_MAX);
     //for (int i = 0; i < m->rigid.v_indexes; i++) {
     //    if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
     //        m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];

@@ -68,12 +68,15 @@ const int checkAllZeros(const vec4 v) {
     vec4 vz = _mm_setzero_ps();
     return _mm_movemask_ps(_mm_cmpneq_ps(vz, v));
 }
+/* Checks two vectors if they are equal.Returns 0 if they are.  */
 const int vecEqualvec(const vec4 v1, const vec4 v2) {
-    return _mm_movemask_ps(_mm_cmpeq_ps(v1, v2));
+    return _mm_movemask_ps(_mm_cmpneq_ps(v1, v2));
 }
+/* Rounds a vector to the nearest integer.Returns floats vector rounded.  */
 vec4 roundvec4(const vec4 v) {
     return _mm_ceil_ps(_mm_add_ps(v, _mm_set_ps1(0.5f)));
 }
+/* Floors down a vector to the nearest integer.Returns floats vector floored.  */
 vec4 floorvec4(const vec4 v) {
     return _mm_round_ps(v, _MM_FROUND_FLOOR);
 }
@@ -140,12 +143,15 @@ vec4 vecSubvec(const vec4 v1, const vec4 v2) {
 const int checkAllZeros(const vec4 v) {
     return (v.m128_f32[0] + v.m128_f32[1] + v.m128_f32[2] + v.m128_f32[3] != 0);
 }
+/* Checks two vectors if they are equal.Returns 0 if they are.  */
 const int vecEqualvec(const vec4 v1, const vec4 v2) {
-    return ( (v1.m128_f32[0] == v2.m128_f32[0]) && (v1.m128_f32[1] == v2.m128_f32[1]) && (v1.m128_f32[2] == v2.m128_f32[2]) );
+    return ( (v1.m128_f32[0] == v2.m128_f32[0]) && (v1.m128_f32[1] == v2.m128_f32[1]) && (v1.m128_f32[2] == v2.m128_f32[2]) ) ? 0 : 1;
 }
+/* Rounds a vector to the nearest integer.Returns floats vector rounded.  */
 vec4 roundvec4(const vec4 v) {
     return (vec4) { (int)(v.m128_f32[0] + 0.5f), (int)(v.m128_f32[1] + 0.5f), (int)(v.m128_f32[2] + 0.5f), (int)(v.m128_f32[3] + 0.5f) };
 }
+/* Floors down a vector to the nearest integer.Returns floats vector floored.  */
 vec4 floorvec4(const vec4 v) {
     return (vec4) { (int)v.m128_f32[0], (int)v.m128_f32[1], (int)v.m128_f32[2], (int)v.m128_f32[3] };
 }

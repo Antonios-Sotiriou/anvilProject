@@ -21,6 +21,10 @@
     #include "headers/components/matrices.h"
 #endif // !MATRICES_H
 
+#ifndef TERRAIN_H
+#include "headers/components/terrain.h"
+#endif // !TERRAIN_H
+
 void loadmeshRigid(mesh* m, const char name[]);
 void getmeshRigidLimits(mesh* m);
 void releasemeshRigid(mesh* m);

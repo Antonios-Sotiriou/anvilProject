@@ -1,5 +1,7 @@
 #include "headers/components/physics.h"
 
+const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
+
 /* Responsible to apply all the forces that act on the rigid body and orginise the appropriate Collision detection functions steps. */
 void applyPhysics(void) {
 
@@ -7,6 +9,13 @@ void applyPhysics(void) {
 		if (SCENE.mesh[i].rigid.state == ENABLE && (checkAllZeros(SCENE.mesh[i].rigid.velocity) || SCENE.mesh[i].rigid.rot_angle)) {
 
 			initMeshQuadInfo(&SCENE.mesh[i]);
+
+			//float g_accelaration = 0.f;
+			//if (!SCENE.mesh[i].rigid.grounded) {
+			//	SCENE.mesh[i].rigid.falling_time += DeltaTime;
+			//	g_accelaration = (98.1f * (SCENE.mesh[i].rigid.falling_time * 2));
+			//}
+			//SCENE.mesh[i].rigid.velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), SCENE.mesh[i].rigid.velocity);
 
 			/* 1st Collision Detection lvl. */
 			//if (SCENE.mesh[i].pk == camera)
@@ -39,7 +48,9 @@ void applyPhysics(void) {
 			}
 
 			mat4x4 tm = translationMatrix(SCENE.mesh[i].rigid.velocity.m128_f32[0], SCENE.mesh[i].rigid.velocity.m128_f32[1], SCENE.mesh[i].rigid.velocity.m128_f32[2]);
+			//setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tm);
 			setfacearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tm);
+			
 			/* Update the position pivot of the mesh. */
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
 		}

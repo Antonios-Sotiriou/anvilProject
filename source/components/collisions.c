@@ -4,7 +4,7 @@
 
 extern void swap(void *a, void *b, unsigned long size);
 /* Checks for collisions whithin a radius sourounding the mesh. */
-const int outerRadiusCollision(mesh* m) {
+const int outerRadiusCollision(mesh *m) {
     //vec4 newPos = vecAddvec(m->coords.v[0], m->rigid.velocity);
     int pk;
     for (int i = 0; i < SCENE.t.quad[m->quadIndex].mpks_indexes; i++) {
@@ -44,18 +44,8 @@ const int checkAABBCollision(mesh *m, const int pks[]) {
             tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->rigid.velocity);
             tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->rigid.velocity);
 
-            //logvec4(tnear);
-            //logvec4(tfar);
-
-            if (!vecEqualvec(tnear, tnear) || !vecEqualvec(tfar, tfar)) {
-                //logvec4(_mm_cmpeq_ps(tnear, tnear));
+            if ( vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar) )
                 continue;
-            }
-
-            //printf("f_nx: %d    f_ny: %d    f_nz: %d\n", f_nx, f_ny, f_nz);
-            //printf("f_fx: %d    f_fy: %d    f_fz: %d\n", f_fx, f_fy, f_fz);
-            //logvec4(tnear);
-            //logvec4(tfar);
 
             if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
             if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
@@ -109,7 +99,7 @@ const int checkAABBCollision(mesh *m, const int pks[]) {
             if (t_near == 0.f) {
                 printf("Sliding.... %f\n", t_near);
 
-                float dot = dotProduct(normal, m->rigid.velocity);
+                float dot = dotProduct(m->rigid.velocity, normal);
                 m->rigid.velocity = vecSubvec(m->rigid.velocity, vecMulf32(normal, dot));
 
                 //if (tnear.m128_f32[1] == 0) {
@@ -121,8 +111,7 @@ const int checkAABBCollision(mesh *m, const int pks[]) {
                 //}
                 return 2;
 
-            }
-            else if (((t_near > 0.f) && (t_near <= 1.f))) {
+            } else if (((t_near > 0.f) && (t_near <= 1.f))) {
                 printf("COLLISION  ######################### : %f    mesh.id: %d\n", t_near, pk);
 
                 m->rigid.velocity = vecMulf32(m->rigid.velocity, t_near);
