@@ -19,17 +19,17 @@ void applyPhysics(void) {
 
 			/* 1st Collision Detection lvl. */
 			//if (SCENE.mesh[i].pk == camera)
-			//    outerRadiusCollision(&SCENE.mesh[i]);
+			//    staticOuterRadiusCollision(&SCENE.mesh[i]);
 
 			/* 2nd Collision Detection lvl. */
 			if (SCENE.mesh[i].pk == camera) {
 				int colls[1] = { 3 };
-				checkAABBCollision(&SCENE.mesh[i], &colls);
+				sweptAABBCollision(&SCENE.mesh[i], &colls);
 			}
 
 			/* 3rd Collision Detection lvl. */
 			//if (SCENE.mesh[i].pk == camera)
-			//    checkOBBCollision(&SCENE.mesh[i]);
+			//    staticOBBCollision(&SCENE.mesh[i]);
 
 			/* 4th Collision Detection lvl. */
 			if (SCENE.mesh[i].rigid.rot_angle) {

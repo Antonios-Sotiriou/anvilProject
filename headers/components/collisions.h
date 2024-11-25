@@ -22,9 +22,9 @@
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H
 
-const int outerRadiusCollision(mesh* m);
-const int checkAABBCollision(mesh* m, const int pks[]);
-const int checkOBBCollision(mesh* m);
+const int staticOuterRadiusCollision(mesh* m);
+const int sweptAABBCollision(mesh* m, const int pks[]);
+const int staticOBBCollision(mesh* m);
 
 #endif // !COLLISIONS_H
 

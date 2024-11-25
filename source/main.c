@@ -95,19 +95,21 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 }
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################
 const static uint64_t epoch = ((uint64_t)116444736000000000ULL);
-void usleep(int usec) {
-    HANDLE timer;
+void usleep(const int usec) {
+    HANDLE timer = 0;
     LARGE_INTEGER ft;
 
     ft.QuadPart = -(10 * usec); // Convert to 100 nanoseconds interval. Negative value indicates relative time.
 
     timer = CreateWaitableTimerA(NULL, TRUE, NULL);
+    if (!timer)
+        return;
     SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
     WaitForSingleObject(timer, INFINITE);
     CloseHandle(timer);
 }
 /* Initializes the given timeval struct, to the time of the day, at the moment, at which this function was called. */
-int gettimeofday(struct timeval *tp, struct timezone *tzp) {
+void gettimeofday(struct timeval *tp, struct timezone *tzp) {
     FILETIME file_time;
     SYSTEMTIME system_time;
     ULARGE_INTEGER ularge;
