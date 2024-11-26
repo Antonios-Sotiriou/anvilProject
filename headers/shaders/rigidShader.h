@@ -1,9 +1,9 @@
 #ifndef RIGIDSHADER_H
 #define RIGIDSHADER_H 1
 
-#ifndef STDIO_H
+#if !defined(STDIO_H) || !defined(_STDIO_H)
     #include <stdio.h>
-#endif
+#endif // !STDIO_H _STDIO_H
 
 /* OpenGL headers. */
 #if !defined(__glew_h__) || !defined(__GLEW_H__)
@@ -17,6 +17,9 @@
 #ifndef MATRICES_H
     #include "headers/components/matrices.h"
 #endif // !MATRICES_H
+
+/* Defined in openGL.c */
+extern void glErrorReport(void);
 
 const int initRigidShader(void);
 void rigidShader(void);

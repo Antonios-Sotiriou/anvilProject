@@ -1,9 +1,9 @@
 #ifndef MESH_H
 #define MESH_H 1
 
-#ifndef _INC_STDIO
+#if !defined(STDIO_H) || !defined(_STDIO_H)
     #include <stdio.h>
-#endif // !_INC_STDIO
+#endif // !STDIO_H _STDIO_H
 
 #ifndef STRUCTS_H
     #include "headers/structs.h"

@@ -11,6 +11,10 @@
     #include "headers/components/vec_math.h"
 #endif // !VEC_MATH_H
 
+#ifndef MATRICES_H
+    #include "headers/components/matrices.h"
+#endif // !MATRICES_H
+
 #ifndef QUATERNIONS_H
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H

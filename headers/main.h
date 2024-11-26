@@ -1,23 +1,23 @@
 #ifndef MAIN_H
 #define MAIN_H 1
 
+/* Platform Specific libraries. */
 /* Operating system checking. ######################################################### */
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     #define  CLIENT_OS  "Windows Operating System!"
+    #include <Windows.h>
+    #include <time.h>
 #elif defined(__APPLE__) || defined(__MACH__)
     #define  CLIENT_OS  "MacOs Operating System!"
 #elif defined(LINUX) || defined(__linux__)
     #define  CLIENT_OS  "Linux Operating System!"
+    #include <sys/time.h>
 #else
     #define  CLIENT_OS  "Unkown Operating System!"
 #endif
 
 /* Cmake variables */
 #include "cmake_variables.h"
-
-/* Platform Specific libraries. */
-#include <Windows.h>
-#include <time.h>
 
 /* Build in Libraries. */
 #include <stdio.h>

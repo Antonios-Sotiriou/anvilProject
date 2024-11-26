@@ -9,7 +9,11 @@ void readBMP(BMP *f, const char path[]) {
         debug_log_info(stdout, "%s\n", path);
         return;
     }
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     sprintf_s(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
+#elif defined(LINUX) || defined(__linux__)
+    snprintf(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
+#endif
 
     FILE* fp;
     fp = fopen(dynamic_path, "rb");

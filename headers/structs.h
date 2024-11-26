@@ -1,9 +1,9 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H 1
 
-#ifndef _INCLUDED_MM2
-    #include <xmmintrin.h>
-#endif // !_INCLUDED_MM2
+#if !defined(_INCLUDED_SMM) || !defined(_SMMINTRIN_H_INCLUDED)
+    #include <smmintrin.h>
+#endif // !_INCLUDED_SMM _SMMINTRIN_H_INCLUDED
 
 // Local created headers.
 #ifndef FLAGS_H
@@ -11,13 +11,21 @@
 #endif // !FLAGS_H
 
 #ifdef VECTORIZED_CODE // ######################################################
-/* Vector's internal format is X Y Z W. */
-typedef union __m128 vec4;
-/* vectors internal format is X Y: */
-typedef union __m64 vec2;
-/* Quaternion's internal format is W X Y Z. */
-typedef union __m128 quat;
-
+    #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        /* Vector's internal format is X Y Z W. */
+        typedef union __m128 vec4;
+        /* vectors internal format is X Y: */
+        typedef union __m64 vec2;
+        /* Quaternion's internal format is W X Y Z. */
+        typedef union __m128 quat;
+    #elif defined(LINUX) || defined(__linux__)
+        /* Vector's internal format is X Y Z W. */
+        typedef __m128 vec4;
+        /* vectors internal format is X Y: */
+        typedef __m64 vec2;
+        /* Quaternion's internal format is W X Y Z. */
+        typedef __m128 quat;
+    #endif
 typedef union {
     vec4 m[4];
 } mat4x4;

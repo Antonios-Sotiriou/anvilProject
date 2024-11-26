@@ -13,7 +13,11 @@ static char *composemeshRigidPath(mesh *m, const char name[]) {
 			debug_log_info(stdout, "%s\n", name);
 			return 0;
 		}
-		sprintf_s(dynamic_path, path_length, "terrains/%s/%s_rigid.obj", name, name);
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        sprintf_s(dynamic_path, path_length, "terrains/%s/%s_rigid.obj", name, name);
+#elif defined(LINUX) || defined(__linux__)
+        snprintf(dynamic_path, path_length, "terrains/%s/%s_rigid.obj", name, name);
+#endif
 	} else {
 		int path_length = (strlen(name) * 2) + 19; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
@@ -22,7 +26,11 @@ static char *composemeshRigidPath(mesh *m, const char name[]) {
 			debug_log_info(stdout, "%s\n", name);
 			return 0;
 		}
-		sprintf_s(dynamic_path, path_length, "meshes/%s/%s_rigid.obj", name, name);
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        sprintf_s(dynamic_path, path_length, "meshes/%s/%s_rigid.obj", name, name);
+#elif defined(LINUX) || defined(__linux__)
+        snprintf(dynamic_path, path_length, "meshes/%s/%s_rigid.obj", name, name);
+#endif
 	}
 
 	return dynamic_path;
@@ -85,8 +93,8 @@ void loadmeshRigid(mesh *m, const char name[]) {
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getmeshRigidLimits(mesh *m) {
-	m->rigid.min = _mm_set_ps1(INT_MAX);
-	m->rigid.max = _mm_set_ps1(-INT_MAX);
+	m->rigid.min = _mm_set_ps1(INT32_MAX);
+	m->rigid.max = _mm_set_ps1(-INT32_MAX);
 	//for (int i = 0; i < m->rigid.v_indexes; i++) {
 	//	m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
 	//	m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.v[i]);
@@ -101,8 +109,8 @@ void getmeshRigidLimits(mesh *m) {
 #else // ITERATIVE_CODE #########################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getmeshRigidLimits(mesh *m) {
-	m->rigid.min = setvec4(INT_MAX, INT_MAX, INT_MAX, INT_MAX);
-    m->rigid.max = setvec4(-INT_MAX, -INT_MAX, -INT_MAX, -INT_MAX);
+	m->rigid.min = setvec4(INT32_MAX, INT32_MAX, INT32_MAX, INT32_MAX);
+    m->rigid.max = setvec4(-INT32_MAX, -INT32_MAX, -INT32_MAX, -INT32_MAX);
     //for (int i = 0; i < m->rigid.v_indexes; i++) {
     //    if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
     //        m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];

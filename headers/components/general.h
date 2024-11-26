@@ -1,6 +1,10 @@
 #ifndef GENERAL_H
 #define GENERAL_H 1
 
+#if !defined(NC_STRING) || !defined(_STRING_H)
+    #include <string.h>
+#endif // !INC_STRING _STRING_H
+
 #ifndef STRUCTS_H
     #include "headers/structs.h"
 #endif // !STRUCTS_H

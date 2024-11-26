@@ -8,7 +8,11 @@ void createMesh(mesh *m, const char name[]) {
         debug_log_info(stdout, "%s\n", name);
         return;
     }
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     sprintf_s(dynamic_path, path_length, "meshes/%s/%s.obj", name, name);
+#elif defined(LINUX) || defined(__linux__)
+    snprintf(dynamic_path, path_length, "meshes/%s/%s.obj", name, name);
+#endif
 
     OBJ obj;
     readOBJ(&obj, dynamic_path);

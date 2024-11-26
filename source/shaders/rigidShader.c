@@ -3,7 +3,7 @@
 static GLint rigidVBO, rigidVAO;
 static void createRigidVAO(void);
 
-const static char *vertexShaderSource = "#version 460 core\n"
+const static char *vertexShaderSource = "#version 450 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
 
 "uniform mat4 vpMatrix;\n"
@@ -11,7 +11,7 @@ const static char *vertexShaderSource = "#version 460 core\n"
 "void main() {\n"
 "    gl_Position = vpMatrix * vec4(vsPos, 1.f);\n"
 "}\n\0";
-const static char *fragmentShaderSource = "#version 460 core\n"
+const static char *fragmentShaderSource = "#version 450 core\n"
 
 "layout (location = 0) out vec4 FragColor;\n"
 

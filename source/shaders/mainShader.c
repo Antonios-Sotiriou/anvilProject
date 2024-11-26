@@ -171,7 +171,7 @@ void project(void) {
 
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
         mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
-        memcpy(&modelMatrix, qm, 64);
+        memcpy(&modelMatrix, &qm, 64);
         glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
         glUniform1i(3, SCENE.mesh[i].pk);
 

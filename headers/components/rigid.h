@@ -1,9 +1,9 @@
 #ifndef RIGID_H
 #define RIGID_H 1
 
-#ifndef _INC_STRING
+#if !defined(NC_STRING) || !defined(_STRING_H)
     #include <string.h>
-#endif // !_INC_STRING
+#endif // !INC_STRING _STRING_H
 
 #ifndef STRUCTS_H
     #include "headers/structs.h"

@@ -1,9 +1,9 @@
 #ifndef QUATERNIONS_H
 #define QUATERNIONS_H 1
 
-#ifndef INC_MATH
+#if !defined(_INC_MATH) || !defined(_MATH_H)
     #include <math.h>
-#endif // !INC_MATH
+#endif //!_INC_MATH _MATH_H
 
 // Local created headers.
 #ifndef FLAGS_H
@@ -15,8 +15,13 @@
 #endif // !STRUCTS_H
 
 #ifdef VECTORIZED_CODE // #######################################################################################
-/* Quaternion's internal format is W X Y Z. */
-typedef union __m128 quat;
+    #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        /* Quaternion's internal format is W X Y Z. */
+        typedef union __m128 quat;
+    #elif defined(LINUX) || defined(__linux__)
+        /* Quaternion's internal format is W X Y Z. */
+        typedef __m128 quat;
+    #endif
 #else // ITERATIVE_CODE #########################################################################################
 /* Quaternion's internal format is W X Y Z. */
 typedef vec4 quat;

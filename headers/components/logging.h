@@ -1,9 +1,9 @@
 #ifndef LOGGING_H
 #define LOGGING_H 1
 
-#ifndef _INC_STDIO
+#if !defined(STDIO_H) || !defined(_STDIO_H)
     #include <stdio.h>
-#endif // !_INC_STDIO
+#endif // !STDIO_H _STDIO_H
 
 // Local created headers.
 #ifndef FLAGS_H

@@ -2,12 +2,18 @@
 
 /* Function pointer to dispatch the appropriate function, according to the type of Table. */
 static int (*callback)(void*, int, char**, char**);
+static int (*sscanf_os)(const char*, const char*, ...);
 /* Loads meshes from the Database mesh Table to the Global SCENE. */
 static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) {
     //for (int i = 0; i < argc; i++) {
     //    printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
     //}
     //printf("\n");
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+    sscanf_os = sscanf_s;
+#elif defined(LINUX) || defined(__linux__)
+    sscanf_os = sscanf;
+#endif
 
     int idx = *(int*)NotUsed; // Increment value depending on how much times this callback was called. Every invocation populates a mesh with data.
 
@@ -18,14 +24,14 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
             SCENE.mesh[idx].type = atoi(argv[i]);
         } else if (strncmp(azColName[i], "coords", 6) == 0) {
             float vecs[16];
-            sscanf_s(argv[i], "{%f %f %f %f} {%f %f %f %f} {%f %f %f %f} {%f %f %f %f}",
+            sscanf_os(argv[i], "{%f %f %f %f} {%f %f %f %f} {%f %f %f %f} {%f %f %f %f}",
                 &vecs[0], &vecs[1], &vecs[2], &vecs[3],&vecs[4], &vecs[5], &vecs[6], &vecs[7],
                 &vecs[8], &vecs[9], &vecs[10], &vecs[11],&vecs[12], &vecs[13], &vecs[14], &vecs[15]
             );
             memcpy(&SCENE.mesh[idx].coords, vecs, 64);
         } else if (strncmp(azColName[i], "quat", 4) == 0) {
             float q[4];
-            sscanf_s(argv[i], "{%f %f %f %f}", &q[0], &q[1], &q[2], &q[3]);
+            sscanf_os(argv[i], "{%f %f %f %f}", &q[0], &q[1], &q[2], &q[3]);
             memcpy(&SCENE.mesh[idx].q, q, 16);
             memcpy(&SCENE.mesh[idx].rigid.q, q, 16);
         } else if (strncmp(azColName[i], "scale", 5) == 0) {
@@ -37,7 +43,7 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
             SCENE.mesh[idx].rigid.state = atoi(argv[i]);
         } else if (strncmp(azColName[i], "velocity", 8) == 0) {
             float v[4];
-            sscanf_s(argv[i], "{%f %f %f %f}", &v[0], &v[1], &v[2], &v[3]);
+            sscanf_os(argv[i], "{%f %f %f %f}", &v[0], &v[1], &v[2], &v[3]);
             memcpy(&SCENE.mesh[idx].rigid.velocity, v, 16);
         } else if (strncmp(azColName[i], "rot_angle", 9) == 0) {
             SCENE.mesh[idx].rigid.rot_angle = strtof(argv[i], NULL);

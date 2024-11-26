@@ -24,6 +24,10 @@
     #include "headers/components/matrices.h"
 #endif // !MATRICES_H
 
+#ifndef COLLISIONS_H
+    #include "headers/components/collisions.h"
+#endif // !COLLISIONS_H
+
 void applyPhysics(void);
 
 #endif // !PHYSICS_H

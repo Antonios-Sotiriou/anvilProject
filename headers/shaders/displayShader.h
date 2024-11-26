@@ -1,9 +1,9 @@
 #ifndef DISPLAYSHADER_H
 #define DISPLAYSHADER_H 1
 
-#ifndef STDIO_H
+#if !defined(STDIO_H) || !defined(_STDIO_H)
     #include <stdio.h>
-#endif
+#endif // !STDIO_H _STDIO_H
 
 /* OpenGL headers. */
 #if !defined(__glew_h__) || !defined(__GLEW_H__)
@@ -13,6 +13,9 @@
 #ifndef GLOBAL_H
     #include "headers/global.h"
 #endif // !GLOBAL_H
+
+/* Defined in openGL.c */
+extern void glErrorReport(void);
 
 const int initDisplayShader(void);
 void displayTexture(const int textureIndex);

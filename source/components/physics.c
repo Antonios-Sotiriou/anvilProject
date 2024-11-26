@@ -24,7 +24,7 @@ void applyPhysics(void) {
 			/* 2nd Collision Detection lvl. */
 			if (SCENE.mesh[i].pk == camera) {
 				int colls[1] = { 3 };
-				sweptAABBCollision(&SCENE.mesh[i], &colls);
+				sweptAABBCollision(&SCENE.mesh[i], colls);
 			}
 
 			/* 3rd Collision Detection lvl. */

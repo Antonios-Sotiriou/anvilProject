@@ -1,13 +1,17 @@
 #ifndef OBJ_H
 #define OBJ_H 1
 
-#ifndef _INC_STDIO
+#if !defined(STDIO_H) || !defined(_STDIO_H)
     #include <stdio.h>
-#endif // !_INC_STDIO
+#endif // !STDIO_H _STDIO_H
 
-#ifndef _INC_STDLIB
+#if !defined(_INC_STDLIB) || !defined(_STDLIB_H)
     #include <stdlib.h>
-#endif //_INC_STDLIB
+#endif //!_INC_STDLIB _STDLIB_H
+
+#if !defined(NC_STRING) || !defined(_STRING_H)
+    #include <string.h>
+#endif // !INC_STRING _STRING_H
 
 #ifndef FLAGS_H
     #include "headers/flags.h"

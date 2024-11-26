@@ -1,13 +1,13 @@
 #ifndef VEC_MATH_H
 #define VEC_MATH_H 1
 
-#ifndef _INCLUDED_SMM
+#if !defined(_INCLUDED_SMM) || !defined(_SMMINTRIN_H_INCLUDED)
     #include <smmintrin.h>
-#endif // !_INCLUDED_SMM
+#endif // !_INCLUDED_SMM _SMMINTRIN_H_INCLUDED
 
-#ifndef INC_MATH
+#if !defined(_INC_MATH) || !defined(_MATH_H)
     #include <math.h>
-#endif // !INC_MATH
+#endif //!_INC_MATH _MATH_H
 
 // Local created headers.
 #ifndef FLAGS_H

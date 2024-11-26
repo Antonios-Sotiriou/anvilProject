@@ -2,7 +2,7 @@
 
 int COUNT = 0;
 float rot = 1.f;
-const static char *vertexShaderSource = "#version 460 core\n"
+const static char *vertexShaderSource = "#version 450 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
 "layout (location = 1) in vec2 vsTexels;\n"
 "layout (location = 2) in vec3 vsNormal;\n"
@@ -17,7 +17,7 @@ const static char *vertexShaderSource = "#version 460 core\n"
 "    gl_Position = (vpMatrix * modelMatrix) * vec4(vsPos, 1.f);\n"
 //"    id = mesh_id;\n"
 "}\n\0";
-const static char *fragmentShaderSource = "#version 460 core\n"
+const static char *fragmentShaderSource = "#version 450 core\n"
 //"layout (location = 0) in flat int id;\n"
 
 "layout (location = 0) out vec4 FragColor;\n"
@@ -94,7 +94,7 @@ void testShader(void) {
 
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
         mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
-        memcpy(&modelMatrix, qm, 64);
+        memcpy(&modelMatrix, &qm, 64);
         glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
         //glUniform1i(2, i + 1);
         

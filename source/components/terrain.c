@@ -8,7 +8,11 @@ void createTerrain(mesh *m, const char name[]) {
         debug_log_info(stdout, "%s\n", name);
         return;
     }
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     sprintf_s(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", name, name);
+#elif defined(LINUX) || defined(__linux__)
+    snprintf(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", name, name);
+#endif
 
     BMP bmp;
 	readBMP(&bmp, dynamic_path);

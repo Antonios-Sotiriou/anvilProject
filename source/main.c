@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
     createScene();
 
     /* Create the Perspective Matrix which is in most cases constant. Changes only with window resize events. */
-    PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 100.f, _CRT_INT_MAX);
+    PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 100.f, INT32_MAX);
 
     initTimeCounter();
     float time_diff;
