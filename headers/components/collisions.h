@@ -1,6 +1,10 @@
 #ifndef COLLISIONS_H
 #define COLLISIONS_H 1
 
+#if !defined(_INC_LIMITS) || !defined(_GCC_LIMITS_H_ )
+    #include <limits.h>
+#endif // !_INC_LIMITS !_GCC_LIMITS_H_ 
+
 /* Global variables. */
 #ifndef GLOBAL_H
     #include "headers/global.h"

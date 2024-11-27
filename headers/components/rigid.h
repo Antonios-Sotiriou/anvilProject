@@ -5,6 +5,10 @@
     #include <string.h>
 #endif // !INC_STRING _STRING_H
 
+#if !defined(_INC_LIMITS) || !defined(_GCC_LIMITS_H_ )
+    #include <limits.h>
+#endif // !_INC_LIMITS !_GCC_LIMITS_H_ 
+
 #ifndef STRUCTS_H
     #include "headers/structs.h"
 #endif // !STRUCTS_H

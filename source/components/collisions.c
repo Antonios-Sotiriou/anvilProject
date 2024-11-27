@@ -81,29 +81,25 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
                 continue;
 
             vec4 normal = { 0.f };
-            if (min.m128_f32[0] >= min.m128_f32[1] && min.m128_f32[0] >= min.m128_f32[2]) {
-                if (m->rigid.velocity.m128_f32[0] < 0) {
-                    normal.m128_f32[0] = 1.f;
-                } else if (m->rigid.velocity.m128_f32[0] > 0) {
-                    normal.m128_f32[0] = -1.f;
+            if (vec4ExtractX(min) >= vec4ExtractY(min) && vec4ExtractX(min) >= vec4ExtractZ(min)) {
+                if (vec4ExtractX(m->rigid.velocity) < 0) {
+                    vec4SetX(&normal, 1.f);
+                } else if (vec4ExtractX(m->rigid.velocity) > 0) {
+                    vec4SetX(&normal, -1.f);
                 }
-            } else if (min.m128_f32[1] >= min.m128_f32[0] && min.m128_f32[1] >= min.m128_f32[2]) {
-                if (m->rigid.velocity.m128_f32[1] < 0) {
-                    normal.m128_f32[1] = 1.f;
-                } else if (m->rigid.velocity.m128_f32[1] > 0) {
-                    normal.m128_f32[1] = -1.f;
+            } else if (vec4ExtractY(min) >= vec4ExtractX(min) && vec4ExtractY(min) >= vec4ExtractZ(min)) {
+                if (vec4ExtractY(m->rigid.velocity) < 0) {
+                    vec4SetY(&normal, 1.f);
+                } else if (vec4ExtractY(m->rigid.velocity) > 0) {
+                    vec4SetY(&normal, -1.f);
                 }
-            } else if (min.m128_f32[2] >= min.m128_f32[0] && min.m128_f32[2] >= min.m128_f32[1]) {
-                if (m->rigid.velocity.m128_f32[2] < 0) {
-                    normal.m128_f32[2] = 1.f;
-                } else if (m->rigid.velocity.m128_f32[2] > 0) {
-                    normal.m128_f32[2] = -1.f;
+            } else if (vec4ExtractZ(min) >= vec4ExtractX(min) && vec4ExtractZ(min) >= vec4ExtractY(min)) {
+                if (vec4ExtractZ(m->rigid.velocity) < 0) {
+                    vec4SetZ(&normal, 1.f);
+                } else if (vec4ExtractZ(m->rigid.velocity) > 0) {
+                    vec4SetZ(&normal, -1.f);
                 }
             }
-            system("cls\n");
-            logvec4(min);
-            logvec4(m->rigid.velocity);
-            logvec4(normal);
 
             if (t_near == 0.f) {
                 printf("Sliding.... %f\n", t_near);
@@ -125,7 +121,7 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
 
                 m->rigid.velocity = vecMulf32(m->rigid.velocity, t_near);
 
-                mat4x4 trans = translationMatrix(m->rigid.velocity.m128_f32[0], m->rigid.velocity.m128_f32[1], m->rigid.velocity.m128_f32[2]);
+                mat4x4 trans = translationMatrix(vec4ExtractX(m->rigid.velocity), vec4ExtractY(m->rigid.velocity), vec4ExtractZ(m->rigid.velocity));
 
                 setvec4arrayMulmat(m->coords.v, 4, trans);
                 setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, trans);
@@ -258,7 +254,7 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
 /* Check for collisions between rotated meshes. */
 const int staticOBBCollision(mesh *m) {
     /* Implement Oriented bounding boxes collision detection. */
-    mat4x4 tm = translationMatrix(m->rigid.velocity.m128_f32[0], m->rigid.velocity.m128_f32[1], m->rigid.velocity.m128_f32[2]);
+    mat4x4 tm = translationMatrix(vec4ExtractX(m->rigid.velocity), vec4ExtractY(m->rigid.velocity), vec4ExtractZ(m->rigid.velocity));
     face *temp1 = facearrayMulmat(m->rigid.f, m->rigid.f_indexes, tm);
 
     float depth = (float)INT_MAX;

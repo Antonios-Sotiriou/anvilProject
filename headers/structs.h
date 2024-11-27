@@ -11,21 +11,10 @@
 #endif // !FLAGS_H
 
 #ifdef VECTORIZED_CODE // ######################################################
-    #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        /* Vector's internal format is X Y Z W. */
-        typedef union __m128 vec4;
-        /* vectors internal format is X Y: */
-        typedef union __m64 vec2;
-        /* Quaternion's internal format is W X Y Z. */
-        typedef union __m128 quat;
-    #elif defined(LINUX) || defined(__linux__)
-        /* Vector's internal format is X Y Z W. */
-        typedef __m128 vec4;
-        /* vectors internal format is X Y: */
-        typedef __m64 vec2;
-        /* Quaternion's internal format is W X Y Z. */
-        typedef __m128 quat;
-    #endif
+/* Vector's internal format is X Y Z W. */
+typedef __m128 vec4;
+/* Quaternion's internal format is W X Y Z. */
+typedef __m128 quat;
 typedef union {
     vec4 m[4];
 } mat4x4;
