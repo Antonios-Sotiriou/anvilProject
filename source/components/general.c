@@ -1,8 +1,10 @@
 #include "headers/components/general.h"
 
 /* Swaping two variables a and b of any type with size. */
-void swap(void* a, void* b, unsigned long size) {
-    void* temp = malloc(size);
+void swap(void *a, void *b, unsigned long size) {
+    void *temp = malloc(size);
+    if (!temp)
+        return;
     memcpy(temp, a, size);
     memcpy(a, b, size);
     memcpy(b, temp, size);

@@ -5,6 +5,42 @@
 vec4 setvec4(const float x, const float y, const float z, const float w) {
     return _mm_setr_ps(x, y, z, w);
 }
+/* Sets the X value of the vector to val. */
+void vec4SetX(vec4 *v, const float val) {
+    vec4 r = _mm_set_ss(val);
+    *v = _mm_move_ss(*v, r);
+}
+/* Sets the Y value of the vector to val. */
+void vec4SetY(vec4 *v, const float val) {
+    vec4 r = _mm_movelh_ps(_mm_set_ss(val), *v);
+    *v = _mm_shuffle_ps(r, *v, _MM_SHUFFLE(3, 2, 0, 2));
+}
+/* Sets the Z value of the vector to val. */
+void vec4SetZ(vec4* v, const float val) {
+    vec4 r = _mm_movehl_ps(_mm_set_ps1(val), *v);
+    *v = _mm_shuffle_ps(*v, r, _MM_SHUFFLE(1, 2, 1, 0));
+}
+/* Sets the W value of the vector to val. */
+void vec4SetW(vec4* v, const float val) {
+    vec4 r = _mm_movehl_ps(_mm_set_ps1(val), *v);
+    *v = _mm_shuffle_ps(*v, r, _MM_SHUFFLE(3, 0, 1, 0));
+}
+/* Extracts the X value of the vector to val. */
+float vec4ExtractX(const vec4 v) {
+    return _mm_cvtss_f32(v);
+}
+/* Extracts the Y value of the vector to val. */
+float vec4ExtractY(const vec4 v) {
+    return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 1)));
+}
+/* Extracts the Z value of the vector to val. */
+float vec4ExtractZ(const vec4 v) {
+    return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 2)));
+}
+/* Extracts the W value of the vector to val. */
+float vec4ExtractW(const vec4 v) {
+    return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 3)));
+}
 /* Computes the Dot Product of two given Vectors. */
 float dotProduct(const vec4 v1, const vec4 v2) {
     vec4 r = _mm_mul_ps(v1, v2);
@@ -84,6 +120,38 @@ vec4 floorvec4(const vec4 v) {
 /* Initializes a vec4 with the given values. */
 vec4 setvec4(const float x, const float y, const float z, const float w) {
     return (vec4) { x, y, z, w };
+}
+/* Sets the X value of the vector to val. */
+void vec4SetX(vec4 *v, const float val) {
+    v->m128_f32[0] = val;
+}
+/* Sets the Y value of the vector to val. */
+void vec4SetY(vec4 *v, const float val) {
+    v->m128_f32[1] = val;
+}
+/* Sets the Z value of the vector to val. */
+void vec4SetZ(vec4 *v, const float val) {
+    v->m128_f32[2] = val;
+}
+/* Sets the W value of the vector to val. */
+void vec4SetW(vec4 *v, const float val) {
+    v->m128_f32[3] = val;
+}
+/* Extracts the X value of the vector to val. */
+float vec4ExtractX(const vec4 v) {
+    return v.m128_f32[0];
+}
+/* Extracts the Y value of the vector to val. */
+float vec4ExtractY(const vec4 v) {
+    return v.m128_f32[1];
+}
+/* Extracts the Z value of the vector to val. */
+float vec4ExtractZ(const vec4 v) {
+    return v.m128_f32[2];
+}
+/* Extracts the W value of the vector to val. */
+float vec4ExtractW(const vec4 v) {
+    return v.m128_f32[3];
 }
 /* Computes the Dot Product of two given Vectors. */
 float dotProduct(const vec4 v1, const vec4 v2) {

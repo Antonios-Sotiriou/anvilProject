@@ -5,7 +5,7 @@
     #include "headers/cmake_variables.h"
 #endif // !anvil_VERSION_MAJOR
 
-// #define VECTORIZED_CODE
+ #define VECTORIZED_CODE
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 

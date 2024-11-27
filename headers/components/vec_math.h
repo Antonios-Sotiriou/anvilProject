@@ -19,6 +19,14 @@
 #endif // !STRUCTS_H
 
 vec4 setvec4(const float x, const float y, const float z, const float w);
+void vec4SetX(vec4 *v, const float val);
+void vec4SetY(vec4 *v, const float val);
+void vec4SetZ(vec4 *v, const float val);
+void vec4SetW(vec4 *v, const float val);
+float vec4ExtractX(const vec4 v);
+float vec4ExtractY(const vec4 v);
+float vec4ExtractZ(const vec4 v);
+float vec4ExtractW(const vec4 v);
 float dotProduct(const vec4 v1, const vec4 v2);
 vec4 crossProduct(const vec4 v1, const vec4 v2);
 float vecLength(const vec4 v);

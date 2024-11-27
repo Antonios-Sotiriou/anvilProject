@@ -46,7 +46,13 @@ float magnitudeQuat(const quat q) {
 }
 /* Normalizes given quat if its not already. */
 void normalizeQuat(quat* q) {
-    float check = (q->m128_f32[0] * q->m128_f32[0]) + (q->m128_f32[1] * q->m128_f32[1]) + (q->m128_f32[2] * q->m128_f32[2]) + (q->m128_f32[3] * q->m128_f32[3]);
+    vec4 r = _mm_mul_ps(*q, *q);
+    const float check = _mm_cvtss_f32(
+        _mm_add_ps(
+            _mm_add_ps(r, _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 1))),
+            _mm_add_ps(_mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 2)), _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 0, 0, 3)))
+        )
+    );
     if (check > 1.000001f) {
         *q = _mm_div_ps(*q, _mm_sqrt_ps(_mm_set_ps1(check)));
     }

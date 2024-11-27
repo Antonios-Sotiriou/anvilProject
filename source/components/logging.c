@@ -1,5 +1,16 @@
 #include "headers/components/logging.h"
 
+#ifdef VECTORIZED_CODE // #######################################################################################
+void logvec4(const vec4 v) {
+	printf("%f %f %f %f\n", vec4ExtractX(v), vec4ExtractY(v), vec4ExtractZ(v), vec4ExtractW(v));
+}
+void logmat4x4(const mat4x4 m) {
+	printf("%f %f %f %f\n", vec4ExtractX(m.m[0]), vec4ExtractY(m.m[0]), vec4ExtractZ(m.m[0]), vec4ExtractW(m.m[0]));
+	printf("%f %f %f %f\n", vec4ExtractX(m.m[1]), vec4ExtractY(m.m[1]), vec4ExtractZ(m.m[1]), vec4ExtractW(m.m[1]));
+	printf("%f %f %f %f\n", vec4ExtractX(m.m[2]), vec4ExtractY(m.m[2]), vec4ExtractZ(m.m[2]), vec4ExtractW(m.m[2]));
+	printf("%f %f %f %f\n", vec4ExtractX(m.m[3]), vec4ExtractY(m.m[3]), vec4ExtractZ(m.m[3]), vec4ExtractW(m.m[3]));
+}
+#else // ITERATIVE_CODE #########################################################################################
 void logvec4(const vec4 v) {
 	printf("%f %f %f %f\n", v.m128_f32[0], v.m128_f32[1], v.m128_f32[2], v.m128_f32[3]);
 }
@@ -9,6 +20,7 @@ void logmat4x4(const mat4x4 m) {
 	printf("%f %f %f %f\n", m.m[2].m128_f32[0], m.m[2].m128_f32[1], m.m[2].m128_f32[2], m.m[2].m128_f32[3]);
 	printf("%f %f %f %f\n", m.m[3].m128_f32[0], m.m[3].m128_f32[1], m.m[3].m128_f32[2], m.m[3].m128_f32[3]);
 }
+#endif // VECTORIZED_CODE #######################################################################################
 void logcoords(const coords c) {
 	printf("Coords {\n");
 	printf("    Pos: ");

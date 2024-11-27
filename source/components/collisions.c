@@ -261,11 +261,11 @@ const int staticOBBCollision(mesh *m) {
     mat4x4 tm = translationMatrix(m->rigid.velocity.m128_f32[0], m->rigid.velocity.m128_f32[1], m->rigid.velocity.m128_f32[2]);
     face *temp1 = facearrayMulmat(m->rigid.f, m->rigid.f_indexes, tm);
 
-    float depth = (float)INT32_MAX;
+    float depth = (float)INT_MAX;
     vec4 normal = { 0 };
     float dot = 0.f, min_outer,  min_inner, max_outer, max_inner;
     for (int i = 0; i < m->rigid.f_indexes; i++) {
-        min_outer = (float)INT32_MAX, min_inner = (float)INT32_MAX, max_outer = (float)-INT32_MAX, max_inner = (float)-INT32_MAX;
+        min_outer = (float)INT_MAX, min_inner = (float)INT_MAX, max_outer = (float)-INT_MAX, max_inner = (float)-INT_MAX;
         for (int x = 0; x < m->rigid.f_indexes; x++) {
             for (int d = 0; d < 3; d++) {
                 min_outer = (dot = dotProduct(temp1[i].vn[0], temp1[x].v[d])) < min_outer ? dot : min_outer;
@@ -295,7 +295,7 @@ const int staticOBBCollision(mesh *m) {
     }
 
     for (int i = 0; i < SCENE.mesh[3].rigid.f_indexes; i++) {
-        min_outer = (float)INT32_MAX, min_inner = (float)INT32_MAX, max_outer = (float)-INT32_MAX, max_inner = (float)-INT32_MAX;
+        min_outer = (float)INT_MAX, min_inner = (float)INT_MAX, max_outer = (float)-INT_MAX, max_inner = (float)-INT_MAX;
         for (int x = 0; x < SCENE.mesh[3].rigid.f_indexes; x++) {
             for (int d = 0; d < 3; d++) {
                 min_outer = (dot = dotProduct(SCENE.mesh[3].rigid.f[i].vn[0], SCENE.mesh[3].rigid.f[x].v[d])) < min_outer ? dot : min_outer;

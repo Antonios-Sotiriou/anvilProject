@@ -34,10 +34,6 @@ typedef union {
 typedef union {
     float m128_f32[4];
 } vec4;
-/* vectors internal format is X Y: */
-typedef union {
-    float m64_f32[2];
-} vec2;
 /* Quaternion's internal format is W X Y Z. */
 typedef vec4 quat;
 
@@ -46,6 +42,10 @@ typedef union {
 } mat4x4;
 #endif // VECTORIZED_CODE ######################################################
 
+/* vectors internal format is X Y. Can be used with intrinsics, but didn't found a usefull usage so far. */
+typedef union {
+    float m64_f32[2];
+} vec2;
 /* Vector's internal format is X Y Z. Can't be used for intrinsics SSE, because it's size is 12 bytes. Not a power multiplier of 2. */
 typedef struct {
     float m96_f32[3];

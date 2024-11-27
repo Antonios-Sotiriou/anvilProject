@@ -47,7 +47,7 @@ void applyPhysics(void) {
 				//SCENE.mesh[i].q = SCENE.mesh[i].rigid.q;
 			}
 
-			mat4x4 tm = translationMatrix(SCENE.mesh[i].rigid.velocity.m128_f32[0], SCENE.mesh[i].rigid.velocity.m128_f32[1], SCENE.mesh[i].rigid.velocity.m128_f32[2]);
+			mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.mesh[i].rigid.velocity), vec4ExtractY(SCENE.mesh[i].rigid.velocity), vec4ExtractZ(SCENE.mesh[i].rigid.velocity));
 			//setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tm);
 			setfacearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tm);
 			

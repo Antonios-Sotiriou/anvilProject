@@ -14,6 +14,10 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
+#ifndef VEC_MATH_H
+    #include "headers/components/vec_math.h"
+#endif // !VEC_MATH_H
+
 void logvec4(const vec4 v);
 void logmat4x4(const mat4x4 m);
 void logcoords(const coords m);

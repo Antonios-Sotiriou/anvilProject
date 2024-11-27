@@ -24,6 +24,7 @@
 #include <xmmintrin.h>
 //#include <immintrin.h>
 //#include <stdint.h>
+#include <limits.h>
 
 /* Internal Libraries. */
 #include "headers/flags.h"
