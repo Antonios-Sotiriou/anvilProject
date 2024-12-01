@@ -339,7 +339,7 @@ const TerrainPointInfo getTerrainPointData(mesh *m) {
 
     /* Translate the face from object space to world space for the edge function to work and get the interpolated height value. */
     mat4x4 ttm = modelMatfromQST(SCENE.mesh[terrain].q, SCENE.mesh[terrain].scale, SCENE.mesh[terrain].coords.v[0]);
-    setvec4arrayMulmat(&vf, 3, ttm);
+    setvec4arrayMulmat(vf, 3, ttm);
 
     const vec4 xs = setvec4(vec4ExtractX(vf[0]), vec4ExtractX(vf[1]), vec4ExtractX(vf[2]), 0.f);
     const vec4 zs = setvec4(vec4ExtractZ(vf[0]), vec4ExtractZ(vf[1]), vec4ExtractZ(vf[2]), 0.f);
