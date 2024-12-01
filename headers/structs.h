@@ -11,10 +11,17 @@
 #endif // !FLAGS_H
 
 #ifdef VECTORIZED_CODE // ######################################################
-/* Vector's internal format is X Y Z W. */
-typedef __m128 vec4;
-/* Quaternion's internal format is W X Y Z. */
-typedef __m128 quat;
+    #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        /* Vector's internal format is X Y Z W. */
+        typedef union __m128 vec4;
+        /* Quaternion's internal format is W X Y Z. */
+        typedef union __m128 quat;
+    #elif defined(LINUX) || defined(__linux__)
+        /* Vector's internal format is X Y Z W. */
+        typedef __m128 vec4;
+        /* Quaternion's internal format is W X Y Z. */
+        typedef __m128 quat;
+    #endif
 typedef union {
     vec4 m[4];
 } mat4x4;
@@ -40,11 +47,6 @@ typedef struct {
     float m96_f32[3];
 } vec3;
 
-/* Struct to save infos about a point on the terrain. */
-typedef struct {
-    vec4 pos, normal;
-    int quad_index;
-} TerrainPointInfo;
 /* Struct to hold infos about a terrain quad. */
 typedef struct {
     int *mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
@@ -75,11 +77,13 @@ typedef struct {
     face *f;                             // Faces array to be used for collisions. Thats the minimum low Poly represantation of the model, with texels and normals also included.
     int v_indexes,
         f_indexes,
-        state;                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
+        state,                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
+        grounded;                        // Switch which tracks if object in grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
     vec4 min,                            // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
         max,                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
         velocity;                        // Velocity of a mesh.
-    float rot_angle;                     // The rotation angle of the rigid body.
+    float rot_angle,                     // The rotation angle of the rigid body.
+        falling_time;                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
     quat q;                              // Rotation quaternion W, X, Y, Z.
 } rigid;
 /* Base structure to represent a shape. */

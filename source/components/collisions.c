@@ -1,6 +1,35 @@
 #include "headers/components/collisions.h"
 
 extern void swap(void *a, void *b, unsigned long size);
+void meshTerrainCollision(mesh *m) {
+    mat4x4 tm;
+    TerrainPointInfo tp = getTerrainPointData(m);
+    float height_diff = -vec4ExtractY(tp.pos) - (vec4ExtractY(m->coords.v[0]) - m->scale);
+    if (height_diff >= 0) {
+        m->rigid.grounded = 1;
+        m->rigid.falling_time = 0;
+    }
+    if (m->rigid.grounded) {
+        tm = translationMatrix(0, height_diff, 0);
+
+        setvec4arrayMulmat(m->coords.v, 4, tm);
+        setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, tm);
+    }
+    printf("height_diff: %f\n", height_diff);
+}
+//const void terrainHeightDifference(Mesh* terrain, Mesh* obj) {
+//    vec4f next_pos = obj->cd.v[P] + obj->velocity + (obj->mvdir * obj->scale);
+//    // displayPoint(next_pos, worldMatrix, 0xffccaa);
+//    TerrainPointInfo tp_0 = getTerrainPointData(terrain, obj->cd.v[0], obj);
+//    TerrainPointInfo tp_1 = getTerrainPointData(terrain, next_pos, obj);
+//
+//    float height_0 = tp_0.pos[1] - (obj->cd.v[P][1] - obj->scale);
+//    float height_1 = tp_1.pos[1] - (next_pos[1] - obj->scale);
+//
+//    if ((obj->grounded) && (height_1 - height_0 > 50)) {
+//        obj->velocity -= obj->velocity;
+//    }
+//}
 /* Checks for collisions whithin a radius sourounding the mesh. */
 const int staticOuterRadiusCollision(mesh *m) {
     //vec4 newPos = vecAddvec(m->coords.v[0], m->rigid.velocity);

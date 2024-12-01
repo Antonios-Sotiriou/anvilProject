@@ -53,6 +53,9 @@ void applyPhysics(void) {
 			
 			/* Update the position pivot of the mesh. */
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
+
+			if (!SCENE.mesh[i].rigid.grounded || SCENE.mesh[i].type == MESH_TYPE_CAMERA)
+				meshTerrainCollision(&SCENE.mesh[i]);
 		}
 	}
 }

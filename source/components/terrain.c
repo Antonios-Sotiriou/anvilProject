@@ -290,8 +290,77 @@ const int getTerrainQuadIndex(vec4 coords) {
     vec4 pos = vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vecWidth);
     const int quad_index = ((int)pos.m128_f32[2] * SCENE.t.quadRows) + (int)pos.m128_f32[0];
 #endif // VECTORIZED_CODE // ######################################################
-
     return quad_index;
+}
+/* Retrieves Terrain *t height at given coords and, sets given meshes *m terain quadIndex to the id of the quad at those coords. */
+const TerrainPointInfo getTerrainPointData(mesh *m) {
+    TerrainPointInfo tp = { 0 };
+    const float t_scale = SCENE.mesh[terrain].scale * 2.f;
+    float quad_len = t_scale / SCENE.t.vecWidth;
+    const int t_limit = t_scale - quad_len;
+
+    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.mesh[terrain].coords.v[0], SCENE.mesh[terrain].scale));
+
+    if ( (vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0) ) {
+        // fprintf(stderr, "Out of terrain Limits -- getTerrainPointData().\n");
+        m->quadIndex = -1;
+    } 
+
+    /* Function to get t quads indexes. */
+    vec4 pos = floorvec4(vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vecWidth));
+    const int quad_index = (vec4ExtractZ(pos) * SCENE.t.quadRows) + vec4ExtractX(pos);
+
+    /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
+        So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
+    const int Upperface = (quad_index * 2) * 24;
+    const int Lowerface = ((quad_index * 2) + 1) * 24;
+
+    /* Find in which Quad we are. */
+    float x = vec4ExtractX(t_coords) / quad_len;
+    float z = vec4ExtractZ(t_coords) / quad_len;
+    x = x >= 1.f ? x - vec4ExtractX(pos) : x;
+    z = z >= 1.f ? z - vec4ExtractZ(pos) : z;
+
+    /* FInd in which face we are. */
+    vec4 vf[3];
+    if ( (x - z) <= 0 ) {
+        memcpy(&vf[0], &SCENE.mesh[terrain].vbo[Upperface], 12);
+        memcpy(&vf[1], &SCENE.mesh[terrain].vbo[Upperface + 8], 12);
+        memcpy(&vf[2], &SCENE.mesh[terrain].vbo[Upperface + 16], 12);
+    } else {
+        memcpy(&vf[0], &SCENE.mesh[terrain].vbo[Lowerface], 12);
+        memcpy(&vf[1], &SCENE.mesh[terrain].vbo[Lowerface + 8], 12);
+        memcpy(&vf[2], &SCENE.mesh[terrain].vbo[Lowerface + 16], 12);
+    }
+
+    vec4SetW(&vf[0], 1.f);
+    vec4SetW(&vf[1], 1.f);
+    vec4SetW(&vf[2], 1.f);
+
+    /* Translate the face from object space to world space for the edge function to work and get the interpolated height value. */
+    mat4x4 ttm = modelMatfromQST(SCENE.mesh[terrain].q, SCENE.mesh[terrain].scale, SCENE.mesh[terrain].coords.v[0]);
+    setvec4arrayMulmat(&vf, 3, ttm);
+
+    const vec4 xs = setvec4(vec4ExtractX(vf[0]), vec4ExtractX(vf[1]), vec4ExtractX(vf[2]), 0.f);
+    const vec4 zs = setvec4(vec4ExtractZ(vf[0]), vec4ExtractZ(vf[1]), vec4ExtractZ(vf[2]), 0.f);
+
+    const vec4 xmx = vecSubvec(xs, setvec4(vec4ExtractY(xs), vec4ExtractZ(xs), vec4ExtractX(xs), vec4ExtractW(xs)));
+    const vec4 zmz = vecSubvec(zs, setvec4(vec4ExtractY(zs), vec4ExtractZ(zs), vec4ExtractX(zs), vec4ExtractW(zs)));
+
+    const float area = (vec4ExtractX(xmx) * vec4ExtractY(zmz)) - (vec4ExtractX(zmz) * vec4ExtractY(xmx));
+    vec4 za = vecDivf32(
+                  vecSubvec(
+                      vecMulvec(vecSubf32(xs, vec4ExtractX(t_coords)), zmz),
+                      vecMulvec(vecSubf32(zs, vec4ExtractZ(t_coords)), xmx)),
+                  area);
+
+    tp.pos = vecAddvec(
+                 vecAddvec(vecMulf32(vf[2], vec4ExtractX(za)), vecMulf32(vf[0], vec4ExtractY(za))), 
+                 vecMulf32(vf[1], vec4ExtractZ(za)));
+    tp.normal = crossProduct(vecSubvec(vf[1], vf[0]), vecSubvec(vf[2], vf[0]));
+    tp.quad_index = quad_index;
+
+    return tp;
 }
 /* Prints the members of given Quad index. */
 void logTerrainQuad(const int quad_index) {
