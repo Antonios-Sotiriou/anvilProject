@@ -1,10 +1,13 @@
 #include "headers/components/collisions.h"
 
 extern void swap(void *a, void *b, unsigned long size);
+
 void meshTerrainCollision(mesh *m) {
     mat4x4 tm;
-    TerrainPointInfo tp = getTerrainPointData(m);
-    float height_diff = -vec4ExtractY(tp.pos) - (vec4ExtractY(m->coords.v[0]) - m->scale);
+    vec4 pos, normal;
+    getmeshPositionData(m, &pos, &normal);
+
+    float height_diff = -vec4ExtractY(pos) - (vec4ExtractY(m->coords.v[0]) - m->scale);
     if (height_diff >= 0) {
         m->rigid.grounded = 1;
         m->rigid.falling_time = 0;
@@ -15,7 +18,6 @@ void meshTerrainCollision(mesh *m) {
         setvec4arrayMulmat(m->coords.v, 4, tm);
         setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, tm);
     }
-    printf("height_diff: %f\n", height_diff);
 }
 //const void terrainHeightDifference(Mesh* terrain, Mesh* obj) {
 //    vec4f next_pos = obj->cd.v[P] + obj->velocity + (obj->mvdir * obj->scale);

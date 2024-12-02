@@ -122,8 +122,8 @@ void rigidShader(void) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     //glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &rigidVBO),
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glDeleteBuffers(1, &rigidVBO),
     //glDisableVertexAttribArray(0);
 
     glPolygonMode(GL_FRONT, GL_FILL);

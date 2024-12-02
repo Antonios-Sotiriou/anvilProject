@@ -97,13 +97,14 @@ typedef struct {
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
-        VAO,
-        VBO,
-        pk,
-        type,
-        quadInit,
-        quadIndex;
-    rigid rigid;
+        VAO,                             // VAO id or name represented by an integer.
+        VBO,                             // VBO id or name represented by an integer.
+        pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
+        type,                            // The type of the mesh.
+        quadInit,                        // Flag, which shows if the mesh went through the terrain initialization pipeline, at least one time, at the start of the program.
+        quadIndex,                       // The index of the terrain quad that the mesh is standing on.
+        quadFace;                        // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+    rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {

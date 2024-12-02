@@ -162,17 +162,13 @@ void project(void) {
     glDrawBuffers(2, drawBuffers);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    GLfloat vpMatrix[16], modelMatrix[16];
-    LOOKAT_M = lookatMatrix(SCENE.mesh[EYEPOINT].coords.v[0], SCENE.mesh[EYEPOINT].coords.v[1], SCENE.mesh[EYEPOINT].coords.v[2], SCENE.mesh[EYEPOINT].coords.v[3]);
-    VIEW_M = inverseMatrix(LOOKAT_M);
-    PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
-    memcpy(&vpMatrix, &PROJECTION_M, 64);
-    glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
+    glUniformMatrix4fv(0, 1, GL_FALSE, &PROJECTION_M);
 
+    mat4x4 modelMatrix;
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
-        mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
-        memcpy(&modelMatrix, &qm, 64);
-        glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
+        modelMatrix = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
+
+        glUniformMatrix4fv(1, 1, GL_FALSE, &modelMatrix);
         glUniform1i(3, SCENE.mesh[i].pk);
 
         glBindVertexArray(SCENE.mesh[i].VAO);

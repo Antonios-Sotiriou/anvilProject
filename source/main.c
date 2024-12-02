@@ -86,11 +86,17 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         glfwGetCursorPos(win, &x, &y);
         printf("x: %d    y: %d\n", (int)x, (int)y);
 
-        GLint data[2];
-        glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
-        glReadBuffer(GL_COLOR_ATTACHMENT1);
-        glReadPixels(x, HEIGHT - y, 1, 1, GL_RG_INTEGER, GL_INT, &data);
-        printf("colour: %d %d\n", data[0], data[1]);
+        //GLint data[2];
+        //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
+        //glReadBuffer(GL_COLOR_ATTACHMENT1);
+        //glReadPixels(x, HEIGHT - y, 1, 1, GL_RG_INTEGER, GL_INT, &data);
+        //printf("colour: %d %d\n", data[0], data[1]);
+
+        //GLubyte data[4];
+        //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
+        //glReadBuffer(GL_COLOR_ATTACHMENT0);
+        //glReadPixels(x, HEIGHT - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+        //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
     }
 }
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################

@@ -19,6 +19,7 @@
 #endif // !STRUCTS_H
 
 vec4 setvec4(const float x, const float y, const float z, const float w);
+vec4 setvec4Zero(void);
 void vec4SetX(vec4 *v, const float val);
 void vec4SetY(vec4 *v, const float val);
 void vec4SetZ(vec4 *v, const float val);

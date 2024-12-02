@@ -1,6 +1,6 @@
 #include "headers/components/camera.h"
 
-#define FORCE      10.03f    // Force to apply on rigid body when its state is enabled.
+#define FORCE      0.03f    // Force to apply on rigid body when its state is enabled.
 #define SCALE_NR   100.f   // Scalar to scale the force of not enables rigid bodies.
 static vec4 velocity;      // Velocity vector for when rigid body state is disabled. Probably better to move in function for better readabillity.
 

@@ -5,6 +5,10 @@
 vec4 setvec4(const float x, const float y, const float z, const float w) {
     return _mm_setr_ps(x, y, z, w);
 }
+/* Initializes a vec4 with Zeros. */
+vec4 setvec4Zero(void) {
+    return _mm_setzero_ps();
+}
 /* Sets the X value of the vector to val. */
 void vec4SetX(vec4 *v, const float val) {
     vec4 r = _mm_set_ss(val);
@@ -120,6 +124,10 @@ vec4 floorvec4(const vec4 v) {
 /* Initializes a vec4 with the given values. */
 vec4 setvec4(const float x, const float y, const float z, const float w) {
     return (vec4) { x, y, z, w };
+}
+/* Initializes a vec4 with Zeros. */
+vec4 setvec4Zero(void) {
+    return (vec4) { 0.f, 0.f, 0.f, 0.f };
 }
 /* Sets the X value of the vector to val. */
 void vec4SetX(vec4 *v, const float val) {

@@ -76,13 +76,7 @@ void testShader(void) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */
-
-    GLfloat vpMatrix[16], modelMatrix[16];
-    LOOKAT_M = lookatMatrix(SCENE.mesh[EYEPOINT].coords.v[0], SCENE.mesh[EYEPOINT].coords.v[1], SCENE.mesh[EYEPOINT].coords.v[2], SCENE.mesh[EYEPOINT].coords.v[3]);
-    VIEW_M = inverseMatrix(LOOKAT_M);
-    PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
-    memcpy(&vpMatrix, &PROJECTION_M, 64);
-    glUniformMatrix4fv(0, 1, GL_FALSE, vpMatrix);
+    glUniformMatrix4fv(0, 1, GL_FALSE, &PROJECTION_M);
 
     quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
     SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
@@ -92,21 +86,17 @@ void testShader(void) {
     }
     COUNT++;
 
+    mat4x4 modelMatrix;
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
-        mat4x4 qm = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
-        memcpy(&modelMatrix, &qm, 64);
-        glUniformMatrix4fv(1, 1, GL_FALSE, modelMatrix);
+        modelMatrix = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
+
+        glUniformMatrix4fv(1, 1, GL_FALSE, &modelMatrix);
         //glUniform1i(2, i + 1);
         
         glBindVertexArray(SCENE.mesh[i].VAO);
         glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].vecs_indexes);
     }
     /* Just for testing purposes code. ##################### */
-
-    //GLubyte data[4];
-    //glReadBuffer(GL_COLOR_ATTACHMENT0);
-    //glReadPixels(320, HEIGHT - 240, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-    //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
 
     debug_log_OpenGL();
 

@@ -15,15 +15,16 @@
 
 typedef struct {
     vec4 pos, normal;
-    int quad_index;
+    int quad_index, quad_face;
 } TerrainPointInfo;
 
 void createTerrain(mesh *m, const char name[]);
-void initMeshQuadInfo(mesh* m);
-void addMeshToQuad(mesh* m);
-void removeMeshFromQuad(mesh* m);
-const int getTerrainQuadIndex(vec4 coords);
-const TerrainPointInfo getTerrainPointData(mesh* m);
+void initMeshQuadInfo(mesh *m);
+void addMeshToQuad(mesh *m);
+void removeMeshFromQuad(mesh *m);
+void getTerrainPointInfo(vec4 coords, int *qi, int *uol);
+void getmeshPositionData(mesh *m, vec4 *tp, vec4 *tn);
+const TerrainPointInfo getvec4PositionData(const vec4 v);
 void logTerrainInfo(void);
 void logTerrainQuad(const int quad_index);
 
