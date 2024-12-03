@@ -80,5 +80,27 @@ void lookLeft(const int action) {
     mat4x4 tr = matfromQuat(rotationQuat(10.f * action, 0.f, 1.f, 0.f), SCENE.mesh[camera].coords.v[0]);
     setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tr);
 }
+/* Rotates camera Up at the U axis. */
+void lookUp(const int action) {
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.rot_angle = action;
+        SCENE.mesh[camera].rigid.q = rotationQuat(0.01f, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1]));
+        return;
+    }
+
+    mat4x4 tr = matfromQuat(rotationQuat(10.f * action, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1])), SCENE.mesh[camera].coords.v[0]);
+    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tr);
+}
+/* Rotates camera Down at the U axis. */
+void lookDown(const int action) {
+    if (SCENE.mesh[camera].rigid.state) {
+        SCENE.mesh[camera].rigid.rot_angle = action;
+        SCENE.mesh[camera].rigid.q = rotationQuat(-0.01f, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1]));
+        return;
+    }
+
+    mat4x4 tr = matfromQuat(rotationQuat(-10.f * action, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1])), SCENE.mesh[camera].coords.v[0]);
+    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tr);
+}
 
 

@@ -69,6 +69,20 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
                 lookLeft(action);
             }
             break;
+        case GLFW_KEY_E:
+            if (action == GLFW_PRESS) {
+                lookUp(action);
+            } else if (action == GLFW_RELEASE) {
+                lookUp(action);
+            }
+            break;
+        case GLFW_KEY_Q:
+            if (action == GLFW_PRESS) {
+                lookDown(action);
+            } else if (action == GLFW_RELEASE) {
+                lookDown(action);
+            }
+            break;
         case GLFW_KEY_C:
             if (action == GLFW_PRESS)
                 EYEPOINT = EYEPOINT == camera ? light : camera;

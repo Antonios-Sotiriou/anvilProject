@@ -76,7 +76,7 @@ void testShader(void) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */
-    glUniformMatrix4fv(0, 1, GL_FALSE, &PROJECTION_M);
+    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
     quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
     SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
@@ -90,7 +90,7 @@ void testShader(void) {
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
         modelMatrix = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
 
-        glUniformMatrix4fv(1, 1, GL_FALSE, &modelMatrix);
+        glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
         //glUniform1i(2, i + 1);
         
         glBindVertexArray(SCENE.mesh[i].VAO);

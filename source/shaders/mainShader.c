@@ -162,13 +162,13 @@ void project(void) {
     glDrawBuffers(2, drawBuffers);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    glUniformMatrix4fv(0, 1, GL_FALSE, &PROJECTION_M);
+    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
     mat4x4 modelMatrix;
     for (int i = 0; i < SCENE.mesh_indexes; i++) {
         modelMatrix = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
 
-        glUniformMatrix4fv(1, 1, GL_FALSE, &modelMatrix);
+        glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
         glUniform1i(3, SCENE.mesh[i].pk);
 
         glBindVertexArray(SCENE.mesh[i].VAO);

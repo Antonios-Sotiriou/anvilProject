@@ -27,6 +27,8 @@ void moveUp(const int action);
 void moveDown(const int action);
 void lookRight(const int action);
 void lookLeft(const int action);
+void lookUp(const int action);
+void lookDown(const int action);
 
 #endif // !CAMERA_H
 
