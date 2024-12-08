@@ -24,7 +24,8 @@
 #endif // !RIGIDSHADER_H
 
 const int initOpenGLComponents(void);
-void createMeshVAO(mesh* m);
+void createMeshVAO(mesh *m);
+void createRigidVAO(mesh *m);
 void releaseOpenGLComponents(void);
 void glErrorReport(void);
 

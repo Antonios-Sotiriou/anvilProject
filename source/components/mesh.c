@@ -48,17 +48,19 @@ void createMesh(mesh *m, const char name[]) {
     }
 
     createMeshVAO(m);
+    free(m->vbo);
     releaseOBJ(&obj);
 }
 /* Releases allocated ressources of a mesh. */
-void releaseMesh(mesh* m) {
-    free(m->vbo);
+void releaseMesh(mesh *m) {
+	//if (m->vbo)
+	//    free(m->vbo);
     glDeleteVertexArrays(1, &m->VAO);
     glDeleteBuffers(1, &m->VBO);
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
-    releasemeshRigid(m);
+    releaseRigid(m);
 }
 
 

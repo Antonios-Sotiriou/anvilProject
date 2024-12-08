@@ -22,21 +22,22 @@ void applyPhysics(void) {
 			//    staticOuterRadiusCollision(&SCENE.mesh[i]);
 
 			/* 2nd Collision Detection lvl. */
-			if (SCENE.mesh[i].pk == camera) {
-				int colls[1] = { 3 };
-				sweptAABBCollision(&SCENE.mesh[i], colls);
-			}
+			//if (SCENE.mesh[i].pk == camera) {
+			//	int colls[1] = { 3 };
+			//	sweptAABBCollision(&SCENE.mesh[i], colls);
+			//}
 
 			/* 3rd Collision Detection lvl. */
-			//if (SCENE.mesh[i].pk == camera)
-			//    staticOBBCollision(&SCENE.mesh[i]);
+			if (SCENE.mesh[i].pk == camera)
+			    staticOBBCollision(&SCENE.mesh[i]);
 
 			/* 4th Collision Detection lvl. */
 			if (SCENE.mesh[i].rigid.rot_angle) {
 				/* At this point apply rotationColision. */
 				mat4x4 tr = matfromQuat(SCENE.mesh[i].rigid.q, SCENE.mesh[i].coords.v[0]);
 				//setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tr);
-				setfacearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tr);
+				setvec4arrayMulmat(SCENE.mesh[i].rigid.v, SCENE.mesh[i].rigid.v_indexes, tr);
+				setvec4arrayMulmat(SCENE.mesh[i].rigid.n, SCENE.mesh[i].rigid.n_indexes, tr);
 
 				//setvec4RotateQuat(SCENE.mesh[i].rigid.q, &SCENE.mesh[i].coords.v[0]);
 				setvec4RotateQuat(SCENE.mesh[i].rigid.q, &SCENE.mesh[i].coords.v[1]);
@@ -49,7 +50,8 @@ void applyPhysics(void) {
 
 			mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.mesh[i].rigid.velocity), vec4ExtractY(SCENE.mesh[i].rigid.velocity), vec4ExtractZ(SCENE.mesh[i].rigid.velocity));
 			//setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tm);
-			setfacearrayMulmat(SCENE.mesh[i].rigid.f, SCENE.mesh[i].rigid.f_indexes, tm);
+			setvec4arrayMulmat(SCENE.mesh[i].rigid.v, SCENE.mesh[i].rigid.v_indexes, tm);
+			setvec4arrayMulmat(SCENE.mesh[i].rigid.n, SCENE.mesh[i].rigid.n_indexes, tm);
 			
 			/* Update the position pivot of the mesh. */
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);

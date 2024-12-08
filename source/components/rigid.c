@@ -71,33 +71,39 @@ void loadmeshRigid(mesh *m, const char name[]) {
 	}
 
 	// Initialize the faces array from .obj file data.
-	m->rigid.f_indexes = (obj.f_indexes / 9);
-	m->rigid.f = malloc(m->rigid.f_indexes * sizeof(face));
-	if (!m->rigid.f) {
-		debug_log_critical(stdout, "m->rigid.f");
-		exit(0);
-	}
-	int f_index = 0, fpad = 0, npad, tpad;
-	for (int i = 0; i < obj.f_indexes; i += 9) {
-		for (int j = 0; j < 3; j++) {
+	m->rigid.vbo_indexes = (obj.f_indexes / 9) * 24;
+	m->rigid.faces_indexes = m->rigid.vbo_indexes / 24;
+	m->rigid.vecs_indexes = m->rigid.faces_indexes * 3;
+	m->rigid.vbo_size = m->rigid.vbo_indexes * 4;
 
-			memcpy(&m->rigid.f[f_index].v[j], &m->rigid.v[obj.f[fpad]], 16);
-
-			tpad = obj.f[fpad + 1] * 2;
-			memcpy(&m->rigid.f[f_index].vt[j], &obj.t[tpad], 8);
-
-			npad = obj.f[fpad + 2] * 3;
-			memcpy(&m->rigid.f[f_index].vn[j], &obj.n[npad], 12);
-			vec4SetW(&m->rigid.f[f_index].vn[j], 0.f);
-
-			fpad += 3;
-		}
-		f_index++;
+	m->rigid.vbo = malloc(m->rigid.vbo_size);
+	if (!m->rigid.vbo) {
+		debug_log_critical(stdout, "m->rigid.vbo");
+		return;
 	}
 
+	int index = 0, vpad, tpad;
+	for (int i = 0; i < obj.f_indexes; i++) {
+		vpad = obj.f[i] * 3;
+		m->rigid.vbo[index] = obj.v[vpad];
+		m->rigid.vbo[index + 1] = obj.v[vpad + 1];
+		m->rigid.vbo[index + 2] = obj.v[vpad + 2];
+		i++;
+		tpad = obj.f[i] * 2;
+		m->rigid.vbo[index + 3] = obj.t[tpad];
+		m->rigid.vbo[index + 4] = obj.t[tpad + 1];
+		i++;
+		vpad = obj.f[i] * 3;
+		m->rigid.vbo[index + 5] = obj.n[vpad];
+		m->rigid.vbo[index + 6] = obj.n[vpad + 1];
+		m->rigid.vbo[index + 7] = obj.n[vpad + 2];
+		index += 8;
+	}
+	logrigid(m);
 	/* Initialize the world starting position of the rigid body. */
 	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
-	setfacearrayMulmat(m->rigid.f, m->rigid.f_indexes, qm1);
+	setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, qm1);
+	setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, qm1);
 	mat4x4 qm2 = matfromQuat(m->rigid.q, m->coords.v[0]);
 	setvec4arrayMulmat(m->coords.v, 4, qm2);
 
@@ -105,7 +111,8 @@ void loadmeshRigid(mesh *m, const char name[]) {
 	getmeshRigidLimits(m);
 	initMeshQuadInfo(m);
 
-	//createRigidVAO(m);
+	createRigidVAO(m);
+	free(m->rigid.vbo);
 	releaseOBJ(&obj);
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
@@ -113,15 +120,9 @@ void loadmeshRigid(mesh *m, const char name[]) {
 void getmeshRigidLimits(mesh *m) {
 	m->rigid.min = _mm_set_ps1(INT_MAX);
 	m->rigid.max = _mm_set_ps1(-INT_MAX);
-	//for (int i = 0; i < m->rigid.v_indexes; i++) {
-	//	m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
-	//	m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.v[i]);
-	//}
-	for (int i = 0; i < m->rigid.f_indexes; i++) {
-		for (int j = 0; j < 3; j++) {
-			m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.f[i].v[j]);
-			m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.f[i].v[j]);
-		}
+	for (int i = 0; i < m->rigid.v_indexes; i++) {
+		m->rigid.min = _mm_min_ps(m->rigid.min, m->rigid.v[i]);
+		m->rigid.max = _mm_max_ps(m->rigid.max, m->rigid.v[i]);
 	}
 }
 #else // ITERATIVE_CODE #########################################################################################
@@ -129,52 +130,37 @@ void getmeshRigidLimits(mesh *m) {
 void getmeshRigidLimits(mesh *m) {
 	m->rigid.min = setvec4(INT_MAX, INT_MAX, INT_MAX, INT_MAX);
     m->rigid.max = setvec4(-INT_MAX, -INT_MAX, -INT_MAX, -INT_MAX);
-    //for (int i = 0; i < m->rigid.v_indexes; i++) {
-    //    if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
-    //        m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];
+    for (int i = 0; i < m->rigid.v_indexes; i++) {
+        if (m->rigid.min.m128_f32[0] > m->rigid.v[i].m128_f32[0])
+            m->rigid.min.m128_f32[0] = m->rigid.v[i].m128_f32[0];
 
-    //    if (m->rigid.max.m128_f32[0] < m->rigid.v[i].m128_f32[0])
-    //        m->rigid.max.m128_f32[0] = m->rigid.v[i].m128_f32[0];
+        if (m->rigid.max.m128_f32[0] < m->rigid.v[i].m128_f32[0])
+            m->rigid.max.m128_f32[0] = m->rigid.v[i].m128_f32[0];
 
-    //    if (m->rigid.min.m128_f32[1] > m->rigid.v[i].m128_f32[1])
-    //        m->rigid.min.m128_f32[1] = m->rigid.v[i].m128_f32[1];
+        if (m->rigid.min.m128_f32[1] > m->rigid.v[i].m128_f32[1])
+            m->rigid.min.m128_f32[1] = m->rigid.v[i].m128_f32[1];
 
-    //    if (m->rigid.max.m128_f32[1] < m->rigid.v[i].m128_f32[1])
-    //        m->rigid.max.m128_f32[1] = m->rigid.v[i].m128_f32[1];
+        if (m->rigid.max.m128_f32[1] < m->rigid.v[i].m128_f32[1])
+            m->rigid.max.m128_f32[1] = m->rigid.v[i].m128_f32[1];
 
-    //    if (m->rigid.min.m128_f32[2] > m->rigid.v[i].m128_f32[2])
-    //        m->rigid.min.m128_f32[2] = m->rigid.v[i].m128_f32[2];
+        if (m->rigid.min.m128_f32[2] > m->rigid.v[i].m128_f32[2])
+            m->rigid.min.m128_f32[2] = m->rigid.v[i].m128_f32[2];
 
-    //    if (m->rigid.max.m128_f32[2] < m->rigid.v[i].m128_f32[2])
-    //        m->rigid.max.m128_f32[2] = m->rigid.v[i].m128_f32[2];
-    //}
-	for (int i = 0; i < m->rigid.f_indexes; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (m->rigid.min.m128_f32[0] > m->rigid.f[i].v[j].m128_f32[0])
-				m->rigid.min.m128_f32[0] = m->rigid.f[i].v[j].m128_f32[0];
-
-			if (m->rigid.max.m128_f32[0] < m->rigid.f[i].v[j].m128_f32[0])
-				m->rigid.max.m128_f32[0] = m->rigid.f[i].v[j].m128_f32[0];
-
-			if (m->rigid.min.m128_f32[1] > m->rigid.f[i].v[j].m128_f32[1])
-				m->rigid.min.m128_f32[1] = m->rigid.f[i].v[j].m128_f32[1];
-
-			if (m->rigid.max.m128_f32[1] < m->rigid.f[i].v[j].m128_f32[1])
-				m->rigid.max.m128_f32[1] = m->rigid.f[i].v[j].m128_f32[1];
-
-			if (m->rigid.min.m128_f32[2] > m->rigid.f[i].v[j].m128_f32[2])
-				m->rigid.min.m128_f32[2] = m->rigid.f[i].v[j].m128_f32[2];
-
-			if (m->rigid.max.m128_f32[2] < m->rigid.f[i].v[j].m128_f32[2])
-				m->rigid.max.m128_f32[2] = m->rigid.f[i].v[j].m128_f32[2];
-		}
-	}
+        if (m->rigid.max.m128_f32[2] < m->rigid.v[i].m128_f32[2])
+            m->rigid.max.m128_f32[2] = m->rigid.v[i].m128_f32[2];
+    }
 }
 #endif // VECTORIZED_CODE #######################################################################################
-void releasemeshRigid(mesh *m) {
+void releaseRigid(mesh *m) {
 	free(m->rigid.v);
-	free(m->rigid.f);
-
+	free(m->rigid.n);
+	glDeleteVertexArrays(1, &m->VAO);
+	glDeleteBuffers(1, &m->VBO);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	//if (m->rigid.vbo)
+	//    free(m->rigid.vbo);
 }
 
 

@@ -35,22 +35,31 @@ void logcoords(const coords c) {
 }
 void logrigid(const rigid r) {
 	printf("rigid {\n");
-	printf("    *v           : %p\n", r.v);
-	printf("    *f           : %p\n", r.f);
-	printf("    v_indexes    : %d\n", r.v_indexes);
-	printf("    f_indexes    : %d\n", r.f_indexes);
-	printf("    state        : %d\n", r.state);
-	printf("    grounded     : %d\n", r.grounded);
-	printf("    min          : ");
+	printf("    *v            : %p\n", r.v);
+	printf("    *n            : %p\n", r.n);
+	printf("    min           : ");
 	logvec4(r.min);
-	printf("    max          : ");
+	printf("    max           : ");
 	logvec4(r.max);
-	printf("    velocity     : ");
+	printf("    velocity      : ");
 	logvec4(r.velocity);
-	printf("    rot_angle    : %f\n", r.rot_angle);
-	printf("    falling_time : %f\n", r.falling_time);
-	printf("    q            : ");
+	printf("    q             : ");
 	logvec4(r.q);
+
+	printf("    vbo           : %p\n", r.vbo);
+	printf("    rot_angle     : %f\n", r.rot_angle);
+	printf("    falling_time  : %f\n", r.falling_time);
+
+	printf("    n_indexes     : %d\n", r.v_indexes);
+	printf("    n_indexes     : %d\n", r.n_indexes);
+	printf("    vbo_indexes   : %d\n", r.vbo_indexes);
+	printf("    faces_indexes : %d\n", r.faces_indexes);
+	printf("    vecs_indexes  : %d\n", r.vecs_indexes);
+	printf("    vbo_size      : %d\n", r.vbo_size);
+	printf("    VAO           : %d\n", r.VAO);
+	printf("    VBO           : %d\n", r.VBO);
+	printf("    state         : %d\n", r.state);
+	printf("    grounded      : %d\n", r.grounded);
 	printf("}\n");
 }
 void logmesh(const mesh m) {
