@@ -55,11 +55,11 @@ typedef struct {
 /* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
 typedef struct {
     Quad *quad;            // Quads pointer to save info about each quad of the terrain.
-    int vecWidth,          // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
-        vecHeight,         // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
+    int vec_width,          // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
+        vec_height,         // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
         quad_indexes,      // Emvadon of the Terrain quads.
-        quadRows,          // Number os quads in rows direction. They are always vectors Width - 1.
-        quadCols;          // Number os quads in columns direction. They are always vectors Height - 1.
+        quad_rows,          // Number os quads in rows direction. They are always vectors Width - 1.
+        quad_cols;          // Number os quads in columns direction. They are always vectors Height - 1.
 } TerrainInfo;
 
 /* Cordinate system structure with components represented as P: position, U: up, V: right(vertical), N: front. */
@@ -73,9 +73,11 @@ typedef struct {
     vec4 vn[3];
 } face;
 typedef struct {
-    vec4 *v;                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
+    vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
+        *n;                              // Normals array to be used for OBB collision. Normals are unique to save iterations.
     face *f;                             // Faces array to be used for collisions. Thats the minimum low Poly represantation of the model, with texels and normals also included.
     int v_indexes,
+        n_indexes,
         f_indexes,
         state,                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
         grounded;                        // Switch which tracks if object in grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
@@ -101,9 +103,9 @@ typedef struct {
         VBO,                             // VBO id or name represented by an integer.
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
         type,                            // The type of the mesh.
-        quadInit,                        // Flag, which shows if the mesh went through the terrain initialization pipeline, at least one time, at the start of the program.
-        quadIndex,                       // The index of the terrain quad that the mesh is standing on.
-        quadFace;                        // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+        quad_init,                        // Flag, which shows if the mesh went through the terrain initialization pipeline, at least one time, at the start of the program.
+        quad_index,                       // The index of the terrain quad that the mesh is standing on.
+        quad_face;                        // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } mesh;
 /* Model structure to represent a collection of shapes. */

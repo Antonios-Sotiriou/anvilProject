@@ -153,7 +153,7 @@ const int initMainShader(void) {
 
     return shaderProgram;
 }
-void project(void) {
+void mainShader(void) {
 
     glUseProgram(mainShaderProgram);
 

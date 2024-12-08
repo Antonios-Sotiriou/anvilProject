@@ -69,7 +69,7 @@ void testShader(void) {
 
     glUseProgram(testShaderProgram);
 
-    glPolygonMode(GL_FRONT, GL_LINE);
+    //glPolygonMode(GL_FRONT, GL_LINE);
 
     glViewport(0, 0, WIDTH, HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
@@ -101,7 +101,7 @@ void testShader(void) {
     debug_log_OpenGL();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glPolygonMode(GL_FRONT, GL_FILL);
+    //glPolygonMode(GL_FRONT, GL_FILL);
 }
 
 

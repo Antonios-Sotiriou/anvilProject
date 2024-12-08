@@ -42,6 +42,7 @@ void loadmeshRigid(mesh *m, const char name[]) {
 	readOBJ(&obj, dynamic_path);
 	free(dynamic_path);
 
+	// Initialize the vectors array from .obj file data.
 	m->rigid.v_indexes = (obj.v_indexes / 3);
 	m->rigid.v = malloc(m->rigid.v_indexes * 16);
 	if (!m->rigid.v) {
@@ -55,6 +56,21 @@ void loadmeshRigid(mesh *m, const char name[]) {
 		v_index++;
 	}
 
+	// Initialize the normals array from .obj file data.
+	m->rigid.n_indexes = (obj.n_indexes / 3);
+	m->rigid.n = malloc(m->rigid.n_indexes * 16);
+	if (!m->rigid.n) {
+		debug_log_critical(stdout, "m->rigid.n");
+		exit(0);
+	}
+	int n_index = 0;
+	for (int i = 0; i < obj.n_indexes; i += 3) {
+		memcpy(&m->rigid.n[n_index], &obj.n[i], 12);
+		vec4SetW(&m->rigid.n[n_index], 0.f);
+		n_index++;
+	}
+
+	// Initialize the faces array from .obj file data.
 	m->rigid.f_indexes = (obj.f_indexes / 9);
 	m->rigid.f = malloc(m->rigid.f_indexes * sizeof(face));
 	if (!m->rigid.f) {
@@ -85,9 +101,11 @@ void loadmeshRigid(mesh *m, const char name[]) {
 	mat4x4 qm2 = matfromQuat(m->rigid.q, m->coords.v[0]);
 	setvec4arrayMulmat(m->coords.v, 4, qm2);
 
+	meshTerrainCollision(m);
 	getmeshRigidLimits(m);
 	initMeshQuadInfo(m);
 
+	//createRigidVAO(m);
 	releaseOBJ(&obj);
 }
 #ifdef VECTORIZED_CODE // #######################################################################################

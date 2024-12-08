@@ -36,8 +36,8 @@ void meshTerrainCollision(mesh *m) {
 const int staticOuterRadiusCollision(mesh *m) {
     //vec4 newPos = vecAddvec(m->coords.v[0], m->rigid.velocity);
     int pk;
-    for (int i = 0; i < SCENE.t.quad[m->quadIndex].mpks_indexes; i++) {
-        pk = SCENE.t.quad[m->quadIndex].mpks[i];
+    for (int i = 0; i < SCENE.t.quad[m->quad_index].mpks_indexes; i++) {
+        pk = SCENE.t.quad[m->quad_index].mpks[i];
         if (pk != m->pk) {
 
             vec4 dis = vecSubvec(m->coords.v[0], SCENE.mesh[pk].coords.v[0]);
@@ -52,8 +52,8 @@ const int staticOuterRadiusCollision(mesh *m) {
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
 const int sweptAABBCollision(mesh *m, const int pks[]) {
 
-    if (m->quadIndex < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quadIndex);
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
         return 0;
     }
 

@@ -36,10 +36,10 @@ void createTerrain(mesh *m, const char name[]) {
     }
 
     /* Populate the gloabal SCENE TerrainInfo struct with infos. */
-    SCENE.t.vecWidth = bmp.info.Width;
-    SCENE.t.vecHeight = bmp.info.Height;
-    SCENE.t.quadCols = quad_vcols;
-    SCENE.t.quadRows = quad_vrows;
+    SCENE.t.vec_width = bmp.info.Width;
+    SCENE.t.vec_height = bmp.info.Height;
+    SCENE.t.quad_cols = quad_vcols;
+    SCENE.t.quad_rows = quad_vrows;
     SCENE.t.quad_indexes = quads;
     SCENE.t.quad = calloc(SCENE.t.quad_indexes, sizeof(Quad));
 
@@ -196,20 +196,20 @@ void initMeshQuadInfo(mesh *m) {
     int quad_index, tri;
     getTerrainPointInfo(m->coords.v[0], &quad_index, &tri);
     /* Set meshes m quadIndex to index. */
-    if (m->quadIndex != quad_index && m->quadInit) {
+    if (m->quad_index != quad_index && m->quad_init) {
         removeMeshFromQuad(m);
-    } else if (m->quadIndex == quad_index && m->quadInit) {
+    } else if (m->quad_index == quad_index && m->quad_init) {
         /* Mesh is already a memmber of this quad. */
         return;
     }
-    m->quadIndex = quad_index;
-    m->quadFace = tri;
-    m->quadInit = 1;
+    m->quad_index = quad_index;
+    m->quad_face = tri;
+    m->quad_init = 1;
     addMeshToQuad(m);
 }
 /* Adds a Mesh to the Quad that is standing on to, if its not already a member of this Quad. */
 void addMeshToQuad(mesh *m) {
-    const int quad_index = m->quadIndex;
+    const int quad_index = m->quad_index;
 
     if ((quad_index < 0 || !m->pk)) {
         /* Mesh is out of terrain if its quadIndex is less than Zero or it is the terrain if its ID is 0. */
@@ -238,7 +238,7 @@ void addMeshToQuad(mesh *m) {
 }
 /* Removes a mesh id from the TerrainInfo global Quad memmbers array. */
 void removeMeshFromQuad(mesh *m) {
-    const int quad_index = m->quadIndex;
+    const int quad_index = m->quad_index;
 
     if (quad_index < 0) {
         /* Mesh is out of terrain if its quadIndex is less than Zero. */
@@ -268,7 +268,7 @@ void removeMeshFromQuad(mesh *m) {
 /* Retrieves Terrain Quad index and terrain triangle at given coords. Terrain triangle Can either be UPPER: 0 or LOWER: 1. Returns Terrain quad index -1 if outside of terrain.*/
 void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
     const float t_scale = SCENE.mesh[terrain].scale * 2.f;
-    float quad_len = t_scale / SCENE.t.vecWidth;
+    float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
     vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.mesh[terrain].coords.v[0], SCENE.mesh[terrain].scale));
@@ -279,8 +279,8 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
         return;
     }
     /* Function to get terrain quad index. */
-    vec4 pos = floorvec4(vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vecWidth));
-    *qi = (vec4ExtractZ(pos) * SCENE.t.quadRows) + vec4ExtractX(pos);
+    vec4 pos = floorvec4(vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vec_width));
+    *qi = (vec4ExtractZ(pos) * SCENE.t.quad_rows) + vec4ExtractX(pos);
 
     /* Find in which Quad we are. */
     float x = vec4ExtractX(t_coords) / quad_len;
@@ -298,12 +298,12 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
 /* Retrieves Terrain Position data tp and Terain position normal tn, at the given mesh's coordinates. */
 void getmeshPositionData(mesh *m, vec4 *tp, vec4 *tn) {
     const float t_scale = SCENE.mesh[terrain].scale * 2.f;
-    float quad_len = t_scale / SCENE.t.vecWidth;
+    float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
     vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.mesh[terrain].coords.v[0], SCENE.mesh[terrain].scale));
 
-    if ( m->quadIndex == -1 ) {
+    if ( m->quad_index == -1 ) {
         debug_log_warning(stdout, "Out of terrain boundaries");
         *tp = setvec4Zero();
         *tn = setvec4Zero();
@@ -312,7 +312,7 @@ void getmeshPositionData(mesh *m, vec4 *tp, vec4 *tn) {
 
     /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
         So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
-    const int faceIndex = ((m->quadIndex * 2) + m->quadFace) * 24;
+    const int faceIndex = ((m->quad_index * 2) + m->quad_face) * 24;
 
     /* FInd in which face we are. */
     vec4 vf[3];
@@ -350,7 +350,7 @@ void getmeshPositionData(mesh *m, vec4 *tp, vec4 *tn) {
 const TerrainPointInfo getvec4PositionData(const vec4 v) {
     TerrainPointInfo tp = { 0 };
     const float t_scale = SCENE.mesh[terrain].scale * 2.f;
-    float quad_len = t_scale / SCENE.t.vecWidth;
+    float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
     vec4 t_coords = vecSubvec(v, vecSubf32(SCENE.mesh[terrain].coords.v[0], SCENE.mesh[terrain].scale));
@@ -362,8 +362,8 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
     }
 
     /* Function to get t quads indexes. */
-    vec4 pos = floorvec4(vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vecWidth));
-    const int quad_index = (vec4ExtractZ(pos) * SCENE.t.quadRows) + vec4ExtractX(pos);
+    vec4 pos = floorvec4(vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vec_width));
+    const int quad_index = (vec4ExtractZ(pos) * SCENE.t.quad_rows) + vec4ExtractX(pos);
 
     /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
         So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
@@ -439,10 +439,10 @@ void logTerrainQuad(const int quad_index) {
 }
 /* Prints the TerrainInfo struct. */
 void logTerrainInfo(void) {
-    printf("vecWidth : %d\n", SCENE.t.vecWidth);
-    printf("vecHeight: %d\n", SCENE.t.vecHeight);
-    printf("quadRows : %d\n", SCENE.t.quadRows);
-    printf("quadCols : %d\n", SCENE.t.quadCols);
+    printf("vecWidth : %d\n", SCENE.t.vec_width);
+    printf("vecHeight: %d\n", SCENE.t.vec_height);
+    printf("quadRows : %d\n", SCENE.t.quad_rows);
+    printf("quadCols : %d\n", SCENE.t.quad_cols);
     printf("quadsArea: %d\n", SCENE.t.quad_indexes);
 }
 

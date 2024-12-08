@@ -93,6 +93,9 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
     }
 }
+static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
+    printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
+}
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
     if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
@@ -111,7 +114,14 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         //glReadBuffer(GL_COLOR_ATTACHMENT0);
         //glReadPixels(x, HEIGHT - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
         //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
-    }
+    } else if (button == GLFW_MOUSE_BUTTON_2)
+        if (action == GLFW_PRESS) {
+            /* Register a Cursor position callback function. */
+            glfwSetCursorPosCallback(win, cursor_pos_callback);
+        } else {
+            /* Unregister a Cursor position callback function. */
+            glfwSetCursorPosCallback(win, NULL);
+        }
 }
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################
 const static uint64_t epoch = ((uint64_t)116444736000000000ULL);

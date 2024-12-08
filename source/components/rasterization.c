@@ -6,7 +6,7 @@ const void rasterize(void) {
     VIEW_M = inverseMatrix(LOOKAT_M);
     PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
 
-    //project();
+    //mainShader();
     testShader();
     if (DISPLAY_RIGID)
         rigidShader();

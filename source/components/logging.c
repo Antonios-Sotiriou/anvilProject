@@ -35,19 +35,21 @@ void logcoords(const coords c) {
 }
 void logrigid(const rigid r) {
 	printf("rigid {\n");
-	printf("    *v         : %p\n", r.v);
-	printf("    *f         : %p\n", r.f);
-	printf("    v_indexes  : %d\n", r.v_indexes);
-	printf("    f_indexes  : %d\n", r.f_indexes);
-	printf("    state      : %d\n", r.state);
-	printf("    min        : ");
+	printf("    *v           : %p\n", r.v);
+	printf("    *f           : %p\n", r.f);
+	printf("    v_indexes    : %d\n", r.v_indexes);
+	printf("    f_indexes    : %d\n", r.f_indexes);
+	printf("    state        : %d\n", r.state);
+	printf("    grounded     : %d\n", r.grounded);
+	printf("    min          : ");
 	logvec4(r.min);
-	printf("    max        : ");
+	printf("    max          : ");
 	logvec4(r.max);
-	printf("    velocity   : ");
+	printf("    velocity     : ");
 	logvec4(r.velocity);
-	printf("    rot_angle  : %f\n", r.rot_angle);
-	printf("    q          : ");
+	printf("    rot_angle    : %f\n", r.rot_angle);
+	printf("    falling_time : %f\n", r.falling_time);
+	printf("    q            : ");
 	logvec4(r.q);
 	printf("}\n");
 }
@@ -66,9 +68,18 @@ void logmesh(const mesh m) {
 	printf("VBO            : %d\n", m.VBO);
 	printf("pk             : %d\n", m.pk);
 	printf("type           : %d\n", m.type);
-	printf("quadInit       : %d\n", m.quadInit);
-	printf("quadIndex      : %d\n", m.quadIndex);
+	printf("quadInit       : %d\n", m.quad_init);
+	printf("quadIndex      : %d\n", m.quad_index);
+	printf("quadIndex      : %d\n", m.quad_face);
 	logrigid(m.rigid);
+}
+void logscene(const scene s) {
+	printf("mesh_indexes         : %d\n", s.mesh_indexes);
+	printf("terrain quad_indexes : %d\n", s.t.quad_indexes);
+	printf("terrain vec_width    : %d\n", s.t.vec_width);
+	printf("terrain vec_height   : %d\n", s.t.vec_height);
+	printf("terrain quad_rows    : %d\n", s.t.quad_rows);
+	printf("terrain quad_cols    : %d\n", s.t.quad_cols);
 }
 
 
