@@ -61,11 +61,11 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
     getmeshRigidLimits(m);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = 1;
+    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = pks[i];
+        int pk = SCENE.t.quad[m->quad_index].mpks[i];
 
         if (pk != m->pk) {
 
@@ -286,28 +286,47 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
 }
 #endif // VECTORIZED_CODE #######################################################################################
 /* Check for collisions between rotated meshes. */
-const int staticOBBCollision(mesh *m) {
+const int staticOBBCollision(mesh *m, const int pk) {
+
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOBBCollisions().\n", m->quad_index);
+        return 0;
+    }
+
+    const int sum_norms = m->rigid.n_indexes + SCENE.mesh[pk].rigid.n_indexes;
     /* Implement Oriented bounding boxes collision detection. */
     mat4x4 tm = translationMatrix(vec4ExtractX(m->rigid.velocity), vec4ExtractY(m->rigid.velocity), vec4ExtractZ(m->rigid.velocity));
     vec4 *vec4s = vec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, tm);
     vec4 *norms = vec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, tm);
+    vec4 *temp = realloc(norms, 16 * sum_norms);;
+    if (!temp) {
+        debug_log_error(stdout, "malloc()");
+        free(vec4s);
+        free(norms);
+        return 0;
+    }
+    norms = temp;
+    memcpy(&norms[m->rigid.n_indexes], SCENE.mesh[pk].rigid.n, 16 * SCENE.mesh[pk].rigid.n_indexes);
 
     float depth = (float)INT_MAX;
     vec4 normal = { 0 };
     float dot = 0.f, min_outer,  min_inner, max_outer, max_inner;
-    for (int i = 0; i < m->rigid.n_indexes; i++) {
+
+    //printf("\x1b[H\x1b[J");
+
+    for (int i = 0; i < sum_norms; i++) {
         min_outer = (float)INT_MAX, min_inner = (float)INT_MAX, max_outer = (float)-INT_MAX, max_inner = (float)-INT_MAX;
         for (int x = 0; x < m->rigid.v_indexes; x++) {
             min_outer = (dot = dotProduct(norms[i], vec4s[x])) < min_outer ? dot : min_outer;
             max_outer = dot > max_outer ? dot : max_outer;
         }
 
-        for (int y = 0; y < SCENE.mesh[3].rigid.v_indexes; y++) {
-            min_inner = (dot = dotProduct(norms[i], SCENE.mesh[3].rigid.v[y])) < min_inner ? dot : min_inner;
+        for (int y = 0; y < SCENE.mesh[pk].rigid.v_indexes; y++) {
+            min_inner = (dot = dotProduct(norms[i], SCENE.mesh[pk].rigid.v[y])) < min_inner ? dot : min_inner;
             max_inner = dot > max_inner ? dot : max_inner;
         }
 
-        if ( (min_outer > max_inner) || (max_outer < min_inner) ) {
+        if ((min_outer > max_inner) || (max_outer < min_inner)) {
             free(vec4s);
             free(norms);
             return 0;
@@ -322,57 +341,118 @@ const int staticOBBCollision(mesh *m) {
         }
     }
 
-    for (int i = 0; i < SCENE.mesh[3].rigid.n_indexes; i++) {
-        min_outer = (float)INT_MAX, min_inner = (float)INT_MAX, max_outer = (float)-INT_MAX, max_inner = (float)-INT_MAX;
-        for (int x = 0; x < SCENE.mesh[3].rigid.v_indexes; x++) {
-            for (int d = 0; d < 3; d++) {
-                min_outer = (dot = dotProduct(SCENE.mesh[3].rigid.n[i], SCENE.mesh[3].rigid.v[x])) < min_outer ? dot : min_outer;
-                max_outer = dot > max_outer ? dot : max_outer;
-            }
-        }
-
-        for (int y = 0; y < m->rigid.v_indexes; y++) {
-            min_inner = (dot = dotProduct(SCENE.mesh[3].rigid.n[i], vec4s[y])) < min_inner ? dot : min_inner;
-            max_inner = dot > max_inner ? dot : max_inner;
-        }
-
-        if ( (min_outer > max_inner) || (max_outer < min_inner) ) {
-            free(vec4s);
-            free(norms);
-            return 0;
-        }
-
-        float da = (max_outer - min_inner);
-        float db = (max_inner - min_outer);
-        float axisDepth = da < db ? da : db;
-        if (axisDepth < depth) {
-            depth = axisDepth;
-            normal = SCENE.mesh[3].rigid.n[i];
-        }
-    }
-
-    depth /= vecLength(normal);
-    if (dotProduct(vecSubvec(m->coords.v[0], SCENE.mesh[3].coords.v[0]), normal) < 0) {
-        normal = vecMulf32(normal, -1.f);
-    }
+    depth = vecLength(m->rigid.velocity);
+    //if (dotProduct(vecSubvec(m->coords.v[0], SCENE.mesh[pk].coords.v[0]), normal) < 0) {
+    //    normal = vecMulf32(normal, -1.f);
+    //}
     normal = vecNormalize(normal);
-
-    //m->rigid.velocity = vecMulf32(m->rigid.velocity, depth);
-    //mat4x4 trans = translationMatrix(vec4ExtractX(m->rigid.velocity), vec4ExtractY(m->rigid.velocity), vec4ExtractZ(m->rigid.velocity));
-    //setvec4arrayMulmat(m->coords.v, 4, trans);
-    //setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, trans);
-    //setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, trans);
-
+    //printf("depth_normal: %f\n", depth / vecLength(normal));
+    //printf("depth_velocity: %f\n", depth / vecLength(m->rigid.velocity));
+    if (depth == 0)
+        printf("Sliding... depth_velocity: %f\n", depth);
+    if (depth > 0 && depth <= 1.f) {
+        vec4 velocity = vecMulf32(m->rigid.velocity, -depth);
+        logvec4(m->rigid.velocity);
+        logvec4(velocity);
+        mat4x4 trans = translationMatrix(vec4ExtractX(velocity), vec4ExtractY(velocity), vec4ExtractZ(velocity));
+        setvec4arrayMulmat(m->coords.v, 4, trans);
+        setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, trans);
+        setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, trans);
+    }
     float col_dot = dotProduct(m->rigid.velocity, normal);
     m->rigid.velocity = vecSubvec(m->rigid.velocity, vecMulf32(normal, col_dot));
-    //logvec4(normal);
-    printf("Collision Detected...depth: %f    col_dot: %f\n", depth, col_dot);
-    //0.006738
-    //0.004883
-    //memcpy(m->rigid.f, temp1, m->rigid.f_indexes * sizeof(face));
+
+    //printf("t_min: %f    t_max: %f    t_near: %f\n", t_min, t_max, t_near);
+    //printf("Collision Detected...depth: %f    col_dot: %f\n", depth, col_dot);
+    printf("depth_velocity: %f\n", depth);
+    //printf("Collision Detected...\n");
+
     free(vec4s);
     free(norms);
+    //getc(stdin);
     return 1;
+}
+/* Swept Sorting the collisions for AABB. */
+void sortCollisions(mesh *m) {
+
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. sortCollisions().\n", m->quad_index);
+        return;
+    }
+
+    getmeshRigidLimits(m);
+    vec4 tnear, tfar, min, max;
+
+    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+
+    for (int i = 0; i < num_of_members; i++) {
+
+        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+
+        if (pk != m->pk) {
+
+            min = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+
+            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->rigid.velocity);
+            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->rigid.velocity);
+
+            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+                continue;
+
+            min = _mm_min_ps(tnear, tfar);
+            max = _mm_max_ps(tnear, tfar);
+
+            int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
+            if (check_xz == 1 || check_xz == 4) {
+                continue;
+            }
+
+            float t_near = 0.f, t_far = 0.f;
+            if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+                t_near = _mm_cvtss_f32(min);
+            }
+            else {
+                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
+            }
+
+            if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+                t_far = _mm_cvtss_f32(max);
+            }
+            else {
+                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
+            }
+
+            /* ##################### Y ############################ */
+            if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
+                continue;
+
+            if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
+                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
+            if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
+                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
+            /* ##################### Y ############################ */
+
+            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+                continue;
+
+            SCENE.mesh[pk].rigid.collision_t = t_near;
+        }
+    }
+    mesh cache_1, cache_2;
+    for (int i = 0; i < num_of_members; i++) {
+        int pk1 = SCENE.t.quad[m->quad_index].mpks[i];
+        cache_1 = SCENE.mesh[pk1];
+        for (int j = 0; j < num_of_members; j++) {
+            int pk2 = SCENE.t.quad[m->quad_index].mpks[j];
+            cache_2 = SCENE.mesh[pk2];
+            if ( cache_1.pk != m->pk ) {
+                if ( cache_1.rigid.collision_t < cache_2.rigid.collision_t ) {
+                    swap(&SCENE.t.quad[m->quad_index].mpks[i], &SCENE.t.quad[m->quad_index].mpks[j], 4);
+                }
+            }
+        }
+    }
 }
 
 

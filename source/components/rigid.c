@@ -99,7 +99,7 @@ void loadmeshRigid(mesh *m, const char name[]) {
 		m->rigid.vbo[index + 7] = obj.n[vpad + 2];
 		index += 8;
 	}
-	logrigid(m);
+
 	/* Initialize the world starting position of the rigid body. */
 	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
 	setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, qm1);

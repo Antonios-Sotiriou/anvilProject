@@ -22,14 +22,18 @@ void applyPhysics(void) {
 			//    staticOuterRadiusCollision(&SCENE.mesh[i]);
 
 			/* 2nd Collision Detection lvl. */
-			//if (SCENE.mesh[i].pk == camera) {
+			//int collide = 1;
+			//while (collide) {
+			//	sortCollisions(&SCENE.mesh[i]);
 			//	int colls[1] = { 3 };
-			//	sweptAABBCollision(&SCENE.mesh[i], colls);
+			//	collide = sweptAABBCollision(&SCENE.mesh[i], colls);
 			//}
 
 			/* 3rd Collision Detection lvl. */
-			if (SCENE.mesh[i].pk == camera)
-			    staticOBBCollision(&SCENE.mesh[i]);
+			if (SCENE.mesh[i].pk == camera) {
+				staticOBBCollision(&SCENE.mesh[i], 3);
+				staticOBBCollision(&SCENE.mesh[i], 4);
+			}
 
 			/* 4th Collision Detection lvl. */
 			if (SCENE.mesh[i].rigid.rot_angle) {
@@ -56,7 +60,7 @@ void applyPhysics(void) {
 			/* Update the position pivot of the mesh. */
 			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
 
-			if (!SCENE.mesh[i].rigid.grounded || SCENE.mesh[i].type == MESH_TYPE_CAMERA)
+			if (!SCENE.mesh[i].rigid.grounded || SCENE.mesh[i].type != MESH_TYPE_CAMERA)
 				meshTerrainCollision(&SCENE.mesh[i]);
 		}
 	}

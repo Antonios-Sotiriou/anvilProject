@@ -75,13 +75,14 @@ typedef struct {
 typedef struct {
     vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
         *n,                              // Normals array to be used for OBB collision. Normals are unique to save iterations.
-        min,                            // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
+        min,                             // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
         max,                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
         velocity;                        // Velocity of a mesh.
     quat q;                              // Rotation quaternion W, X, Y, Z.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         rot_angle,                       // The rotation angle of the rigid body.
-        falling_time;                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
+        falling_time,                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
+        collision_t;                     // The time of collision to help us sort them.Used in sortCollisions function, to find out which collision take place earlier.
     int v_indexes,
         n_indexes,
         vbo_indexes,                     // Number of vbo indexes as individual floats.

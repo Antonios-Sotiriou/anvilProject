@@ -29,7 +29,8 @@
 void meshTerrainCollision(mesh *m);
 const int staticOuterRadiusCollision(mesh *m);
 const int sweptAABBCollision(mesh *m, const int pks[]);
-const int staticOBBCollision(mesh *m);
+const int staticOBBCollision(mesh *m, const int pk);
+void sortCollisions(mesh* m);
 
 #endif // !COLLISIONS_H
 

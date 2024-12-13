@@ -14,7 +14,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
 
     switch (key) {
         case GLFW_KEY_W :
-            if (action == GLFW_PRESS) {
+            if (action == GLFW_PRESS || action == GLFW_REPEAT) {
                 moveForward(action);
             } else if (action == GLFW_RELEASE) {
                 moveForward(action);
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
     createScene();
 
     /* Create the Perspective Matrix which is in most cases constant. Changes only with window resize events. */
-    PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 100.f, INT32_MAX);
+    PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 10.f, INT32_MAX);
 
     initTimeCounter();
     float time_diff;
