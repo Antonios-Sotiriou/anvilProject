@@ -32,7 +32,7 @@ void applyPhysics(void) {
 			/* 3rd Collision Detection lvl. */
 			if (SCENE.mesh[i].pk == camera) {
 				staticOBBCollision(&SCENE.mesh[i], 3);
-				staticOBBCollision(&SCENE.mesh[i], 4);
+				//staticOBBCollision(&SCENE.mesh[i], 4);
 			}
 
 			/* 4th Collision Detection lvl. */

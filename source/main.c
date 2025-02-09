@@ -83,7 +83,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
                 lookDown(action);
             }
             break;
-        case GLFW_KEY_C:
+        case GLFW_KEY_L:
             if (action == GLFW_PRESS)
                 EYEPOINT = EYEPOINT == camera ? light : camera;
             break;

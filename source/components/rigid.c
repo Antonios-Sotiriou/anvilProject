@@ -103,9 +103,9 @@ void loadmeshRigid(mesh *m, const char name[]) {
 	/* Initialize the world starting position of the rigid body. */
 	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
 	setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, qm1);
-	setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, qm1);
 	mat4x4 qm2 = matfromQuat(m->rigid.q, m->coords.v[0]);
 	setvec4arrayMulmat(m->coords.v, 4, qm2);
+	setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, qm2);
 
 	meshTerrainCollision(m);
 	getmeshRigidLimits(m);

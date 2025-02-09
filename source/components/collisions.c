@@ -1,6 +1,19 @@
 #include "headers/components/collisions.h"
 
 extern void swap(void *a, void *b, unsigned long size);
+/* For testing purposes. Return t time of collision. */
+float planeIntersect(vec4 plane, vec4 point, vec4 line_start, vec4 line_end) {
+    float plane_d = -dotProduct(plane, point);
+    float ad = dotProduct(line_start, plane);
+    float bd = dotProduct(line_end, plane);
+    float t = ((-plane_d - ad) / (bd - ad));
+    return t;
+}
+/* Return signed shortest distance from point to plane, plane normal must be normalised. */
+const float planeDistance(vec4 plane, vec4 v) {
+    vec4 r = vecMulvec(plane, v);
+    return ((vec4ExtractX(r) + vec4ExtractY(r) + vec4ExtractZ(r)) - dotProduct(plane, vecNormalize(plane)));
+}
 
 void meshTerrainCollision(mesh *m) {
     mat4x4 tm;
@@ -176,8 +189,8 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
 const int sweptAABBCollision(mesh *m, const int pks[]) {
 
-    if (m->quadIndex < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quadIndex);
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
         return 0;
     }
 
@@ -345,7 +358,8 @@ const int staticOBBCollision(mesh *m, const int pk) {
     //if (dotProduct(vecSubvec(m->coords.v[0], SCENE.mesh[pk].coords.v[0]), normal) < 0) {
     //    normal = vecMulf32(normal, -1.f);
     //}
-    normal = vecNormalize(normal);
+    //normal = vecNormalize(normal);
+
     //printf("depth_normal: %f\n", depth / vecLength(normal));
     //printf("depth_velocity: %f\n", depth / vecLength(m->rigid.velocity));
     if (depth == 0)
