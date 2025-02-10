@@ -1,7 +1,7 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-int WIDTH, HEIGHT, EYEPOINT = camera, DISPLAY_RIGID = 0;
+int WIDTH = 1000, HEIGHT = 1000, EYEPOINT = camera, DISPLAY_RIGID = 0, lastMouseX, lastMouseY;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
 mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
@@ -94,7 +94,41 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
     }
 }
 static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
-    printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
+    //printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
+    float test_x = ((x - (WIDTH * 0.5f)) / (WIDTH * 0.5f));
+    float test_y = ((y - (HEIGHT * 0.5f)) / (HEIGHT * 0.5f));
+
+    vec4 axis = { 0 };
+    float radius = 1.f;
+
+    if (fabsf(test_x) > fabsf(test_y))
+        axis = setvec4(0.f, 1.f, 0.f, 0.f);
+        if (x < lastMouseX)
+            radius = -1.f;
+    else
+        axis = setvec4(1.f, 0.f, 0.f, 0.f);
+        if (y < lastMouseY)
+            radius = -1.f;
+
+    lastMouseX = x;
+    lastMouseY = y;
+
+    printf("x: %f    y: %f\n", x, y);
+
+    if (checkAllZeros(axis)) {
+
+        SCENE.mesh[camera].rigid.q = rotationQuat(radius, vec4ExtractX(axis), vec4ExtractY(axis), 0);
+        mat4x4 tm = matfromQuat(SCENE.mesh[camera].rigid.q, SCENE.mesh[3].coords.v[0]);
+
+        setvec4arrayMulmat(&SCENE.mesh[camera].coords, 4, tm);
+        setvec4arrayMulmat(SCENE.mesh[camera].rigid.v, SCENE.mesh[camera].rigid.v_indexes, tm);
+        setvec4arrayMulmat(SCENE.mesh[camera].rigid.n, SCENE.mesh[camera].rigid.n_indexes, tm);
+
+        SCENE.mesh[camera].q = multiplyQuats(SCENE.mesh[camera].q, SCENE.mesh[camera].rigid.q);
+    }
+
+    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.mesh[camera].coords.v[0]));
+    //SCENE.mesh[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
@@ -117,10 +151,14 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
     } else if (button == GLFW_MOUSE_BUTTON_2)
         if (action == GLFW_PRESS) {
             /* Register a Cursor position callback function. */
+            glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             glfwSetCursorPosCallback(win, cursor_pos_callback);
         } else {
             /* Unregister a Cursor position callback function. */
             glfwSetCursorPosCallback(win, NULL);
+            glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            lastMouseX = WIDTH * 0.5f;
+            lastMouseY = HEIGHT * 0.5f;
         }
 }
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################
@@ -190,12 +228,16 @@ int main(int argc, char *argv[]) {
     debug_log_info(stdout, "GLFW Version revision     : %d\n", vers[2]);
 
     /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* window = glfwCreateWindow(640, 480, "anvil", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "anvil", NULL, NULL);
     if ( !window ) {
         debug_log_critical(stdout, "glfwCreateWindow()");
         glfwTerminate();
         return -1;
     }
+    /* Initialize last mause x and y positions to start at the center of the screen. */
+    lastMouseX = WIDTH * 0.5f;
+    lastMouseY = HEIGHT * 0.5f;
+
     /* Get window's dimensions. */
     glfwGetWindowSize(window, &WIDTH, &HEIGHT);
 

@@ -11,7 +11,7 @@
 #endif // !STRUCTS_H
 
 /* Defined in main.c */
-extern int WIDTH, HEIGHT, EYEPOINT, DISPLAY_RIGID;
+extern int WIDTH, HEIGHT, EYEPOINT, DISPLAY_RIGID, lastMouseX, lastMouseY;
 /* The global matrices, defined also in main.c. */
 extern mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 /* deltaTime. Time taken between frames. Defined in main.c. */
