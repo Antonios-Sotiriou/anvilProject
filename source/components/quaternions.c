@@ -91,12 +91,12 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
     const float half_yaw = yaw * 0.5f;
     const float half_pitch = pitch * 0.5f;
 
-    const float cr = cosf(half_roll);
-    const float sr = sinf(half_roll);
-    const float cy = cosf(half_yaw);
-    const float sy = sinf(half_yaw);
-    const float cp = cosf(half_pitch);
-    const float sp = sinf(half_pitch);
+    const float cy = cosf(half_roll);
+    const float sy = sinf(half_roll);
+    const float cp = cosf(half_yaw);
+    const float sp = sinf(half_yaw);
+    const float cr = cosf(half_pitch);
+    const float sr = sinf(half_pitch);
 
     quat crsrcrcr = _mm_setr_ps(cr, sr, cr, cr);
     quat cpcpspcp = _mm_setr_ps(cp, cp, sp, cp);
@@ -269,12 +269,12 @@ quat eulertoQuat(const float roll, const float yaw, const float pitch) {
     const float half_yaw = yaw * 0.5f;
     const float half_pitch = pitch * 0.5f;
 
-    const float cr = cosf(half_roll);
-    const float sr = sinf(half_roll);
-    const float cy = cosf(half_yaw);
-    const float sy = sinf(half_yaw);
-    const float cp = cosf(half_pitch);
-    const float sp = sinf(half_pitch);
+    const float cy = cosf(half_roll);
+    const float sy = sinf(half_roll);
+    const float cp = cosf(half_yaw);
+    const float sp = sinf(half_yaw);
+    const float cr = cosf(half_pitch);
+    const float sr = sinf(half_pitch);
     const float cpcy = cp * cy;
     const float spsy = sp * sy;
     const float spcy = sp * cy;

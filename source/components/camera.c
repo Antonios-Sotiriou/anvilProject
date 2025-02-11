@@ -63,7 +63,7 @@ void lookRight(const int action) {
     if (SCENE.mesh[camera].rigid.state) {
         SCENE.mesh[camera].rigid.rot_angle = action;
         SCENE.mesh[camera].rigid.q = rotationQuat(-0.01f, 0.f, 1.f, 0.f);
-            return;
+        return;
     }
 
     mat4x4 tr = matfromQuat(rotationQuat(-10.f * action, 0.f, 1.f, 0.f), SCENE.mesh[camera].coords.v[0]);

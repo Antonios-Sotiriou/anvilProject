@@ -53,12 +53,9 @@ void applyPhysics(void) {
 			}
 
 			mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.mesh[i].rigid.velocity), vec4ExtractY(SCENE.mesh[i].rigid.velocity), vec4ExtractZ(SCENE.mesh[i].rigid.velocity));
-			//setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tm);
+			setvec4arrayMulmat(SCENE.mesh[i].coords.v, 4, tm);
 			setvec4arrayMulmat(SCENE.mesh[i].rigid.v, SCENE.mesh[i].rigid.v_indexes, tm);
 			setvec4arrayMulmat(SCENE.mesh[i].rigid.n, SCENE.mesh[i].rigid.n_indexes, tm);
-			
-			/* Update the position pivot of the mesh. */
-			SCENE.mesh[i].coords.v[0] = vecAddvec(SCENE.mesh[i].coords.v[0], SCENE.mesh[i].rigid.velocity);
 
 			if (!SCENE.mesh[i].rigid.grounded || SCENE.mesh[i].type != MESH_TYPE_CAMERA)
 				meshTerrainCollision(&SCENE.mesh[i]);
