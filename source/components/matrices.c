@@ -4,6 +4,15 @@
 /* Usefull to inverse some values in inverseMatrix function. */
 const static vec4 invmor = { -0.f, -0.f, -0.f, 0.f };
 
+/* Identify Matrix or else Unit Matrix. */
+mat4x4 identityMatrix(void) {
+    return (mat4x4) {
+        setvec4(1.f, 0.f, 0.f, 0.f),
+        setvec4(0.f, 1.f, 0.f, 0.f),
+        setvec4(0.f, 0.f, 1.f, 0.f),
+        setvec4(0.f, 0.f, 0.f, 1.f),
+    };
+}
 /* Scale Matrix. */
 mat4x4 scaleMatrix(const float scale) {
     mat4x4 m = { 0 };
@@ -251,6 +260,15 @@ mat4x4 inverseMatrix(const mat4x4 m) {
     return r;
 }
 #else // ITERATIVE_CODE #########################################################################################
+/* Identify Matrix or else Unit Matrix. */
+mat4x4 identityMatrix(void) {
+    mat4x4 m = { 0 };
+    m.m[0].m128_f32[0] = 1.0f;
+    m.m[1].m128_f32[1] = 1.0f;
+    m.m[2].m128_f32[2] = 1.0f;
+    m.m[3].m128_f32[3] = 1.0f;
+    return m;
+}
 /* Scale Matrix. */
 mat4x4 scaleMatrix(const float scale) {
     mat4x4 m = { 0 };

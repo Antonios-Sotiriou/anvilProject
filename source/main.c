@@ -95,39 +95,30 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
 }
 static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     //printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
-
-    vec4 axis = { 0 };
     float radius = 1.f;
-
     int xoffset = lastMouseX - x;
     int yoffset = y - lastMouseY;
 
     if (abs(xoffset) > abs(yoffset)) {
         if (xoffset < 0)
             radius = -1.f;
-        axis = setvec4(0.f, 1.f, 0.f, 1.f);
-        //axis = SCENE.mesh[3].coords.v[2];
+        SCENE.mesh[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
     } else {
         if (yoffset < 0)
             radius = -1.f;
-        axis = SCENE.mesh[camera].coords.v[1];
-        //axis = crossProduct(vecNormalize(vecSubvec(SCENE.mesh[camera].coords.v[0], SCENE.mesh[3].coords.v[0])), SCENE.mesh[3].coords.v[2]);
+        SCENE.mesh[camera].rigid.q = rotationQuat(radius, SCENE.mesh[camera].coords.v[1].m128_f32[0], SCENE.mesh[camera].coords.v[1].m128_f32[1], SCENE.mesh[camera].coords.v[1].m128_f32[2]);
     }
 
     lastMouseX = x;
     lastMouseY = y;
 
-    if (checkAllZeros(axis)) {
+    mat4x4 tm = matfromQuat(SCENE.mesh[camera].rigid.q, SCENE.mesh[3].coords.v[0]);
 
-        SCENE.mesh[camera].rigid.q = rotationQuat(radius, vec4ExtractX(axis), vec4ExtractY(axis), 0);
-        mat4x4 tm = matfromQuat(SCENE.mesh[camera].rigid.q, SCENE.mesh[3].coords.v[0]);
+    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tm);
+    setvec4arrayMulmat(SCENE.mesh[camera].rigid.v, SCENE.mesh[camera].rigid.v_indexes, tm);
+    setvec4arrayMulmat(SCENE.mesh[camera].rigid.n, SCENE.mesh[camera].rigid.n_indexes, tm);
 
-        setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tm);
-        setvec4arrayMulmat(SCENE.mesh[camera].rigid.v, SCENE.mesh[camera].rigid.v_indexes, tm);
-        setvec4arrayMulmat(SCENE.mesh[camera].rigid.n, SCENE.mesh[camera].rigid.n_indexes, tm);
-
-        SCENE.mesh[camera].q = multiplyQuats(SCENE.mesh[camera].q, SCENE.mesh[camera].rigid.q);
-    }
+    SCENE.mesh[camera].q = multiplyQuats(SCENE.mesh[camera].q, SCENE.mesh[camera].rigid.q);
 
     //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.mesh[camera].coords.v[0]));
     //SCENE.mesh[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
@@ -289,8 +280,6 @@ int main(int argc, char *argv[]) {
         /* Sleep so much as we need to keep us at 60 fps. */
         //time_diff = deltaTime > 0.016666 ? 0 : (0.016666 - deltaTime) * 100000;
         //usleep(time_diff);
-        system("cls\n");
-        logcoords(SCENE.mesh[camera].coords);
     }
 
     glfwTerminate();

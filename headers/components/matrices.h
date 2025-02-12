@@ -18,6 +18,7 @@
     #include "headers/components/vec_math.h"
 #endif // !VEC_MATH_H
 
+mat4x4 identityMatrix(void);
 mat4x4 scaleMatrix(const float scale);
 mat4x4 translationMatrix(const float x, const float y, const float z);
 mat4x4 rotateXMatrix(const float angle);

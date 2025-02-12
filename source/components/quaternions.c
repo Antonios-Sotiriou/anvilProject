@@ -346,6 +346,45 @@ mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t) {
 
     return m;
 }
+/* Creates a quaternion from a rotation Matrix. Scale is not taken in account. */
+quat quatFromMat(mat4x4 m) {
+    float trace = m.m[0].m128_f32[0] + m.m[1].m128_f32[1] + m.m[2].m128_f32[2];
+    if (trace > 0) {
+        float s = 0.5f / sqrtf(trace + 1.f);
+        return (quat) {
+            0.25f / s,
+            (m.m[2].m128_f32[1] - m.m[1].m128_f32[2]) * s,
+            (m.m[0].m128_f32[2] - m.m[2].m128_f32[0]) * s,
+            (m.m[1].m128_f32[0] - m.m[0].m128_f32[1]) * s
+        };
+    } else {
+        if ((m.m[0].m128_f32[0] > m.m[1].m128_f32[1]) && (m.m[0].m128_f32[0]) > m.m[2].m128_f32[2]) {
+            float s = 2.f * sqrtf(1.f + m.m[0].m128_f32[0] - m.m[1].m128_f32[1] - m.m[2].m128_f32[2]);
+            return (quat) {
+                (m.m[2].m128_f32[1] - m.m[1].m128_f32[2]) / s,
+                0.25f * s,
+                (m.m[0].m128_f32[1] + m.m[1].m128_f32[0]) / s,
+                (m.m[0].m128_f32[2] + m.m[2].m128_f32[0]) / s
+            };
+        } else if (m.m[1].m128_f32[1] > m.m[2].m128_f32[2]) {
+            float s = 2.f * sqrtf(1.f + m.m[1].m128_f32[1] - m.m[0].m128_f32[0] - m.m[2].m128_f32[2]);
+            return (quat) {
+                (m.m[0].m128_f32[2] - m.m[2].m128_f32[0]) / s,
+                (m.m[0].m128_f32[1] + m.m[1].m128_f32[0]) / s,
+                0.25f * s,
+                (m.m[1].m128_f32[2] + m.m[2].m128_f32[1]) / s
+            };
+        } else {
+            float s = 2.f * sqrtf(1.f + m.m[2].m128_f32[2] - m.m[0].m128_f32[0] - m.m[1].m128_f32[1]);
+            return (quat) {
+                (m.m[1].m128_f32[0] - m.m[0].m128_f32[1]) / s,
+                (m.m[0].m128_f32[2] + m.m[2].m128_f32[0]) / s,
+                (m.m[1].m128_f32[2] + m.m[2].m128_f32[1]) / s,
+                0.25f * s
+            };
+        }
+    }
+}
 /* Spherical interpolates between two quaternions at coefficient t. */
 quat slerp(const quat q1, const quat q2, const float t) {
     // Calculate angle between q1 and q2.
