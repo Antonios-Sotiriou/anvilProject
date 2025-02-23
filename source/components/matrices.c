@@ -7,99 +7,91 @@ const static vec4 invmor = { -0.f, -0.f, -0.f, 0.f };
 /* Identify Matrix or else Unit Matrix. */
 mat4x4 identityMatrix(void) {
     return (mat4x4) {
-        setvec4(1.f, 0.f, 0.f, 0.f),
-        setvec4(0.f, 1.f, 0.f, 0.f),
-        setvec4(0.f, 0.f, 1.f, 0.f),
-        setvec4(0.f, 0.f, 0.f, 1.f),
+        _mm_setr_ps(1.f, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, 1.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 1.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 0.f, 1.f),
     };
 }
 /* Scale Matrix. */
 mat4x4 scaleMatrix(const float scale) {
-    mat4x4 m = { 0 };
-    vec4SetX(&m.m[0], scale);
-    vec4SetY(&m.m[1], scale);
-    vec4SetZ(&m.m[2], scale);
-    vec4SetW(&m.m[3], 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(scale, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, scale, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, scale, 0.f),
+        _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
+    };
 }
 /* Translation Matrix. */
 mat4x4 translationMatrix(const float x, const float y, const float z) {
-    mat4x4 m = { 0 };
-    vec4SetX(&m.m[0], 1.f);
-    vec4SetY(&m.m[1], 1.f);
-    vec4SetZ(&m.m[2], 1.f);
-    vec4SetW(&m.m[3], 1.f);
-    m.m[3] = setvec4(x, y, z, 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(1.f, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, 1.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 1.f, 0.f),
+        _mm_setr_ps(x, y, z, 1.f)
+    };
 }
 /* Rotate Object on X axis according the world origin */
 mat4x4 rotateXMatrix(const float angle) {
-    mat4x4 m = { 0 };
     const float cosa = cosf(angle);
     const float sina = sinf(angle);
-    vec4SetX(&m.m[0], 1.f);
-    vec4SetY(&m.m[1], cosa);
-    vec4SetZ(&m.m[1], -sina);
-    vec4SetY(&m.m[2], sina);
-    vec4SetZ(&m.m[2], cosa);
-    vec4SetW(&m.m[3], 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(1.f, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, cosa, -sina, 0.f),
+        _mm_setr_ps(0.f, sina, cosa, 0.f),
+        _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
+    };
 }
 /* Rotate Object on Y axis according the world origin. */
 mat4x4 rotateYMatrix(const float angle) {
-    mat4x4 m = { 0 };
     const float cosa = cosf(angle);
     const float sina = sinf(angle);
-    vec4SetX(&m.m[0], cosa);
-    vec4SetZ(&m.m[0], -sina);
-    vec4SetY(&m.m[1], 1.f);
-    vec4SetX(&m.m[2], sina);
-    vec4SetZ(&m.m[2], cosa);
-    vec4SetW(&m.m[3], 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(cosa, 0.f, -sina, 0.f),
+        _mm_setr_ps(0.f, 1.f, 0.f, 0.f),
+        _mm_setr_ps(sina, 0.f, cosa, 0.f),
+        _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
+    };
 }
 /* Rotate Object on Z axis according the world origin */
 mat4x4 rotateZMatrix(const float angle) {
-    mat4x4 m = { 0 };
     const float cosa = cosf(angle);
     const float sina = sinf(angle);
-    vec4SetX(&m.m[0], cosa);
-    vec4SetY(&m.m[0], sina);
-    vec4SetX(&m.m[1], -sina);
-    vec4SetY(&m.m[1], cosa);
-    vec4SetZ(&m.m[2], 1.f);
-    vec4SetW(&m.m[3], 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(cosa, sina, 0.f, 0.f),
+        _mm_setr_ps(-sina, cosa, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 1.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
+    };
 }
 /* Orthographic Projection Matrix. l: left, r: right, t: top, b: bottom, n: near, f: far.*/
 mat4x4 orthographicMatrix(const float l, const float r, const float t, const float b, const float n, const float f) {
-    mat4x4 m = { 0 };
-    vec4SetX(&m.m[0], 2.f / (r - l));
-    vec4SetY(&m.m[1], 2.f / (b - t));
-    vec4SetZ(&m.m[2], 1.0f / (n - f));
-    m.m[3] = setvec4(((r + l) / (r - l)), ((b + t) / (b - t)), ((f + n) / (n - f)), 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(2.f / (r - l), 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, 2.f / (b - t), 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 1.0f / (n - f), 0.f),
+        _mm_setr_ps(((r + l) / (r - l)), ((b + t) / (b - t)), ((f + n) / (n - f)), 1.f)
+    };
 }
 /* Perspective Projection Matrix. */
 mat4x4 perspectiveMatrix(const float fov, const float aspectratio, const float zn, const float zf) {
-    mat4x4 m = { 0 };
     const float fovRadius = 1.f / tanf(fov * 0.5f / 180.0f * 3.14159f);
-    vec4SetX(&m.m[0], fovRadius);
-    vec4SetY(&m.m[1], aspectratio * fovRadius);
-    vec4SetZ(&m.m[2], zf / (zf - zn));
-    vec4SetW(&m.m[2], 1.f);
-    vec4SetZ(&m.m[3], (zf * zn) / (zn - zf));
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(fovRadius, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, aspectratio * fovRadius, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, zf / (zf - zn), 1.f),
+        _mm_setr_ps(0.f, 0.f, (zf * zn) / (zn - zf), 0.f)
+    };
 }
 /* Reverse Perspective Projection Matrix. fov: field of view, ar: aspect ratio. */
-mat4x4 reperspectiveMatrix(const float fov, const float ar) {
-    mat4x4 m = { 0 };
+mat4x4 reperspectiveMatrix(const float fov, const float aspectratio) {
     const float fovRadius = 1.f / tanf(fov * 0.5f / 180.0f * 3.14159f);
-    vec4SetX(&m.m[0], ar / fovRadius);
-    vec4SetY(&m.m[1], ar / fovRadius);
-    vec4SetZ(&m.m[3], 1.f);
-    vec4SetW(&m.m[3], 1.f);
-    return m;
+    return  (mat4x4) {
+        _mm_setr_ps(aspectratio / fovRadius, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, aspectratio / fovRadius, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, 1.f, 1.f)
+    };
 }
 /* The Camera Matrix or as used to called the View Matrix.Returns a new 4x4 Matrix. */
 mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {

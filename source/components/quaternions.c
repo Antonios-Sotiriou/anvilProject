@@ -161,6 +161,45 @@ mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t) {
 
     return m;
 }
+/* Creates a quaternion from a rotation Matrix. Scale is not taken in account. */
+quat quatFromMat(mat4x4 m) {
+    float trace = vec4ExtractX(m.m[0]) + vec4ExtractY(m.m[1]) + vec4ExtractZ(m.m[2]);
+    if (trace > 0) {
+        float s = 0.5f / sqrtf(trace + 1.f);
+        return (quat) {
+            0.25f / s,
+            (vec4ExtractY(m.m[2]) - vec4ExtractZ(m.m[1])) * s,
+            (vec4ExtractZ(m.m[0]) - vec4ExtractX(m.m[2])) * s,
+            (vec4ExtractX(m.m[1]) - vec4ExtractY(m.m[0])) * s
+        };
+    } else {
+        if ((vec4ExtractX(m.m[0]) > vec4ExtractY(m.m[1])) && (vec4ExtractX(m.m[0]) > vec4ExtractZ(m.m[2]))) {
+            float s = 2.f * sqrtf(1.f + vec4ExtractX(m.m[0]) - vec4ExtractY(m.m[1]) - vec4ExtractZ(m.m[2]));
+            return (quat) {
+                (vec4ExtractY(m.m[2]) - vec4ExtractZ(m.m[1])) / s,
+                0.25f * s,
+                (vec4ExtractY(m.m[0]) + vec4ExtractX(m.m[1])) / s,
+                (vec4ExtractZ(m.m[0]) + vec4ExtractX(m.m[2])) / s
+            };
+        } else if (vec4ExtractY(m.m[1]) > vec4ExtractZ(m.m[2])) {
+            float s = 2.f * sqrtf(1.f + vec4ExtractY(m.m[1]) - vec4ExtractX(m.m[0]) - vec4ExtractZ(m.m[2]));
+            return (quat) {
+                (vec4ExtractZ(m.m[0]) - vec4ExtractX(m.m[2])) / s,
+                (vec4ExtractY(m.m[0]) + vec4ExtractX(m.m[1])) / s,
+                0.25f * s,
+                (vec4ExtractZ(m.m[1]) + vec4ExtractY(m.m[2])) / s
+            };
+        } else {
+            float s = 2.f * sqrtf(1.f + vec4ExtractZ(m.m[2]) - vec4ExtractX(m.m[0]) - vec4ExtractY(m.m[1]));
+            return (quat) {
+                (vec4ExtractX(m.m[1]) - vec4ExtractY(m.m[0])) / s,
+                (vec4ExtractZ(m.m[0]) + vec4ExtractX(m.m[2])) / s,
+                (vec4ExtractZ(m.m[1]) + vec4ExtractY(m.m[2])) / s,
+                0.25f * s
+            };
+        }
+    }
+}
 /* Spherical interpolates between two quaternions at coefficient t. */
 quat slerp(const quat q1, const quat q2, const float t) {
     // Calculate angle between q1 and q2.(Dot Product).
