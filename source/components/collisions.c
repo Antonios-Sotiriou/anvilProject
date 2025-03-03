@@ -185,6 +185,88 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
     }
     return 0;
 }
+/* Swept Sorting the collisions for AABB. */
+void sortCollisions(mesh* m) {
+
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. sortCollisions().\n", m->quad_index);
+        return;
+    }
+
+    getmeshRigidLimits(m);
+    vec4 tnear, tfar, min, max;
+
+    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+
+    for (int i = 0; i < num_of_members; i++) {
+
+        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+
+        if (pk != m->pk) {
+
+            min = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+
+            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->rigid.velocity);
+            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->rigid.velocity);
+
+            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+                continue;
+
+            min = _mm_min_ps(tnear, tfar);
+            max = _mm_max_ps(tnear, tfar);
+
+            int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
+            if (check_xz == 1 || check_xz == 4) {
+                continue;
+            }
+
+            float t_near = 0.f, t_far = 0.f;
+            if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+                t_near = _mm_cvtss_f32(min);
+            }
+            else {
+                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
+            }
+
+            if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+                t_far = _mm_cvtss_f32(max);
+            }
+            else {
+                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
+            }
+
+            /* ##################### Y ############################ */
+            if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
+                continue;
+
+            if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
+                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
+            if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
+                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
+            /* ##################### Y ############################ */
+
+            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+                continue;
+
+            SCENE.mesh[pk].rigid.collision_t = t_near;
+        }
+    }
+    mesh cache_1, cache_2;
+    for (int i = 0; i < num_of_members; i++) {
+        int pk1 = SCENE.t.quad[m->quad_index].mpks[i];
+        cache_1 = SCENE.mesh[pk1];
+        for (int j = 0; j < num_of_members; j++) {
+            int pk2 = SCENE.t.quad[m->quad_index].mpks[j];
+            cache_2 = SCENE.mesh[pk2];
+            if (cache_1.pk != m->pk) {
+                if (cache_1.rigid.collision_t < cache_2.rigid.collision_t) {
+                    swap(&SCENE.t.quad[m->quad_index].mpks[i], &SCENE.t.quad[m->quad_index].mpks[j], 4);
+                }
+            }
+        }
+    }
+}
 #else // ITERATIVE_CODE #########################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
 const int sweptAABBCollision(mesh *m, const int pks[]) {
@@ -197,11 +279,11 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
     getmeshRigidLimits(m);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = 1;
+    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = pks[i];
+        int pk = SCENE.t.quad[m->quad_index].mpks[i];
 
         if (pk != m->pk) {
 
@@ -297,9 +379,104 @@ const int sweptAABBCollision(mesh *m, const int pks[]) {
     }
     return 0;
 }
+/* Swept Sorting the collisions for AABB. */
+void sortCollisions(mesh* m) {
+
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
+        return 0;
+    }
+
+    getmeshRigidLimits(m);
+    vec4 tnear, tfar, min, max;
+
+    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+
+    for (int i = 0; i < num_of_members; i++) {
+
+        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+
+        if (pk != m->pk) {
+
+            min = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+
+            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->rigid.velocity);
+            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->rigid.velocity);
+
+            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+                continue;
+
+            if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
+            if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
+            if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
+
+            if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
+                continue;
+
+            float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
+            float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
+
+            /* ##################### Y ############################ */
+            if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
+                continue;
+
+            if (tnear.m128_f32[1] > t_near)
+                t_near = tnear.m128_f32[1];
+            if (tfar.m128_f32[1] < t_far)
+                t_far = tfar.m128_f32[1];
+            /* ##################### Y ############################ */
+
+            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+                continue;
+
+            vec4 normal = { 0.f };
+            if (tnear.m128_f32[0] >= tnear.m128_f32[1] && tnear.m128_f32[0] >= tnear.m128_f32[2]) {
+                if (m->rigid.velocity.m128_f32[0] < 0) {
+                    normal.m128_f32[0] = 1.f;
+                }
+                else if (m->rigid.velocity.m128_f32[0] > 0) {
+                    normal.m128_f32[0] = -1.f;
+                }
+            }
+            else if (tnear.m128_f32[1] >= tnear.m128_f32[0] && tnear.m128_f32[1] >= tnear.m128_f32[2]) {
+                if (m->rigid.velocity.m128_f32[1] < 0) {
+                    normal.m128_f32[1] = 1.f;
+                }
+                else if (m->rigid.velocity.m128_f32[1] > 0) {
+                    normal.m128_f32[1] = -1.f;
+                }
+            }
+            else if (tnear.m128_f32[2] >= tnear.m128_f32[0] && tnear.m128_f32[2] >= tnear.m128_f32[1]) {
+                if (m->rigid.velocity.m128_f32[2] < 0) {
+                    normal.m128_f32[2] = 1.f;
+                }
+                else if (m->rigid.velocity.m128_f32[2] > 0) {
+                    normal.m128_f32[2] = -1.f;
+                }
+            }
+
+            SCENE.mesh[pk].rigid.collision_t = t_near;
+        }
+    }
+    mesh cache_1, cache_2;
+    for (int i = 0; i < num_of_members; i++) {
+        int pk1 = SCENE.t.quad[m->quad_index].mpks[i];
+        cache_1 = SCENE.mesh[pk1];
+        for (int j = 0; j < num_of_members; j++) {
+            int pk2 = SCENE.t.quad[m->quad_index].mpks[j];
+            cache_2 = SCENE.mesh[pk2];
+            if (cache_1.pk != m->pk) {
+                if (cache_1.rigid.collision_t < cache_2.rigid.collision_t) {
+                    swap(&SCENE.t.quad[m->quad_index].mpks[i], &SCENE.t.quad[m->quad_index].mpks[j], 4);
+                }
+            }
+        }
+    }
+}
 #endif // VECTORIZED_CODE #######################################################################################
 /* Check for collisions between rotated meshes. */
-const int staticOBBCollision(mesh *m, const int pk) {
+const int staticOBBCollision(mesh* m, const int pk) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOBBCollisions().\n", m->quad_index);
@@ -309,9 +486,9 @@ const int staticOBBCollision(mesh *m, const int pk) {
     const int sum_norms = m->rigid.n_indexes + SCENE.mesh[pk].rigid.n_indexes;
     /* Implement Oriented bounding boxes collision detection. */
     mat4x4 tm = translationMatrix(vec4ExtractX(m->rigid.velocity), vec4ExtractY(m->rigid.velocity), vec4ExtractZ(m->rigid.velocity));
-    vec4 *vec4s = vec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, tm);
-    vec4 *norms = vec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, tm);
-    vec4 *temp = realloc(norms, 16 * sum_norms);;
+    vec4* vec4s = vec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, tm);
+    vec4* norms = vec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, tm);
+    vec4* temp = realloc(norms, 16 * sum_norms);;
     if (!temp) {
         debug_log_error(stdout, "malloc()");
         free(vec4s);
@@ -323,7 +500,7 @@ const int staticOBBCollision(mesh *m, const int pk) {
 
     float depth = (float)INT_MAX;
     vec4 normal = { 0 };
-    float dot = 0.f, min_outer,  min_inner, max_outer, max_inner;
+    float dot = 0.f, min_outer, min_inner, max_outer, max_inner;
 
     //printf("\x1b[H\x1b[J");
 
@@ -385,88 +562,6 @@ const int staticOBBCollision(mesh *m, const int pk) {
     free(norms);
     //getc(stdin);
     return 1;
-}
-/* Swept Sorting the collisions for AABB. */
-void sortCollisions(mesh *m) {
-
-    if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. sortCollisions().\n", m->quad_index);
-        return;
-    }
-
-    getmeshRigidLimits(m);
-    vec4 tnear, tfar, min, max;
-
-    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
-
-    for (int i = 0; i < num_of_members; i++) {
-
-        int pk = SCENE.t.quad[m->quad_index].mpks[i];
-
-        if (pk != m->pk) {
-
-            min = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(SCENE.mesh[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
-
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->rigid.velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->rigid.velocity);
-
-            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
-                continue;
-
-            min = _mm_min_ps(tnear, tfar);
-            max = _mm_max_ps(tnear, tfar);
-
-            int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
-            if (check_xz == 1 || check_xz == 4) {
-                continue;
-            }
-
-            float t_near = 0.f, t_far = 0.f;
-            if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_near = _mm_cvtss_f32(min);
-            }
-            else {
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
-            }
-
-            if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_far = _mm_cvtss_f32(max);
-            }
-            else {
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
-            }
-
-            /* ##################### Y ############################ */
-            if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
-                continue;
-
-            if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
-            if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
-            /* ##################### Y ############################ */
-
-            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
-                continue;
-
-            SCENE.mesh[pk].rigid.collision_t = t_near;
-        }
-    }
-    mesh cache_1, cache_2;
-    for (int i = 0; i < num_of_members; i++) {
-        int pk1 = SCENE.t.quad[m->quad_index].mpks[i];
-        cache_1 = SCENE.mesh[pk1];
-        for (int j = 0; j < num_of_members; j++) {
-            int pk2 = SCENE.t.quad[m->quad_index].mpks[j];
-            cache_2 = SCENE.mesh[pk2];
-            if ( cache_1.pk != m->pk ) {
-                if ( cache_1.rigid.collision_t < cache_2.rigid.collision_t ) {
-                    swap(&SCENE.t.quad[m->quad_index].mpks[i], &SCENE.t.quad[m->quad_index].mpks[j], 4);
-                }
-            }
-        }
-    }
 }
 
 
