@@ -384,7 +384,7 @@ void sortCollisions(mesh* m) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
-        return 0;
+        return;
     }
 
     getmeshRigidLimits(m);
