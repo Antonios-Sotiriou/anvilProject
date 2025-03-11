@@ -125,11 +125,11 @@ Data must be freed when no longer needed. */
 /* Frees OBJ allocated data releasing sources. */
 void releaseOBJ(OBJ *obj) {
     for (int i = 0; i < obj->e_indexes; i++) {
-        free(obj->e[i].cname);
-        free(obj->e[i].v);
-        free(obj->e[i].n);
-        free(obj->e[i].t);
-        free(obj->e[i].f);
+        free(&obj->e[i].cname);
+        free(&obj->e[i].v);
+        free(&obj->e[i].n);
+        free(&obj->e[i].t);
+        free(&obj->e[i].f);
     }
     free(obj->e);
 }
@@ -175,6 +175,7 @@ void readOBJ(OBJ *obj, const char path[]) {
 
             ch = getc(fp);
             if (ch == ' ') {
+
                 e_cache++;
                 /* Dynamically allocating memory for an entry of an object in the obj file. ########################################## */
                 ENTRY *temp_e = realloc(obj->e, entry_size * e_inc);
@@ -185,41 +186,43 @@ void readOBJ(OBJ *obj, const char path[]) {
                 } else {
                     obj->e = temp_e;
 
-                    /* Extract all the characters to  form the ENTRY name until we meet a New Line char */
-                    char test[64] = { 0 };
-                    while ((ch = getc(fp)) != '\n') {
-                        test[ch_index] = ch;
-                        ch_index++;
-                        ch_inc++;
-                    }
-                    if (ch_index > 63) {
-                        debug_log_error(stdout, "ch_index > 64");
-                        break;
-                    }
-
                     /* Allocating memory for the name to hold the obj name of the processing ENTRY. ######################################### */
                     obj->e[e_cache].cname = malloc(ch_inc);
                     if (!obj->e[e_cache].cname) {
                         debug_log_error(stdout, "obj->e[e_cache].cname = malloc(ch_inc)");
                         break;
                     } else {
-                        memcpy(obj->e[e_cache].cname, &test, ch_index);
+                        /* Extract all the characters to  form the ENTRY name until we meet a New Line char */
+                        while ((ch = getc(fp)) != '\n') {
+                            char *temp = realloc(obj->e[e_cache].cname, 1 * ch_inc);
+                            if (!temp) {
+                                debug_log_error(stdout, "realloc(obj->e[e_cache].cname, 1 * ch_inc)");
+                                free(obj->e[e_cache].cname);
+                                break;
+                            } else {
+                                obj->e[e_cache].cname = temp;
+
+                                obj->e[e_cache].cname[ch_index] = ch;
+                                ch_index++;
+                                ch_inc++;
+                            }
+                        }
                         obj->e[e_cache].cname[ch_index] = '\0';
                         obj->e[e_cache].c_indexes = ch_index;
-                    }
-                    /* Reset the char count variables for the next ENTRY. */
-                    ch_inc = 1;
-                    ch_index = 0;
+                        /* Reset the char count variables for the next ENTRY. */
+                        ch_inc = 1;
+                        ch_index = 0;
 
-                    /* Allocating memory for the arrays to hold the obj data of the processing ENTRY. ######################################### */
-                    obj->e[e_cache].v = malloc(4);
-                    obj->e[e_cache].n = malloc(4);
-                    obj->e[e_cache].t = malloc(4);
-                    obj->e[e_cache].f = malloc(4);
+                        /* Allocating memory for the arrays to hold the obj data of the processing ENTRY. ######################################### */
+                        obj->e[e_cache].v = malloc(4);
+                        obj->e[e_cache].n = malloc(4);
+                        obj->e[e_cache].t = malloc(4);
+                        obj->e[e_cache].f = malloc(4);
+                    }
+                    /* Update and increment the ENTRIES counters. */
+                    e_index++;
+                    e_inc++;
                 }
-                /* Update and increment the ENTRIES counters. */
-                e_index++;
-                e_inc++;
             }
         } else if (ch == 'v') {
             ch = getc(fp);
