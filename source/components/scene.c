@@ -19,7 +19,7 @@ void releaseScene(void) {
     free(SCENE.mesh);
     for (int i = 0; i < SCENE.t.quad_indexes; i++) {
         if (SCENE.t.quad[i].mpks)
-            free(SCENE.t.quad[i].mpks);
+            free(&SCENE.t.quad[i].mpks);
     }
     free(SCENE.t.quad);
 }

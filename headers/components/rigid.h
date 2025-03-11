@@ -35,7 +35,7 @@
 
 void loadmeshRigid(mesh *m, const char name[]);
 void getmeshRigidLimits(mesh *m);
-void releaseRigid(mesh *m);
+void releaseRigid(rigid *r);
 
 #endif // !RIGID_H
 

@@ -51,10 +51,10 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
              if (SCENE.mesh[idx].type == MESH_TYPE_TERRAIN) {
                  createTerrain(&SCENE.mesh[idx], argv[i]);
              } else {
-                 createMesh(&SCENE.mesh[idx], argv[i]);
+                 //createMesh(&SCENE.mesh[idx], argv[i]);
              }
-             if (SCENE.mesh[idx].rigid.state == ENABLE)
-                 loadmeshRigid(&SCENE.mesh[idx], argv[i]);
+             //if (SCENE.mesh[idx].rigid.state == ENABLE)
+             //    loadmeshRigid(&SCENE.mesh[idx], argv[i]);
         }
     }
 

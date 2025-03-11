@@ -36,85 +36,85 @@ static char *composemeshRigidPath(mesh *m, const char name[]) {
 	return dynamic_path;
 }
 
-void loadmeshRigid(mesh *m, const char name[]) {
-	OBJ obj;
-	char *dynamic_path = composemeshRigidPath(m, name);
-	readOBJ(&obj, dynamic_path);
-	free(dynamic_path);
-
-	// Initialize the vectors array from .obj file data.
-	m->rigid.v_indexes = (obj.v_indexes / 3);
-	m->rigid.v = malloc(m->rigid.v_indexes * 16);
-	if (!m->rigid.v) {
-		debug_log_critical(stdout, "m->rigid.v");
-		exit(0);
-	}
-	int v_index = 0;
-	for (int i = 0; i < obj.v_indexes; i += 3) {
-		memcpy(&m->rigid.v[v_index], &obj.v[i], 12);
-		vec4SetW(&m->rigid.v[v_index], 1.f);
-		v_index++;
-	}
-
-	// Initialize the normals array from .obj file data.
-	m->rigid.n_indexes = (obj.n_indexes / 3);
-	m->rigid.n = malloc(m->rigid.n_indexes * 16);
-	if (!m->rigid.n) {
-		debug_log_critical(stdout, "m->rigid.n");
-		exit(0);
-	}
-	int n_index = 0;
-	for (int i = 0; i < obj.n_indexes; i += 3) {
-		memcpy(&m->rigid.n[n_index], &obj.n[i], 12);
-		vec4SetW(&m->rigid.n[n_index], 0.f);
-		n_index++;
-	}
-
-	// Initialize the faces array from .obj file data.
-	m->rigid.vbo_indexes = (obj.f_indexes / 9) * 24;
-	m->rigid.faces_indexes = m->rigid.vbo_indexes / 24;
-	m->rigid.vecs_indexes = m->rigid.faces_indexes * 3;
-	m->rigid.vbo_size = m->rigid.vbo_indexes * 4;
-
-	m->rigid.vbo = malloc(m->rigid.vbo_size);
-	if (!m->rigid.vbo) {
-		debug_log_critical(stdout, "m->rigid.vbo");
-		return;
-	}
-
-	int index = 0, vpad, tpad;
-	for (int i = 0; i < obj.f_indexes; i++) {
-		vpad = obj.f[i] * 3;
-		m->rigid.vbo[index] = obj.v[vpad];
-		m->rigid.vbo[index + 1] = obj.v[vpad + 1];
-		m->rigid.vbo[index + 2] = obj.v[vpad + 2];
-		i++;
-		tpad = obj.f[i] * 2;
-		m->rigid.vbo[index + 3] = obj.t[tpad];
-		m->rigid.vbo[index + 4] = obj.t[tpad + 1];
-		i++;
-		vpad = obj.f[i] * 3;
-		m->rigid.vbo[index + 5] = obj.n[vpad];
-		m->rigid.vbo[index + 6] = obj.n[vpad + 1];
-		m->rigid.vbo[index + 7] = obj.n[vpad + 2];
-		index += 8;
-	}
-
-	/* Initialize the world starting position of the rigid body. */
-	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
-	setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, qm1);
-	mat4x4 qm2 = matfromQuat(m->rigid.q, m->coords.v[0]);
-	setvec4arrayMulmat(m->coords.v, 4, qm2);
-	setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, qm2);
-
-	meshTerrainCollision(m);
-	getmeshRigidLimits(m);
-	initMeshQuadInfo(m);
-
-	createRigidVAO(m);
-	free(m->rigid.vbo);
-	releaseOBJ(&obj);
-}
+//void loadmeshRigid(mesh *m, const char name[]) {
+//	OBJ obj;
+//	char *dynamic_path = composemeshRigidPath(m, name);
+//	readOBJ(&obj, dynamic_path);
+//	free(dynamic_path);
+//
+//	// Initialize the vectors array from .obj file data.
+//	m->rigid.v_indexes = (obj.e->v_indexes / 3);
+//	m->rigid.v = malloc(m->rigid.v_indexes * 16);
+//	if (!m->rigid.v) {
+//		debug_log_critical(stdout, "m->rigid.v");
+//		exit(0);
+//	}
+//	int v_index = 0;
+//	for (int i = 0; i < obj.e->v_indexes; i += 3) {
+//		memcpy(&m->rigid.v[v_index], &obj.e->v[i], 12);
+//		vec4SetW(&m->rigid.v[v_index], 1.f);
+//		v_index++;
+//	}
+//
+//	// Initialize the normals array from .obj file data.
+//	m->rigid.n_indexes = (obj.e->n_indexes / 3);
+//	m->rigid.n = malloc(m->rigid.n_indexes * 16);
+//	if (!m->rigid.n) {
+//		debug_log_critical(stdout, "m->rigid.n");
+//		exit(0);
+//	}
+//	int n_index = 0;
+//	for (int i = 0; i < obj.e->n_indexes; i += 3) {
+//		memcpy(&m->rigid.n[n_index], &obj.e->n[i], 12);
+//		vec4SetW(&m->rigid.n[n_index], 0.f);
+//		n_index++;
+//	}
+//
+//	// Initialize the faces array from .obj file data.
+//	m->rigid.vbo_indexes = (obj.e->f_indexes / 9) * 24;
+//	m->rigid.faces_indexes = m->rigid.vbo_indexes / 24;
+//	m->rigid.vecs_indexes = m->rigid.faces_indexes * 3;
+//	m->rigid.vbo_size = m->rigid.vbo_indexes * 4;
+//
+//	m->rigid.vbo = malloc(m->rigid.vbo_size);
+//	if (!m->rigid.vbo) {
+//		debug_log_critical(stdout, "m->rigid.vbo");
+//		return;
+//	}
+//
+//	int index = 0, vpad, tpad;
+//	for (int i = 0; i < obj.e->f_indexes; i++) {
+//		vpad = obj.e->f[i] * 3;
+//		m->rigid.vbo[index] = obj.e->v[vpad];
+//		m->rigid.vbo[index + 1] = obj.e->v[vpad + 1];
+//		m->rigid.vbo[index + 2] = obj.e->v[vpad + 2];
+//		i++;
+//		tpad = obj.e->f[i] * 2;
+//		m->rigid.vbo[index + 3] = obj.e->t[tpad];
+//		m->rigid.vbo[index + 4] = obj.e->t[tpad + 1];
+//		i++;
+//		vpad = obj.e->f[i] * 3;
+//		m->rigid.vbo[index + 5] = obj.e->n[vpad];
+//		m->rigid.vbo[index + 6] = obj.e->n[vpad + 1];
+//		m->rigid.vbo[index + 7] = obj.e->n[vpad + 2];
+//		index += 8;
+//	}
+//
+//	/* Initialize the world starting position of the rigid body. */
+//	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
+//	setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, qm1);
+//	mat4x4 qm2 = matfromQuat(m->rigid.q, m->coords.v[0]);
+//	setvec4arrayMulmat(m->coords.v, 4, qm2);
+//	setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, qm2);
+//
+//	meshTerrainCollision(m);
+//	getmeshRigidLimits(m);
+//	initMeshQuadInfo(m);
+//
+//	createRigidVAO(m);
+//	free(m->rigid.vbo);
+//	releaseOBJ(&obj);
+//}
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getmeshRigidLimits(mesh *m) {
@@ -151,16 +151,14 @@ void getmeshRigidLimits(mesh *m) {
     }
 }
 #endif // VECTORIZED_CODE #######################################################################################
-void releaseRigid(mesh *m) {
-	free(m->rigid.v);
-	free(m->rigid.n);
-	glDeleteVertexArrays(1, &m->VAO);
-	glDeleteBuffers(1, &m->VBO);
+void releaseRigid(rigid *r) {
+	free(r->v);
+	free(r->n);
+	glDeleteVertexArrays(1, &r->VAO);
+	glDeleteBuffers(1, &r->VBO);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
-	//if (m->rigid.vbo)
-	//    free(m->rigid.vbo);
 }
 
 

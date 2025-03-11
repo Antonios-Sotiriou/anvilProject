@@ -116,8 +116,12 @@ typedef struct {
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {
+    coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
+    quat q;                              // Quaternion to save rotations.
+    float scale;                         // Value to store the scale of the mesh.
     mesh *mesh;
     int mesh_indexes;
+    rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } model;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
