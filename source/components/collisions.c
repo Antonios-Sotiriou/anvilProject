@@ -543,8 +543,6 @@ const int staticOBBCollision(mesh* m, const int pk) {
         printf("Sliding... depth_velocity: %f\n", depth);
     if (depth > 0 && depth <= 1.f) {
         vec4 velocity = vecMulf32(m->rigid.velocity, -depth);
-        logvec4(m->rigid.velocity);
-        logvec4(velocity);
         mat4x4 trans = translationMatrix(vec4ExtractX(velocity), vec4ExtractY(velocity), vec4ExtractZ(velocity));
         setvec4arrayMulmat(m->coords.v, 4, trans);
         setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, trans);

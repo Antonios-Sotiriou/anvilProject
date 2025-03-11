@@ -14,6 +14,10 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
+#ifndef VEC_MATH_H
+    #include "headers/components/vec_math.h"
+#endif // !VEC_MATH_H
+
 #ifdef VECTORIZED_CODE // #######################################################################################
     #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
         /* Quaternion's internal format is W X Y Z. */
