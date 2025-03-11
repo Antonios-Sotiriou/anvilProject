@@ -14,15 +14,14 @@ void createModel(model *m, const char name[]) {
     snprintf(dynamic_path, path_length, "models/%s/%s.obj", name, name);
 #endif
 
-    //OBJ *obj = { 0 };
-    //readOBJ(obj, dynamic_path);
-    OBJ *obj = readOBJ(dynamic_path);
+    OBJ obj = { 0 };
+    readOBJ(&obj, dynamic_path);
     printf("model name: %s\n", dynamic_path);
     free(dynamic_path);
 
 
     
-    releaseOBJ(obj);
+    releaseOBJ(&obj);
 }
 void releaseModel(model *m) {
     for (int i = 0; i < m->mesh_indexes; i++) {
