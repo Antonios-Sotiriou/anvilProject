@@ -33,13 +33,10 @@ typedef struct {
         t_indexes,        // Number of items stored in the t array aka(The length of the array). 
         f_indexes,        // Number of items stored in the f array aka(The length of the array).
         c_indexes;        // Number of items stored in the cname char array aka(The length of the array).
-} ENTRY;
-typedef struct {
-    ENTRY *e;
     int e_indexes;        // Number of items stored in the entries array aka(The length of the array).
 } OBJ;
 
-void readOBJ(OBJ *obj, const char path[]);
+OBJ *readOBJ(const char path[]);
 void releaseOBJ(OBJ *obj);
 
 #endif // !OBJ_H
