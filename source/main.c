@@ -1,5 +1,5 @@
 #include "headers/main.h"
-#include "headers/components/logging.h"
+
 /* Window app Global variables. */
 int WIDTH = 1000, HEIGHT = 1000, EYEPOINT = camera, DISPLAY_RIGID = 0, lastMouseX, lastMouseY;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
@@ -106,7 +106,7 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     } else {
         if (yoffset < 0)
             radius = -1.f;
-        SCENE.mesh[camera].rigid.q = rotationQuat(radius, SCENE.mesh[camera].coords.v[1].m128_f32[0], SCENE.mesh[camera].coords.v[1].m128_f32[1], SCENE.mesh[camera].coords.v[1].m128_f32[2]);
+        SCENE.mesh[camera].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1]));
     }
 
     lastMouseX = x;
