@@ -185,6 +185,7 @@ void createTerrain(mesh *m, const char name[]) {
     }
 
     createMeshVAO(m);
+    free(m->vbo);
 
     free(v);
     free(t);

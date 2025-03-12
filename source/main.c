@@ -129,7 +129,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         double x, y;
         glfwGetCursorPos(win, &x, &y);
         printf("x: %d    y: %d\n", (int)x, (int)y);
-        createModel(0, "robot");
+
         //GLint data[2];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
         //glReadBuffer(GL_COLOR_ATTACHMENT1);

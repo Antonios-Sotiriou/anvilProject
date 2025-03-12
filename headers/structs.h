@@ -98,6 +98,7 @@ typedef struct {
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
+    char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         scale,                           // Value to store the scale of the mesh.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
@@ -125,8 +126,8 @@ typedef struct {
 } model;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
-    //model *model;
-    //int model_indexes;
+    model *model;
+    int model_indexes;
     mesh *mesh;
     int mesh_indexes;
     TerrainInfo t;
