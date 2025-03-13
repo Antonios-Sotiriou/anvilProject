@@ -26,6 +26,7 @@ void readOBJ(OBJ *obj, const char path[]) {
     }
 
     const int entry_size = sizeof(ENTRY);
+    obj->e = malloc(entry_size);
     int v_inc = 1, n_inc = 1, t_inc = 1, f_inc = 1, e_inc = 1, ch_inc = 1;
     int v_index = 0, n_index = 0, t_index = 0, f_index = 0, e_index = 0, ch_index = 0, e_cache = -1, last_index = 0;
 
@@ -186,11 +187,6 @@ void readOBJ(OBJ *obj, const char path[]) {
 
     fclose(fp);
     obj->e_indexes = e_index;
-
-    //for (int i = 0; i < obj->e_indexes; i++) {
-    //    printf("ENTRY. %p\n", &obj->e[i]);
-    //    printf("cname. %p\n\n", &obj->e[i].cname);
-    //}
 }
 /* Frees OBJ allocated data releasing sources. */
 void releaseOBJ(OBJ* obj) {

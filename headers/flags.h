@@ -20,8 +20,8 @@
     #define SCENE_TABLE               2
 
     /* Flags for states changing. */
-    #define ENABLE              1
-    #define DISABLE             0
+    #define ENABLED             1
+    #define DISABLED            0
     #define ON                  1
     #define OFF                 0
 

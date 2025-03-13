@@ -6,7 +6,7 @@ const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
 void applyPhysics(void) {
 
 	for (int i = 0; i < SCENE.mesh_indexes; i++) {
-		if (SCENE.mesh[i].rigid.state == ENABLE && (checkAllZeros(SCENE.mesh[i].rigid.velocity) || SCENE.mesh[i].rigid.rot_angle)) {
+		if (SCENE.mesh[i].rigid.state == ENABLED && (checkAllZeros(SCENE.mesh[i].rigid.velocity) || SCENE.mesh[i].rigid.rot_angle)) {
 
 			initMeshQuadInfo(&SCENE.mesh[i]);
 

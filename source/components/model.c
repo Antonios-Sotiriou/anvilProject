@@ -18,12 +18,11 @@ void createModel(model *m, const char name[]) {
     readOBJ(&obj, dynamic_path);
     free(dynamic_path);
 
-    m->mesh = malloc(sizeof(mesh) * obj.e_indexes);
+    m->mesh = calloc(obj.e_indexes, sizeof(mesh));
     m->mesh_indexes = obj.e_indexes;
     for (int i = 0; i < m->mesh_indexes; i++) {
         createMesh(&m->mesh[i], obj.e[i]);
     }
-
 
     releaseOBJ(&obj);
 }
@@ -31,8 +30,9 @@ void releaseModel(model *m) {
     for (int i = 0; i < m->mesh_indexes; i++) {
         releaseMesh(&m->mesh[i]);
     }
-    free(m->mesh);
-    releaseRigid(&m->rigid);
+    //free(m->mesh);
+    //if (m->rigid.state == ENABLED)
+    //    releaseRigid(&m->rigid);
 }
 
 

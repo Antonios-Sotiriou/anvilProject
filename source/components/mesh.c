@@ -6,16 +6,19 @@ void createMesh(mesh *m, ENTRY obj) {
     m->vecs_indexes = m->faces_indexes * 3;
     m->vbo_size = m->vbo_indexes * 4;
 
+    /* Allocating size for the vertex buffer object which will be realeased after we upload it on the GPU. */
     m->vbo = malloc(m->vbo_size);
     if (!m->vbo) {
         debug_log_error(stdout, "m->vbo = malloc(m->vbo_size)");
         return;
     }
-    m->cname = malloc(obj.c_indexes);
-    memcpy(&m->cname, &obj.cname, obj.c_indexes);
-
-    printf("mesh: %p\n", &m->cname);
-    printf("vao:  %p\n\n", &m->vbo);
+    /* Allocating space for the mesh identification, null terminating, string name. +1 for the null terminating char. */
+    m->cname = malloc(obj.c_indexes + 1);
+    if (!m->cname) {
+        debug_log_error(stdout, "m->cname = malloc(obj.c_indexes)");
+        return;
+    }
+    memcpy(m->cname, obj.cname, obj.c_indexes + 1);
 
     int index = 0, vpad, tpad;
     for (int i = 0; i < obj.f_indexes; i++) {
@@ -46,7 +49,7 @@ void releaseMesh(mesh *m) {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
-    if (m->rigid.state)
+    if (m->rigid.state == ENABLED)
         releaseRigid(&m->rigid);
 }
 

@@ -78,23 +78,25 @@ void testShader(void) {
     /* Just for testing purposes code. ##################### */
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
-    quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
-    SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
-    if ((COUNT % 1000) == 0) {
-        rot += 1.0f;
-        //logvec4(SCENE.mesh[terrain].q);
-    }
-    COUNT++;
+    //quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
+    //SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
+    //if ((COUNT % 1000) == 0) {
+    //    rot += 1.0f;
+    //    //logvec4(SCENE.mesh[terrain].q);
+    //}
+    //COUNT++;
 
     mat4x4 modelMatrix;
-    for (int i = 0; i < SCENE.mesh_indexes; i++) {
-        modelMatrix = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
+    for (int i = 0; i < SCENE.model_indexes; i++) {
+        for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+            modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
 
-        glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
-        //glUniform1i(2, i + 1);
-        
-        glBindVertexArray(SCENE.mesh[i].VAO);
-        glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].vecs_indexes);
+            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+            //glUniform1i(2, i + 1);
+
+            glBindVertexArray(SCENE.model[i].mesh[x].VAO);
+            glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
+        }
     }
     /* Just for testing purposes code. ##################### */
 
