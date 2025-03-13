@@ -11,17 +11,29 @@ void createScene(void) {
 
     //dbloadTable(GITANA_DB, MESH_TABLE, "SELECT * FROM mesh;");
 
-    SCENE.model = calloc(2, sizeof(model));
-    createTerrain(&SCENE.model[0], "gitana");
+    /*  TERRAIN  */
+    SCENE.model = calloc(1, sizeof(model));
+    SCENE.model[0].mesh = calloc(1, sizeof(mesh));
+    SCENE.model_indexes = 1;
     SCENE.model[0].mesh_indexes = 1;
-
-
-    SCENE.model_indexes = 2;
-    createModel(&SCENE.model[1], "robot");
-    SCENE.model[0].scale = 100;
+    createTerrain(&SCENE.model[0].mesh[0], "gitana");
+    SCENE.model[0].scale = 1000;
     SCENE.model[0].q = unitQuat();
-    //for (int i = 0; i < SCENE.model[1].mesh_indexes; i++)
-        SCENE.model[0].mesh[0].scale = SCENE.model[0].scale;
+    SCENE.model[0].mesh[0].scale = SCENE.model[0].scale;
+    SCENE.model[0].mesh[0].q = SCENE.model[0].q;
+    SCENE.model[0].mesh[0].coords.v[0].m128_f32[3] = 1.f;
+
+    /* ROBOT */
+    //SCENE.model = calloc(1, sizeof(model));
+    //SCENE.model_indexes = 1;
+    //createModel(&SCENE.model[0], "robot");
+    //SCENE.model[0].scale = 100;
+    //SCENE.model[0].q = unitQuat();
+    //for (int i = 0; i < SCENE.model[0].mesh_indexes; i++) {
+    //    SCENE.model[0].mesh[i].scale = SCENE.model[0].scale;
+    //    SCENE.model[0].mesh[i].q = SCENE.model[0].q;
+    //    SCENE.model[0].mesh[i].coords.v[0].m128_f32[3] = 1.f;
+    //}
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {

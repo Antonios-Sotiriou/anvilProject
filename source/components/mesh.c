@@ -19,6 +19,7 @@ void createMesh(mesh *m, ENTRY obj) {
         return;
     }
     memcpy(m->cname, obj.cname, obj.c_indexes + 1);
+    m->cname_indexes = obj.c_indexes;
 
     int index = 0, vpad, tpad;
     for (int i = 0; i < obj.f_indexes; i++) {

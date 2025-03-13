@@ -30,9 +30,9 @@ void releaseModel(model *m) {
     for (int i = 0; i < m->mesh_indexes; i++) {
         releaseMesh(&m->mesh[i]);
     }
-    //free(m->mesh);
-    //if (m->rigid.state == ENABLED)
-    //    releaseRigid(&m->rigid);
+    free(m->mesh);
+    if (m->rigid.state == ENABLED)
+        releaseRigid(&m->rigid);
 }
 
 

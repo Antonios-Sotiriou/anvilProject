@@ -102,7 +102,8 @@ typedef struct {
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         scale,                           // Value to store the scale of the mesh.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
-    int vbo_indexes,                     // Number of vbo indexes as individual floats.
+    int cname_indexes,                   // Number of items stored in the cname char array aka(The length of the array).
+        vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
