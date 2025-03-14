@@ -66,7 +66,7 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
     SCENE.model[idx].cname = malloc(SCENE.model[idx].length_cname + 1); // +1 For the NULL terminating character also.
     if (!SCENE.model[idx].cname) {
         debug_log_error(stdout, "SCENE.model[idx].cname = malloc(SCENE.model[idx].length_cname + 1)");
-        return;
+        return 1;
     }
     memcpy(SCENE.model[idx].cname, argv[name_index], SCENE.model[idx].length_cname + 1);
 

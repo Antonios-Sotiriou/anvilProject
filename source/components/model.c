@@ -33,6 +33,7 @@ void createModel(model *m, const char name[]) {
     releaseOBJ(&obj);
 }
 void releaseModel(model *m) {
+    free(m->cname);
     for (int i = 0; i < m->mesh_indexes; i++) {
         releaseMesh(&m->mesh[i]);
     }
