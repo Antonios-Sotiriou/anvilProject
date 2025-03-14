@@ -32,8 +32,8 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
         } else if (strncmp(azColName[i], "quat", 4) == 0) {
             float q[4];
             sscanf_os(argv[i], "{%f %f %f %f}", &q[0], &q[1], &q[2], &q[3]);
-            memcpy(&SCENE.model[idx].q, q, 16);
-            memcpy(&SCENE.model[idx].rigid.q, q, 16);
+            SCENE.model[idx].q = rotationQuat(q[0], q[1], q[2], q[3]);
+            SCENE.model[idx].rigid.q = SCENE.model[idx].q;
         } else if (strncmp(azColName[i], "scale", 5) == 0) {
             SCENE.model[idx].scale = strtof(argv[i], NULL);
         } else if (strncmp(azColName[i], "outer_radius", 12) == 0) {
