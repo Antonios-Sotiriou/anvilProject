@@ -77,13 +77,27 @@ void logmesh(const mesh m) {
 	printf("VBO            : %d\n", m.VBO);
 	printf("pk             : %d\n", m.pk);
 	printf("type           : %d\n", m.type);
+	logrigid(m.rigid);
+}
+void logmodel(const model m) {
+	logcoords(m.coords);
+	printf("Quat           : ");
+	logvec4(m.q);
+	printf("cname          : %s\n", m.cname);
+	printf("scale          : %f\n", m.scale);
+	printf("outer_radius   : %f\n", m.outer_radius);
+	printf("mesh           : %p\n", &m.mesh);
+	printf("mesh_indexes   : %d\n", m.mesh_indexes);
+	printf("cname_length   : %d\n", m.length_cname);
+	printf("pk             : %d\n", m.pk);
+	printf("type           : %d\n", m.type);
 	printf("quadInit       : %d\n", m.quad_init);
 	printf("quadIndex      : %d\n", m.quad_index);
 	printf("quadIndex      : %d\n", m.quad_face);
 	logrigid(m.rigid);
 }
 void logscene(const scene s) {
-	printf("mesh_indexes         : %d\n", s.mesh_indexes);
+	printf("mesh_indexes         : %d\n", s.model_indexes);
 	printf("terrain quad_indexes : %d\n", s.t.quad_indexes);
 	printf("terrain vec_width    : %d\n", s.t.vec_width);
 	printf("terrain vec_height   : %d\n", s.t.vec_height);

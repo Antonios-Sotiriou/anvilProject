@@ -34,7 +34,7 @@
 #endif // !COLLISIONS_H
 
 void loadmeshRigid(mesh *m, const char name[]);
-void getmeshRigidLimits(mesh *m);
+void getRigidLimits(rigid *r);
 void releaseRigid(rigid *r);
 
 #endif // !RIGID_H

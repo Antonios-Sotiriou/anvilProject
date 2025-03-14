@@ -102,26 +102,26 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     if (abs(xoffset) > abs(yoffset)) {
         if (xoffset < 0)
             radius = -1.f;
-        SCENE.mesh[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
+        SCENE.model[camera].mesh[0].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
     } else {
         if (yoffset < 0)
             radius = -1.f;
-        SCENE.mesh[camera].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1]));
+        SCENE.model[camera].mesh[0].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.model[camera].mesh[0].coords.v[1]), vec4ExtractY(SCENE.model[camera].mesh[0].coords.v[1]), vec4ExtractZ(SCENE.model[camera].mesh[0].coords.v[1]));
     }
 
     lastMouseX = x;
     lastMouseY = y;
 
-    mat4x4 tm = matfromQuat(SCENE.mesh[camera].rigid.q, SCENE.mesh[3].coords.v[0]);
+    mat4x4 tm = matfromQuat(SCENE.model[camera].mesh[0].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
 
-    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tm);
-    setvec4arrayMulmat(SCENE.mesh[camera].rigid.v, SCENE.mesh[camera].rigid.v_indexes, tm);
-    setvec4arrayMulmat(SCENE.mesh[camera].rigid.n, SCENE.mesh[camera].rigid.n_indexes, tm);
+    setvec4arrayMulmat(SCENE.model[camera].mesh[0].coords.v, 4, tm);
+    setvec4arrayMulmat(SCENE.model[camera].mesh[0].rigid.v, SCENE.model[camera].mesh[0].rigid.v_indexes, tm);
+    setvec4arrayMulmat(SCENE.model[camera].mesh[0].rigid.n, SCENE.model[camera].mesh[0].rigid.n_indexes, tm);
 
-    SCENE.mesh[camera].q = multiplyQuats(SCENE.mesh[camera].q, SCENE.mesh[camera].rigid.q);
+    SCENE.model[camera].mesh[0].q = multiplyQuats(SCENE.model[camera].mesh[0].q, SCENE.model[camera].mesh[0].rigid.q);
 
-    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.mesh[camera].coords.v[0]));
-    //SCENE.mesh[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
+    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].mesh[0].coords.v[0]));
+    //SCENE.model[camera].mesh[0].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
         //printf("FPS          : %4.1f\n", FPS);
 
         /* Apply physics */
-        //applyPhysics();
+        applyPhysics();
 
         /* Draw the Global SCENE. */
         rasterize();

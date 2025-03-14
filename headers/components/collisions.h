@@ -26,11 +26,11 @@
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H
 
-void meshTerrainCollision(mesh *m);
-const int staticOuterRadiusCollision(mesh *m);
-const int sweptAABBCollision(mesh *m, const int pks[]);
-const int staticOBBCollision(mesh *m, const int pk);
-void sortCollisions(mesh* m);
+void modelTerrainCollision(model *m);
+const int staticOuterRadiusCollision(model *m);
+const int sweptAABBCollision(model *m, const int pks[]);
+const int staticOBBCollision(model *m, const int pk);
+void sortCollisions(model *m);
 
 #endif // !COLLISIONS_H
 

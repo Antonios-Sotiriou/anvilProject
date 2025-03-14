@@ -102,7 +102,7 @@ typedef struct {
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         scale,                           // Value to store the scale of the mesh.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
-    int cname_indexes,                   // Number of items stored in the cname char array aka(The length of the array).
+    int length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
@@ -110,27 +110,30 @@ typedef struct {
         VAO,                             // VAO id or name represented by an integer.
         VBO,                             // VBO id or name represented by an integer.
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
-        type,                            // The type of the mesh.
-        quad_init,                       // Flag, which shows if the mesh went through the terrain initialization pipeline, at least one time, at the start of the program.
-        quad_index,                      // The index of the terrain quad that the mesh is standing on.
-        quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+        type;                            // The type of the mesh.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
-    float scale;                         // Value to store the scale of the mesh.
-    mesh *mesh;
-    int mesh_indexes;
+    char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
+    float scale,                         // Value to store the scale of the model.
+        outer_radius;                    // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
+    mesh *mesh;                          // Meshes array from which the model is consisting.
+    int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
+        length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
+        type,                            // The type of the model.
+        quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
+        quad_index,                      // The index of the terrain quad that the model is standing on.
+        quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } model;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
     model *model;
     int model_indexes;
-    mesh *mesh;
-    int mesh_indexes;
     TerrainInfo t;
 } scene;
 
