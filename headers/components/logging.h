@@ -23,6 +23,8 @@ void logmat4x4(const mat4x4 m);
 void logcoords(const coords m);
 void logrigid(const rigid r);
 void logmesh(const mesh m);
+void logmodel(const model m);
+void logscene(const scene s);
 
 #endif // !LOGGING_H
 

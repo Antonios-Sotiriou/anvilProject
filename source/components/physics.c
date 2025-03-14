@@ -9,7 +9,7 @@ void applyPhysics(void) {
 		if (SCENE.model[i].rigid.state == ENABLED && (checkAllZeros(SCENE.model[i].rigid.velocity) || SCENE.model[i].rigid.rot_angle)) {
 
 			initModelQuadInfo(&SCENE.model[i]);
-
+			printf("reached this spot\n");
 			//float g_accelaration = 0.f;
 			//if (!SCENE.model[i].rigid.grounded) {
 			//	SCENE.model[i].rigid.falling_time += DeltaTime;
@@ -57,7 +57,7 @@ void applyPhysics(void) {
 			setvec4arrayMulmat(SCENE.model[i].rigid.v, SCENE.model[i].rigid.v_indexes, tm);
 			setvec4arrayMulmat(SCENE.model[i].rigid.n, SCENE.model[i].rigid.n_indexes, tm);
 
-			if (!SCENE.model[i].rigid.grounded || SCENE.model[i].type != MESH_TYPE_CAMERA)
+			if (!SCENE.model[i].rigid.grounded || SCENE.model[i].type != MODEL_TYPE_CAMERA)
 				modelTerrainCollision(&SCENE.model[i]);
 		}
 	}

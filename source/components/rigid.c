@@ -5,11 +5,11 @@ static char* composemeshRigidPath(mesh* m, const char name[]);
 /* Create the rigid file path according to the type of the mesh. Different types of meshes may have diferent file paths. Thats why we must generalize them. */
 static char *composemeshRigidPath(mesh *m, const char name[]) {
 	char* dynamic_path = { 0 };
-	if (m->type == MESH_TYPE_TERRAIN) {
+	if (m->type == MODEL_TYPE_TERRAIN) {
 		int path_length = (strlen(name) * 2) + 21; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
 		if (!dynamic_path) {
-			debug_log_error(stdout, "malloc()");
+			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
 			debug_log_info(stdout, "%s\n", name);
 			return 0;
 		}
@@ -22,7 +22,7 @@ static char *composemeshRigidPath(mesh *m, const char name[]) {
 		int path_length = (strlen(name) * 2) + 19; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
 		if (!dynamic_path) {
-			debug_log_error(stdout, "malloc()");
+			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
 			debug_log_info(stdout, "%s\n", name);
 			return 0;
 		}

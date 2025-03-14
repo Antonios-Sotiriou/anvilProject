@@ -110,7 +110,8 @@ typedef struct {
         VAO,                             // VAO id or name represented by an integer.
         VBO,                             // VBO id or name represented by an integer.
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
-        type;                            // The type of the mesh.
+        type,                            // The type of the mesh.
+        visible;                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } mesh;
 /* Model structure to represent a collection of shapes. */
@@ -125,6 +126,7 @@ typedef struct {
         length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
         type,                            // The type of the model.
+        visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.

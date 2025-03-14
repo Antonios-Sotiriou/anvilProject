@@ -41,6 +41,8 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
             SCENE.model[idx].outer_radius = sqrtf(rad2 + rad2);
         } else if (strncmp(azColName[i], "state", 5) == 0) {
             SCENE.model[idx].rigid.state = atoi(argv[i]);
+        } else if (strncmp(azColName[i], "visible", 7) == 0) {
+            SCENE.model[idx].visible = atoi(argv[i]);
         } else if (strncmp(azColName[i], "velocity", 8) == 0) {
             float v[4];
             sscanf_os(argv[i], "{%f %f %f %f}", &v[0], &v[1], &v[2], &v[3]);
@@ -67,7 +69,6 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
         return;
     }
     memcpy(SCENE.model[idx].cname, argv[name_index], SCENE.model[idx].length_cname + 1);
-    printf("length_cname: %d\n", SCENE.model[idx].length_cname);
 
     *(int*)NotUsed += 1;
 

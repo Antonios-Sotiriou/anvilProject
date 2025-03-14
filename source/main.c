@@ -97,31 +97,31 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     //printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
     float radius = 1.f;
     int xoffset = lastMouseX - x;
-    int yoffset = y - lastMouseY;
+    int yoffset = lastMouseY - y;
 
     if (abs(xoffset) > abs(yoffset)) {
         if (xoffset < 0)
             radius = -1.f;
-        SCENE.model[camera].mesh[0].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
+        SCENE.model[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
     } else {
         if (yoffset < 0)
             radius = -1.f;
-        SCENE.model[camera].mesh[0].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.model[camera].mesh[0].coords.v[1]), vec4ExtractY(SCENE.model[camera].mesh[0].coords.v[1]), vec4ExtractZ(SCENE.model[camera].mesh[0].coords.v[1]));
+        SCENE.model[camera].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.model[camera].coords.v[1]), vec4ExtractY(SCENE.model[camera].coords.v[1]), vec4ExtractZ(SCENE.model[camera].coords.v[1]));
     }
 
     lastMouseX = x;
     lastMouseY = y;
 
-    mat4x4 tm = matfromQuat(SCENE.model[camera].mesh[0].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
+    mat4x4 tm = matfromQuat(SCENE.model[camera].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
 
-    setvec4arrayMulmat(SCENE.model[camera].mesh[0].coords.v, 4, tm);
-    setvec4arrayMulmat(SCENE.model[camera].mesh[0].rigid.v, SCENE.model[camera].mesh[0].rigid.v_indexes, tm);
-    setvec4arrayMulmat(SCENE.model[camera].mesh[0].rigid.n, SCENE.model[camera].mesh[0].rigid.n_indexes, tm);
+    setvec4arrayMulmat(SCENE.model[camera].coords.v, 4, tm);
+    setvec4arrayMulmat(SCENE.model[camera].rigid.v, SCENE.model[camera].rigid.v_indexes, tm);
+    setvec4arrayMulmat(SCENE.model[camera].rigid.n, SCENE.model[camera].rigid.n_indexes, tm);
 
-    SCENE.model[camera].mesh[0].q = multiplyQuats(SCENE.model[camera].mesh[0].q, SCENE.model[camera].mesh[0].rigid.q);
+    SCENE.model[camera].q = multiplyQuats(SCENE.model[camera].q, SCENE.model[camera].rigid.q);
 
-    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].mesh[0].coords.v[0]));
-    //SCENE.model[camera].mesh[0].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
+    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].coords.v[0]));
+    //SCENE.model[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
@@ -129,7 +129,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         double x, y;
         glfwGetCursorPos(win, &x, &y);
         printf("x: %d    y: %d\n", (int)x, (int)y);
-
+        SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
         //GLint data[2];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
         //glReadBuffer(GL_COLOR_ATTACHMENT1);

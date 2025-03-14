@@ -21,7 +21,13 @@ void createModel(model *m, const char name[]) {
     m->mesh = calloc(obj.e_indexes, sizeof(mesh));
     m->mesh_indexes = obj.e_indexes;
     for (int i = 0; i < m->mesh_indexes; i++) {
+        /* Creating the meshes from ENTRIES of obj file. */
         createMesh(&m->mesh[i], obj.e[i]);
+
+        /* Inherit model translations to meshes. */
+        m->mesh[i].scale = m->scale;
+        m->mesh[i].q = m->q;
+        memcpy(&m->mesh[i].coords, &m->coords, 64);
     }
 
     releaseOBJ(&obj);

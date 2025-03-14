@@ -88,15 +88,16 @@ void testShader(void) {
 
     mat4x4 modelMatrix;
     for (int i = 0; i < SCENE.model_indexes; i++) {
-        for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-            modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
+        if (SCENE.model[i].visible)
+            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+                modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
 
-            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
-            //glUniform1i(2, i + 1);
+                glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+                //glUniform1i(2, i + 1);
 
-            glBindVertexArray(SCENE.model[i].mesh[x].VAO);
-            glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
-        }
+                glBindVertexArray(SCENE.model[i].mesh[x].VAO);
+                glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
+            }
     }
     /* Just for testing purposes code. ##################### */
 

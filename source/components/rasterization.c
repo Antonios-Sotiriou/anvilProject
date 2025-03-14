@@ -3,10 +3,10 @@
 /* Rasterizing Meshes with appropriate shaders. */
 const void rasterize(void) {
     LOOKAT_M = lookatMatrix(
-        SCENE.model[EYEPOINT].mesh[0].coords.v[0],
-        SCENE.model[EYEPOINT].mesh[0].coords.v[1],
-        SCENE.model[EYEPOINT].mesh[0].coords.v[2],
-        SCENE.model[EYEPOINT].mesh[0].coords.v[3]
+        SCENE.model[EYEPOINT].coords.v[0],
+        SCENE.model[EYEPOINT].coords.v[1],
+        SCENE.model[EYEPOINT].coords.v[2],
+        SCENE.model[EYEPOINT].coords.v[3]
     );
     VIEW_M = inverseMatrix(LOOKAT_M);
     PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);

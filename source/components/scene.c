@@ -44,12 +44,6 @@ void createScene(void) {
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         createModel(&SCENE.model[i], SCENE.model[i].cname);
-
-        for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-            SCENE.model[i].mesh[x].scale = SCENE.model[i].scale;
-            SCENE.model[i].mesh[x].q = SCENE.model[i].q;
-            memcpy(&SCENE.model[i].mesh[x].coords, &SCENE.model[i].coords, 64);
-        }
     }
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
