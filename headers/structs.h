@@ -76,8 +76,7 @@ typedef struct {
     vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
         *n,                              // Normals array to be used for OBB collision. Normals are unique to save iterations.
         min,                             // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
-        max,                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
-        velocity;                        // Velocity of a mesh.
+        max;                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
     quat q;                              // Rotation quaternion W, X, Y, Z.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         rot_angle,                       // The rotation angle of the rigid body.
@@ -118,6 +117,7 @@ typedef struct {
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
+    vec4 velocity;                       // Velocity of a model.
     char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
     float scale,                         // Value to store the scale of the model.
         outer_radius;                    // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.

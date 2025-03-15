@@ -13,75 +13,17 @@ int			            Frame = 0;
 static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
 
     switch (key) {
-        case GLFW_KEY_W :
-            if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-                moveForward(action);
-            } else if (action == GLFW_RELEASE) {
-                moveForward(action);
-            }
-            break;
-        case GLFW_KEY_S :
-            if (action == GLFW_PRESS) {
-                moveBackward(action);
-            } else if (action == GLFW_RELEASE) {
-                moveBackward(action);
-            }
-            break;
-        case GLFW_KEY_RIGHT:
-            if (action == GLFW_PRESS) {
-                moveRight(action);
-            } else if (action == GLFW_RELEASE) {
-                moveRight(action);
-            }
-            break;
-        case GLFW_KEY_LEFT:
-            if (action == GLFW_PRESS) {
-                moveLeft(action);
-            } else if (action == GLFW_RELEASE) {
-                moveLeft(action);
-            }
-            break;
-        case GLFW_KEY_UP:
-            if (action == GLFW_PRESS) {
-                moveUp(action);
-            } else if (action == GLFW_RELEASE) {
-                moveUp(action);
-            }
-            break;
-        case GLFW_KEY_DOWN:
-            if (action == GLFW_PRESS) {
-                moveDown(action);
-            } else if (action == GLFW_RELEASE) {
-                moveDown(action);
-            }
-            break;
-        case GLFW_KEY_D:
-            if (action == GLFW_PRESS) {
-                lookRight(action);
-            } else if (action == GLFW_RELEASE) {
-                lookRight(action);
-            }
-            break;
+        case GLFW_KEY_W:
         case GLFW_KEY_A:
-            if (action == GLFW_PRESS) {
-                lookLeft(action);
-            } else if (action == GLFW_RELEASE) {
-                lookLeft(action);
-            }
-            break;
-        case GLFW_KEY_E:
-            if (action == GLFW_PRESS) {
-                lookUp(action);
-            } else if (action == GLFW_RELEASE) {
-                lookUp(action);
-            }
-            break;
+        case GLFW_KEY_S:
+        case GLFW_KEY_D:
         case GLFW_KEY_Q:
-            if (action == GLFW_PRESS) {
-                lookDown(action);
-            } else if (action == GLFW_RELEASE) {
-                lookDown(action);
-            }
+        case GLFW_KEY_E:
+        case GLFW_KEY_RIGHT:
+        case GLFW_KEY_LEFT:
+        case GLFW_KEY_UP:
+        case GLFW_KEY_DOWN:
+            movementDispatch(key, action);
             break;
         case GLFW_KEY_L:
             if (action == GLFW_PRESS)

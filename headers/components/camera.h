@@ -19,16 +19,12 @@
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H
 
-void moveForward(const int action);
-void moveBackward(const int action);
-void moveRight(const int action);
-void moveLeft(const int action);
-void moveUp(const int action);
-void moveDown(const int action);
-void lookRight(const int action);
-void lookLeft(const int action);
-void lookUp(const int action);
-void lookDown(const int action);
+/* External Libraries. */
+#ifndef _glfw3_h_
+    #include "libraries/glfw-3.4/include/GLFW/glfw3.h"
+#endif
+
+movementDispatch(const int key, const int action);
 
 #endif // !CAMERA_H
 

@@ -41,8 +41,6 @@ void logrigid(const rigid r) {
 	logvec4(r.min);
 	printf("    max           : ");
 	logvec4(r.max);
-	printf("    velocity      : ");
-	logvec4(r.velocity);
 	printf("    q             : ");
 	logvec4(r.q);
 
@@ -83,6 +81,8 @@ void logmodel(const model m) {
 	logcoords(m.coords);
 	printf("Quat           : ");
 	logvec4(m.q);
+	printf("    velocity      : ");
+	logvec4(m.velocity);
 	printf("cname          : %s\n", m.cname);
 	printf("scale          : %f\n", m.scale);
 	printf("outer_radius   : %f\n", m.outer_radius);

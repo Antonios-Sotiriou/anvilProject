@@ -46,7 +46,7 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
         } else if (strncmp(azColName[i], "velocity", 8) == 0) {
             float v[4];
             sscanf_os(argv[i], "{%f %f %f %f}", &v[0], &v[1], &v[2], &v[3]);
-            memcpy(&SCENE.model[idx].rigid.velocity, v, 16);
+            memcpy(&SCENE.model[idx].velocity, v, 16);
         } else if (strncmp(azColName[i], "rot_angle", 9) == 0) {
             SCENE.model[idx].rigid.rot_angle = strtof(argv[i], NULL);
         } else if (strncmp(azColName[i], "cname", 5) == 0) {
