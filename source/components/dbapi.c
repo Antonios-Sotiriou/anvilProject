@@ -47,17 +47,10 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
             float v[4];
             sscanf_os(argv[i], "{%f %f %f %f}", &v[0], &v[1], &v[2], &v[3]);
             memcpy(&SCENE.model[idx].velocity, v, 16);
-        } else if (strncmp(azColName[i], "rot_angle", 9) == 0) {
-            SCENE.model[idx].rigid.rot_angle = strtof(argv[i], NULL);
+        } else if (strncmp(azColName[i], "rotate", 6) == 0) {
+            SCENE.model[idx].rotate = strtof(argv[i], NULL);
         } else if (strncmp(azColName[i], "cname", 5) == 0) {
             name_index = i;
-             //if (SCENE.model[idx].type == MESH_TYPE_TERRAIN) {
-             //    createTerrain(&SCENE.model[idx], argv[i]);
-             //} else {
-             //    createMesh(&SCENE.model[idx], argv[i]);
-             //}
-             //if (SCENE.model[idx].rigid.state == ENABLED)
-             //    loadmeshRigid(&SCENE.model[idx], argv[i]);
         } else if (strncmp(azColName[i], "length_cname", 12) == 0) {
             SCENE.model[idx].length_cname = atoi(argv[i]);
         }
@@ -112,8 +105,8 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
     //        float v[4];
     //        sscanf_os(argv[i], "{%f %f %f %f}", &v[0], &v[1], &v[2], &v[3]);
     //        memcpy(&SCENE.mesh[idx].rigid.velocity, v, 16);
-    //    } else if (strncmp(azColName[i], "rot_angle", 9) == 0) {
-    //        SCENE.mesh[idx].rigid.rot_angle = strtof(argv[i], NULL);
+    //    } else if (strncmp(azColName[i], "rotate", 6) == 0) {
+    //        SCENE.mesh[idx].rigid.rotate = strtof(argv[i], NULL);
     //    } else if (strncmp(azColName[i], "cname", 5) == 0) {
     //         if (SCENE.mesh[idx].type == MESH_TYPE_TERRAIN) {
     //             createTerrain(&SCENE.mesh[idx], argv[i]);

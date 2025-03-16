@@ -79,7 +79,6 @@ typedef struct {
         max;                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
     quat q;                              // Rotation quaternion W, X, Y, Z.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
-        rot_angle,                       // The rotation angle of the rigid body.
         falling_time,                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
         collision_t;                     // The time of collision to help us sort them.Used in sortCollisions function, to find out which collision take place earlier.
     int v_indexes,
@@ -120,7 +119,8 @@ typedef struct {
     vec4 velocity;                       // Velocity of a model.
     char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
     float scale,                         // Value to store the scale of the model.
-        outer_radius;                    // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
+        outer_radius,                    // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
+        rotate;                          // The rotation angle of the rigid body.
     mesh *mesh;                          // Meshes array from which the model is consisting.
     int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
         length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).

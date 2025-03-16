@@ -6,7 +6,7 @@ const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
 void applyPhysics(void) {
 
 	for (int i = 0; i < SCENE.model_indexes; i++) {
-		if (SCENE.model[i].rigid.state == ENABLED && (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rigid.rot_angle)) {
+		if (SCENE.model[i].rigid.state == ENABLED && (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rotate)) {
 
 			initModelQuadInfo(&SCENE.model[i]);
 			printf("Physics ENABLED\n");
@@ -39,7 +39,7 @@ void applyPhysics(void) {
 			/* At this point apply rotationColision. */
 		}
 
-		if (SCENE.model[i].rigid.rot_angle) {
+		if (SCENE.model[i].rotate) {
 			//setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[0]);
 			setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[1]);
 			setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[2]);
@@ -51,8 +51,8 @@ void applyPhysics(void) {
 		mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.model[i].velocity), vec4ExtractY(SCENE.model[i].velocity), vec4ExtractZ(SCENE.model[i].velocity));
 		setvec4arrayMulmat(SCENE.model[i].coords.v, 4, tm);
 
-		if (!SCENE.model[i].rigid.grounded || SCENE.model[i].type != MODEL_TYPE_CAMERA)
-			modelTerrainCollision(&SCENE.model[i]);
+		//if (!SCENE.model[i].rigid.grounded || SCENE.model[i].type != MODEL_TYPE_CAMERA)
+		//	modelTerrainCollision(&SCENE.model[i]);
 	}
 }
 

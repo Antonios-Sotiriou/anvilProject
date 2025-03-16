@@ -45,7 +45,6 @@ void logrigid(const rigid r) {
 	logvec4(r.q);
 
 	printf("    vbo           : %p\n", r.vbo);
-	printf("    rot_angle     : %f\n", r.rot_angle);
 	printf("    falling_time  : %f\n", r.falling_time);
 
 	printf("    n_indexes     : %d\n", r.v_indexes);
@@ -81,11 +80,12 @@ void logmodel(const model m) {
 	logcoords(m.coords);
 	printf("Quat           : ");
 	logvec4(m.q);
-	printf("    velocity      : ");
+	printf("velocity       : ");
 	logvec4(m.velocity);
 	printf("cname          : %s\n", m.cname);
 	printf("scale          : %f\n", m.scale);
 	printf("outer_radius   : %f\n", m.outer_radius);
+	printf("rotate         : %f\n", m.rotate);
 	printf("mesh           : %p\n", &m.mesh);
 	printf("mesh_indexes   : %d\n", m.mesh_indexes);
 	printf("cname_length   : %d\n", m.length_cname);

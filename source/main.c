@@ -23,7 +23,8 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
         case GLFW_KEY_LEFT:
         case GLFW_KEY_UP:
         case GLFW_KEY_DOWN:
-            movementDispatch(key, action);
+            if (action != GLFW_REPEAT)
+                movementDispatch(key, action);
             break;
         case GLFW_KEY_L:
             if (action == GLFW_PRESS)
@@ -72,6 +73,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         glfwGetCursorPos(win, &x, &y);
         printf("x: %d    y: %d\n", (int)x, (int)y);
         SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
+
         //GLint data[2];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
         //glReadBuffer(GL_COLOR_ATTACHMENT1);

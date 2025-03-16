@@ -10,22 +10,22 @@ movementDispatch(const int key, const int action) {
             SCENE.model[camera].velocity = vecMulf32(vecMulf32(SCENE.model[camera].coords.v[3], FORCE), action);
             break;
         case GLFW_KEY_A:
-            SCENE.model[camera].rigid.rot_angle = action;
+            SCENE.model[camera].rotate = action;
             SCENE.model[camera].rigid.q = rotationQuat(0.01f, 0.f, 1.f, 0.f);
             break;
         case GLFW_KEY_S:
             SCENE.model[camera].velocity = vecMulf32(vecMulf32(SCENE.model[camera].coords.v[3], -FORCE), action);
             break;
         case GLFW_KEY_D:
-            SCENE.model[camera].rigid.rot_angle = action;
+            SCENE.model[camera].rotate = action;
             SCENE.model[camera].rigid.q = rotationQuat(-0.01f, 0.f, 1.f, 0.f);
             break;
         case GLFW_KEY_Q:
-            SCENE.model[camera].rigid.rot_angle = action;
+            SCENE.model[camera].rotate = action;
             SCENE.model[camera].rigid.q = rotationQuat(0.01f, vec4ExtractX(SCENE.model[camera].coords.v[1]), vec4ExtractY(SCENE.model[camera].coords.v[1]), vec4ExtractZ(SCENE.model[camera].coords.v[1]));
             break;
         case GLFW_KEY_E:
-            SCENE.model[camera].rigid.rot_angle = action;
+            SCENE.model[camera].rotate = action;
             SCENE.model[camera].rigid.q = rotationQuat(-0.01f, vec4ExtractX(SCENE.model[camera].coords.v[1]), vec4ExtractY(SCENE.model[camera].coords.v[1]), vec4ExtractZ(SCENE.model[camera].coords.v[1]));
             break;
         case GLFW_KEY_RIGHT:
