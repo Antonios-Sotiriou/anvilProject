@@ -21,7 +21,7 @@
     #include "headers/components/rigid.h"
 #endif // !RIGID_H
 
-void createMesh(mesh *m, const char name[]);
+void createMesh(mesh *m, ENTRY obj);
 void releaseMesh(mesh *m);
 
 #endif // !MESH_H

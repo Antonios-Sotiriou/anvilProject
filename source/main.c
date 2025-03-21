@@ -1,5 +1,5 @@
 #include "headers/main.h"
-#include "headers/components/logging.h"
+
 /* Window app Global variables. */
 int WIDTH = 1000, HEIGHT = 1000, EYEPOINT = camera, DISPLAY_RIGID = 0, lastMouseX, lastMouseY;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
@@ -13,75 +13,18 @@ int			            Frame = 0;
 static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
 
     switch (key) {
-        case GLFW_KEY_W :
-            if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-                moveForward(action);
-            } else if (action == GLFW_RELEASE) {
-                moveForward(action);
-            }
-            break;
-        case GLFW_KEY_S :
-            if (action == GLFW_PRESS) {
-                moveBackward(action);
-            } else if (action == GLFW_RELEASE) {
-                moveBackward(action);
-            }
-            break;
-        case GLFW_KEY_RIGHT:
-            if (action == GLFW_PRESS) {
-                moveRight(action);
-            } else if (action == GLFW_RELEASE) {
-                moveRight(action);
-            }
-            break;
-        case GLFW_KEY_LEFT:
-            if (action == GLFW_PRESS) {
-                moveLeft(action);
-            } else if (action == GLFW_RELEASE) {
-                moveLeft(action);
-            }
-            break;
-        case GLFW_KEY_UP:
-            if (action == GLFW_PRESS) {
-                moveUp(action);
-            } else if (action == GLFW_RELEASE) {
-                moveUp(action);
-            }
-            break;
-        case GLFW_KEY_DOWN:
-            if (action == GLFW_PRESS) {
-                moveDown(action);
-            } else if (action == GLFW_RELEASE) {
-                moveDown(action);
-            }
-            break;
-        case GLFW_KEY_D:
-            if (action == GLFW_PRESS) {
-                lookRight(action);
-            } else if (action == GLFW_RELEASE) {
-                lookRight(action);
-            }
-            break;
+        case GLFW_KEY_W:
         case GLFW_KEY_A:
-            if (action == GLFW_PRESS) {
-                lookLeft(action);
-            } else if (action == GLFW_RELEASE) {
-                lookLeft(action);
-            }
-            break;
-        case GLFW_KEY_E:
-            if (action == GLFW_PRESS) {
-                lookUp(action);
-            } else if (action == GLFW_RELEASE) {
-                lookUp(action);
-            }
-            break;
+        case GLFW_KEY_S:
+        case GLFW_KEY_D:
         case GLFW_KEY_Q:
-            if (action == GLFW_PRESS) {
-                lookDown(action);
-            } else if (action == GLFW_RELEASE) {
-                lookDown(action);
-            }
+        case GLFW_KEY_E:
+        case GLFW_KEY_RIGHT:
+        case GLFW_KEY_LEFT:
+        case GLFW_KEY_UP:
+        case GLFW_KEY_DOWN:
+            if (action != GLFW_REPEAT)
+                movementDispatch(key, action);
             break;
         case GLFW_KEY_L:
             if (action == GLFW_PRESS)
@@ -97,31 +40,32 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     //printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
     float radius = 1.f;
     int xoffset = lastMouseX - x;
-    int yoffset = y - lastMouseY;
+    int yoffset = lastMouseY - y;
 
     if (abs(xoffset) > abs(yoffset)) {
         if (xoffset < 0)
             radius = -1.f;
-        SCENE.mesh[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
+        SCENE.model[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
     } else {
         if (yoffset < 0)
             radius = -1.f;
-        SCENE.mesh[camera].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.mesh[camera].coords.v[1]), vec4ExtractY(SCENE.mesh[camera].coords.v[1]), vec4ExtractZ(SCENE.mesh[camera].coords.v[1]));
+
+        SCENE.model[camera].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.model[camera].coords.v[1]), vec4ExtractY(SCENE.model[camera].coords.v[1]), vec4ExtractZ(SCENE.model[camera].coords.v[1]));
     }
 
     lastMouseX = x;
     lastMouseY = y;
 
-    mat4x4 tm = matfromQuat(SCENE.mesh[camera].rigid.q, SCENE.mesh[3].coords.v[0]);
+    mat4x4 tm = matfromQuat(SCENE.model[camera].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
 
-    setvec4arrayMulmat(SCENE.mesh[camera].coords.v, 4, tm);
-    setvec4arrayMulmat(SCENE.mesh[camera].rigid.v, SCENE.mesh[camera].rigid.v_indexes, tm);
-    setvec4arrayMulmat(SCENE.mesh[camera].rigid.n, SCENE.mesh[camera].rigid.n_indexes, tm);
+    setvec4arrayMulmat(SCENE.model[camera].coords.v, 4, tm);
+    setvec4arrayMulmat(SCENE.model[camera].rigid.v, SCENE.model[camera].rigid.v_indexes, tm);
+    setvec4arrayMulmat(SCENE.model[camera].rigid.n, SCENE.model[camera].rigid.n_indexes, tm);
 
-    SCENE.mesh[camera].q = multiplyQuats(SCENE.mesh[camera].q, SCENE.mesh[camera].rigid.q);
+    SCENE.model[camera].q = multiplyQuats(SCENE.model[camera].q, SCENE.model[camera].rigid.q);
 
-    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.mesh[camera].coords.v[0]));
-    //SCENE.mesh[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
+    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].coords.v[0]));
+    //SCENE.model[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
@@ -129,6 +73,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         double x, y;
         glfwGetCursorPos(win, &x, &y);
         printf("x: %d    y: %d\n", (int)x, (int)y);
+        SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
 
         //GLint data[2];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);

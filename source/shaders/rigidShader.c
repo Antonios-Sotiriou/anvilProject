@@ -70,16 +70,18 @@ void rigidShader(void) {
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
     mat4x4 modelMatrix;
-    for (int i = 0; i < SCENE.mesh_indexes; i++) {
+    for (int i = 0; i < SCENE.model_indexes; i++) {
+        for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-        if (SCENE.mesh[i].rigid.state == ENABLE) {
-            modelMatrix = modelMatfromQST(SCENE.mesh[i].q, SCENE.mesh[i].scale, SCENE.mesh[i].coords.v[0]);
+            if (SCENE.model[i].mesh[x].rigid.state == ENABLED) {
+                modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
 
-            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+                glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
-            glBindVertexArray(SCENE.mesh[i].VAO);
-            //glBufferSubData(GL_ARRAY_BUFFER, 0, SCENE.mesh[i].rigid.f_indexes * 36, arr);
-            glDrawArrays(GL_TRIANGLES, 0, SCENE.mesh[i].rigid.vecs_indexes);
+                glBindVertexArray(SCENE.model[i].mesh[x].VAO);
+                //glBufferSubData(GL_ARRAY_BUFFER, 0, SCENE.model[i].mesh[x].rigid.f_indexes * 36, arr);
+                glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].rigid.vecs_indexes);
+            }
         }
     }
 

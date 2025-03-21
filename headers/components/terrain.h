@@ -19,11 +19,11 @@ typedef struct {
 } TerrainPointInfo;
 
 void createTerrain(mesh *m, const char name[]);
-void initMeshQuadInfo(mesh *m);
-void addMeshToQuad(mesh *m);
-void removeMeshFromQuad(mesh *m);
+void initModelQuadInfo(model *m);
+void addModelToQuad(model *m);
+void removeModelFromQuad(model *m);
 void getTerrainPointInfo(vec4 coords, int *qi, int *uol);
-void getmeshPositionData(mesh *m, vec4 *tp, vec4 *tn);
+void getModelPositionData(model *m, vec4 *tp, vec4 *tn);
 const TerrainPointInfo getvec4PositionData(const vec4 v);
 void logTerrainInfo(void);
 void logTerrainQuad(const int quad_index);

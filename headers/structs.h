@@ -76,11 +76,9 @@ typedef struct {
     vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
         *n,                              // Normals array to be used for OBB collision. Normals are unique to save iterations.
         min,                             // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
-        max,                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
-        velocity;                        // Velocity of a mesh.
+        max;                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
     quat q;                              // Rotation quaternion W, X, Y, Z.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
-        rot_angle,                       // The rotation angle of the rigid body.
         falling_time,                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
         collision_t;                     // The time of collision to help us sort them.Used in sortCollisions function, to find out which collision take place earlier.
     int v_indexes,
@@ -98,10 +96,12 @@ typedef struct {
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
+    char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         scale,                           // Value to store the scale of the mesh.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
-    int vbo_indexes,                     // Number of vbo indexes as individual floats.
+    int length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
@@ -109,22 +109,33 @@ typedef struct {
         VBO,                             // VBO id or name represented by an integer.
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
         type,                            // The type of the mesh.
-        quad_init,                       // Flag, which shows if the mesh went through the terrain initialization pipeline, at least one time, at the start of the program.
-        quad_index,                      // The index of the terrain quad that the mesh is standing on.
-        quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+        visible;                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } mesh;
 /* Model structure to represent a collection of shapes. */
 typedef struct {
-    mesh *mesh;
-    int mesh_indexes;
+    coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
+    quat q;                              // Quaternion to save rotations.
+    vec4 velocity;                       // Velocity of a model.
+    char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
+    float scale,                         // Value to store the scale of the model.
+        outer_radius,                    // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
+        rotate;                          // The rotation angle of the rigid body.
+    mesh *mesh;                          // Meshes array from which the model is consisting.
+    int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
+        length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
+        type,                            // The type of the model.
+        visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
+        quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
+        quad_index,                      // The index of the terrain quad that the model is standing on.
+        quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+    rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } model;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
-    //model *model;
-    //int model_indexes;
-    mesh *mesh;
-    int mesh_indexes;
+    model *model;
+    int model_indexes;
     TerrainInfo t;
 } scene;
 

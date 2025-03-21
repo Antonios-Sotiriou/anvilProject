@@ -20,8 +20,8 @@
     #define SCENE_TABLE               2
 
     /* Flags for states changing. */
-    #define ENABLE              1
-    #define DISABLE             0
+    #define ENABLED             1
+    #define DISABLED            0
     #define ON                  1
     #define OFF                 0
 
@@ -29,11 +29,11 @@
     #define ASSET_TYPE_MESH          0
     #define ASSET_TYPE_MODEL         1
 
-    /* Meshes types. */
-    #define MESH_TYPE_TERRAIN             0
-    #define MESH_TYPE_CAMERA              1
-    #define MESH_TYPE_LIGHT               2
-    #define MESH_TYPE_GENERAL             3
+    /* Models types. */
+    #define MODEL_TYPE_TERRAIN             0
+    #define MODEL_TYPE_CAMERA              1
+    #define MODEL_TYPE_LIGHT               2
+    #define MODEL_TYPE_GENERAL             3
 
 #endif // !anvil_MAJOR_VERSION
 
