@@ -68,10 +68,25 @@ typedef struct {
 } coords;
 /* Base struct to represent a face. */
 typedef struct {
-    vec4 v[3];
-    vec2 vt[3];
-    vec4 vn[3];
+    vec4 v[3];          // 3 vectors with 4 dimensions each
+    vec2 vt[3];         // 3 texels with 2 dimensions each
+    vec4 vn[3];         // 3 vectors-normals with 4 dimensions each
 } face;
+
+/* Base struct to orginize per object animations, where object can be a mesh, a model or a rigid body. */
+typedef struct {
+    int number_of_frames;         // the number of frames that the data represent
+    vec4 *location;               // location per frame 
+    quat *rotation_quaternion;    // rotation per frame
+    vec4 *scale;                  // scale per frame
+} animations;
+/* Base struct to organize animations Data importedd from Blender. */
+typedef struct {
+    int number_of_frames,
+        number_of_objects;
+    animations *anim;
+} animationData;
+
 typedef struct {
     vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
         *n,                              // Normals array to be used for OBB collision. Normals are unique to save iterations.

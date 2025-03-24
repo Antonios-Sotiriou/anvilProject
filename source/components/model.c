@@ -25,9 +25,9 @@ void createModel(model *m, const char name[]) {
         createMesh(&m->mesh[i], obj.e[i]);
 
         /* Inherit model translations to meshes. */
-        m->mesh[i].scale = m->scale;
-        m->mesh[i].q = m->q;
-        memcpy(&m->mesh[i].coords, &m->coords, 64);
+        m->mesh[i].scale = 1.f;
+        m->mesh[i].q = unitQuat();
+        m->mesh[i].coords.v[0] = setvec4(0, 0, 0, 1);
     }
 
     releaseOBJ(&obj);

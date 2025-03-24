@@ -9,12 +9,13 @@ const static char *vertexShaderSource = "#version 450 core\n"
 
 "uniform mat4 vpMatrix;\n"
 "uniform mat4 modelMatrix;\n"
+"uniform mat4 meshMatrix;\n"
 //"uniform int mesh_id;\n"
 
 //"layout (location = 0) out int id;\n"
 
 "void main() {\n"
-"    gl_Position = (vpMatrix * modelMatrix) * vec4(vsPos, 1.f);\n"
+"    gl_Position = (vpMatrix * (modelMatrix * meshMatrix)) * vec4(vsPos, 1.f);\n"
 //"    id = mesh_id;\n"
 "}\n\0";
 const static char *fragmentShaderSource = "#version 450 core\n"
@@ -78,21 +79,28 @@ void testShader(void) {
     /* Just for testing purposes code. ##################### */
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
-    //quat q = rotationQuat(rot, 0.f, 1.f, 0.f);
+    quat q = rotationQuat(rot, 1.f, 0.f, 0.f);
     //SCENE.mesh[light].q = q;// multiplyQuats(SCENE.mesh[terrain].q, q);
-    //if ((COUNT % 1000) == 0) {
-    //    rot += 1.0f;
-    //    //logvec4(SCENE.mesh[terrain].q);
-    //}
+    if ((COUNT % 1000) == 0) {
+        rot += 0.1f;
+        //logvec4(SCENE.mesh[terrain].q);
+    }
     //COUNT++;
 
-    mat4x4 modelMatrix;
+    mat4x4 modelMatrix, meshMatrix;
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
             modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
             for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+
+                if (strncmp(SCENE.model[i].mesh[x].cname, "rechte_arm", 10) == 0)
+                    meshMatrix = modelMatfromQST(multiplyQuats(SCENE.model[i].mesh[x].q, q), SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
+                else
+                    meshMatrix = identityMatrix();
+
+                glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&meshMatrix);
                 //glUniform1i(2, i + 1);
                 glBindVertexArray(SCENE.model[i].mesh[x].VAO);
                 glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
