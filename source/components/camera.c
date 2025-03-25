@@ -2,7 +2,7 @@
 
 #define FORCE      0.3f    // Force to apply on velocity to move the object.
 
-movementDispatch(const int key, const int action) {
+void movementDispatch(const int key, const int action) {
 
     switch (key) {
 
