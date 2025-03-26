@@ -21,6 +21,10 @@
     #include "headers/components/dbapi.h"
 #endif // !DBAPI_H
 
+#ifndef ANIMATIONS_H
+    #include "headers/components/animations.h"
+#endif // !ANIMATIONS_H
+
 void createScene(void);
 void releaseScene(void);
 

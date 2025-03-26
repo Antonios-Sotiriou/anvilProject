@@ -21,7 +21,7 @@
     #include "headers/components/obj.h"
 #endif // !OBJ_H
 
-void createModel(model *m, const char name[]);
+void createModel(model *m);
 void releaseModel(model *m);
 
 #endif // !MODEL_H

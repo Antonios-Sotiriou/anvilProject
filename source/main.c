@@ -73,6 +73,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         double x, y;
         glfwGetCursorPos(win, &x, &y);
         printf("x: %d    y: %d\n", (int)x, (int)y);
+
         SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
 
         //GLint data[2];

@@ -1,44 +1,44 @@
 #include "headers/components/rigid.h"
 
-static char* composemeshRigidPath(mesh* m, const char name[]);
+static char *composemeshRigidPath(mesh *m);
 
 /* Create the rigid file path according to the type of the mesh. Different types of meshes may have diferent file paths. Thats why we must generalize them. */
-static char *composemeshRigidPath(mesh *m, const char name[]) {
-	char* dynamic_path = { 0 };
+static char *composemeshRigidPath(mesh *m) {
+	char *dynamic_path = { 0 };
 	if (m->type == MODEL_TYPE_TERRAIN) {
-		int path_length = (strlen(name) * 2) + 21; // Plus 1 here for the null termination \0.
+		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 22; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
 		if (!dynamic_path) {
 			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
-			debug_log_info(stdout, "%s\n", name);
+			debug_log_info(stdout, "%s\n", m->cname);
 			return 0;
 		}
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        sprintf_s(dynamic_path, path_length, "terrains/%s/%s_rigid.obj", name, name);
+        sprintf_s(dynamic_path, path_length, "%s/terrains/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #elif defined(LINUX) || defined(__linux__)
-        snprintf(dynamic_path, path_length, "terrains/%s/%s_rigid.obj", name, name);
+        snprintf(dynamic_path, path_length, "%s/terrains/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #endif
 	} else {
-		int path_length = (strlen(name) * 2) + 19; // Plus 1 here for the null termination \0.
+		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 12; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
 		if (!dynamic_path) {
 			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
-			debug_log_info(stdout, "%s\n", name);
+			debug_log_info(stdout, "%s\n", m->cname);
 			return 0;
 		}
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        sprintf_s(dynamic_path, path_length, "meshes/%s/%s_rigid.obj", name, name);
+        sprintf_s(dynamic_path, path_length, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #elif defined(LINUX) || defined(__linux__)
-        snprintf(dynamic_path, path_length, "meshes/%s/%s_rigid.obj", name, name);
+        snprintf(dynamic_path, path_length, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #endif
 	}
 
 	return dynamic_path;
 }
 
-//void loadmeshRigid(mesh *m, const char name[]) {
+//void loadmeshRigid(mesh *m) {
 //	OBJ obj;
-//	char *dynamic_path = composemeshRigidPath(m, name);
+//	char *dynamic_path = composemeshRigidPath(m);
 //	readOBJ(&obj, dynamic_path);
 //	free(dynamic_path);
 //

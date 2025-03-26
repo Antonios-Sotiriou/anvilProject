@@ -5,21 +5,7 @@ It's the programmer's responsibillity to rearange the data according to hes need
 Data must be freed when no longer needed. */
 /* Very Compicated function to read an obj file with one iteration. Must be simplified for future readabillity. */
 void readOBJ(OBJ *obj, const char path[]) {
-    int path_length = strlen(path) + strlen(anvil_SOURCE_DIR) + 2; // Plus 2 here for the / between source dir and file location and a null termination \0.
-    char* dynamic_path = malloc(path_length);
-    if (!dynamic_path) {
-        debug_log_error(stdout, "malloc()");
-        debug_log_info(stdout, "%s\n", path);
-        exit(1);
-    }
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
-#elif defined(LINUX) || defined(__linux__)
-    snprintf(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
-#endif
-
-    FILE* fp = fopen(dynamic_path, "r");
-    free(dynamic_path);
+    FILE* fp = fopen(path, "r");
     if (!fp) {
         debug_log_error(stdout, "fopen()");
         exit(1);

@@ -33,7 +33,7 @@
     #include "headers/components/collisions.h"
 #endif // !COLLISIONS_H
 
-void loadmeshRigid(mesh *m, const char name[]);
+void loadmeshRigid(mesh *m);
 void getRigidLimits(rigid *r);
 void releaseRigid(rigid *r);
 
