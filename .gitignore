@@ -2,3 +2,5 @@
 .vs/
 out/
 *.asm
+headers/network/
+source/network/

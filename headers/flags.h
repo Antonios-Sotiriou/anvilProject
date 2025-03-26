@@ -5,7 +5,10 @@
     #include "headers/cmake_variables.h"
 #endif // !anvil_VERSION_MAJOR
 
+/* Flag to compile with SSE code or without. */
 #define VECTORIZED_CODE
+/* Flag to enable networking and expose inner data to external apps. */
+#define NETWORK
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 

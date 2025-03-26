@@ -34,6 +34,11 @@
 #include "headers/components/camera.h"
 #include "headers/components/physics.h"
 
+#if (NETWORK_INTERFACE)
+    #include "headers/network/TCPServer.h"
+#endif // (NETWORK_INTERFACE)
+
+
 /* External Libraries. */
 #ifndef _glfw3_h_
     #include "libraries/glfw-3.4/include/GLFW/glfw3.h"

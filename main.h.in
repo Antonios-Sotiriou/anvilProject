@@ -1,4 +1,5 @@
-// Global variables and settings for the project which are beeing shared between CMAKE and our App.
+// Global variables and settings for the project which cmake is going to set.
 #define anvil_VERSION_MAJOR @anvil_VERSION_MAJOR@
 #define anvil_VERSION_MINOR @anvil_VERSION_MINOR@
 #define anvil_SOURCE_DIR "@anvil_SOURCE_DIR@"
+#define NETWORK_INTERFACE @NETWORK_INTERFACE@

@@ -5,6 +5,10 @@
     #include <stdio.h>
 #endif // !STDIO_H _STDIO_H
 
+#if !defined(NC_STRING) || !defined(_STRING_H)
+    #include <string.h>
+#endif // !INC_STRING _STRING_H
+
 #ifndef STRUCTS_H
     #include "headers/structs.h"
 #endif // !STRUCTS_H
