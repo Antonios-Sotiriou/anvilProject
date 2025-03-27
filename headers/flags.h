@@ -8,7 +8,7 @@
 /* Flag to compile with SSE code or without. */
 #define VECTORIZED_CODE
 /* Flag to enable networking and expose inner data to external apps. */
-#define NETWORK
+#define NETWORK_ENABLED 1
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 

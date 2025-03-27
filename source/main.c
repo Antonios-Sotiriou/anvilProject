@@ -204,6 +204,11 @@ int main(int argc, char *argv[]) {
     initTimeCounter();
     float time_diff;
 
+    
+    /* Enable NETWORK_INTERFACE */
+    if (NETWORK_ENABLED)
+        enableNetworkInterface();
+
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
         /* Timing functions. */
@@ -227,6 +232,10 @@ int main(int argc, char *argv[]) {
         //time_diff = deltaTime > 0.016666 ? 0 : (0.016666 - deltaTime) * 100000;
         //usleep(time_diff);
     }
+
+    /* Disable NETWORK_INTERFACE */
+    if (NETWORK_ENABLED)
+        disableNetworkInterface();
 
     glfwTerminate();
 

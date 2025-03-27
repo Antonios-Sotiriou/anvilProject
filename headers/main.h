@@ -22,8 +22,6 @@
 /* Build in Libraries. */
 #include <stdio.h>
 #include <xmmintrin.h>
-//#include <immintrin.h>
-//#include <stdint.h>
 #include <limits.h>
 
 /* Internal Libraries. */
@@ -34,9 +32,11 @@
 #include "headers/components/camera.h"
 #include "headers/components/physics.h"
 
-#if (NETWORK_INTERFACE)
-    #include "headers/network/TCPServer.h"
-#endif // (NETWORK_INTERFACE)
+#if (NETWORK_ENABLED)
+    #ifndef TCPSERVER_H
+        #include "headers/network/TCPServer.h"
+    #endif // !TCPSERVER_H
+#endif // 1(NETWORK_INTERFACE)
 
 
 /* External Libraries. */
