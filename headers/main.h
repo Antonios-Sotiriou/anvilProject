@@ -32,11 +32,11 @@
 #include "headers/components/camera.h"
 #include "headers/components/physics.h"
 
-#if (NETWORK_ENABLED)
-    #ifndef TCPSERVER_H
-        #include "headers/network/TCPServer.h"
-    #endif // !TCPSERVER_H
-#endif // 1(NETWORK_INTERFACE)
+// #if (NETWORK_ENABLED)
+#ifndef TCPSERVER_H
+    #include "headers/network/TCPServer.h"
+#endif // !TCPSERVER_H
+// #endif // 1(NETWORK_INTERFACE)
 
 
 /* External Libraries. */

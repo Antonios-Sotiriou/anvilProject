@@ -84,34 +84,31 @@ DWORD WINAPI startTCPServer(void *args) {
     closesocket(sockfd);
     WSACleanup();
 
-    //int *input = (int*)arg;
-
     return 0;
 }
 #else // ########################################################### LINUX ######################################################################
 /* Create a seperate thread to run the Server. */
-HANDLE thread;
+pthread_t thread;
 
 void enableNetworkInterface(void) {
-    thread = CreateThread(NULL, 0, startTCPServer, NULL, 0, NULL);
-    if (thread == NULL) {
+    thread = pthread_create(&thread, NULL, &startTCPServer, NULL);
+    if (thread != 0) {
         debug_log_critical(stderr, "HANDLE thread = CreateThread(NULL, 0, startTCPServer, NULL, 0, NULL)");
         exit(-1);
     }
 }
 void disableNetworkInterface(void) {
-    WaitForSingleObject(thread, 0);
-    CloseHandle(thread);
+    pthread_join(thread, NULL);
 }
 // Function designed to handle Client requests.
 static void connectionHandler(int connfd) {
     char buff[MAX];
 
-    read(connfd, buff, sizeof(buff), 0);
+    read(connfd, buff, sizeof(buff));
     printf("Received: %s\n", buff);
 
     snprintf(buff, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
-    write(connfd, buff, 121, 0);
+    write(connfd, buff, 121);
 
     close(connfd);
 }
@@ -144,15 +141,18 @@ void *startTCPServer(void *args) {
         exit(-1);
     }
 
+    printf("IP address: %s:%d\n", inet_ntoa(servaddr.sin_addr), ntohs(servaddr.sin_port));
+    printf("Server running...\n");
+
     len = sizeof(cli);
     // Accept the data packet from client and verification
-    while ((connfd = accept(sockfd, (SA*)&cli, &len) != -1 )
-        // Function for chatting between client and server
+    while ((connfd = accept(sockfd, (SA*)&cli, &len)) != -1 )
         connectionHandler(connfd);
 
     close(sockfd);
 
-    return 1;
+    int *input = (int*)args;
+    return input;
 }
 #endif //!WINDOWS
 
