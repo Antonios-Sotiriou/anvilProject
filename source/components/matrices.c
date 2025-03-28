@@ -6,101 +6,101 @@ const static vec4 invmor = { -0.f, -0.f, -0.f, 0.f };
 
 /* Identify Matrix or else Unit Matrix. */
 mat4x4 identityMatrix(void) {
-    return (mat4x4) {
+    return (mat4x4) {{
         _mm_setr_ps(1.f, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 1.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 1.f, 0.f),
-        _mm_setr_ps(0.f, 0.f, 0.f, 1.f),
-    };
+        _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
+    }};
 }
 /* Scale Matrix. */
 mat4x4 scaleMatrix(const float scale) {
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(scale, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, scale, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, scale, 0.f),
         _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
-    };
+    }};
 }
 /* Translation Matrix. */
 mat4x4 translationMatrix(const float x, const float y, const float z) {
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(1.f, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 1.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 1.f, 0.f),
         _mm_setr_ps(x, y, z, 1.f)
-    };
+    }};
 }
 /* Rotate Object on X axis according the world origin */
 mat4x4 rotateXMatrix(const float angle) {
     const float cosa = cosf(angle);
     const float sina = sinf(angle);
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(1.f, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, cosa, -sina, 0.f),
         _mm_setr_ps(0.f, sina, cosa, 0.f),
         _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
-    };
+    }};
 }
 /* Rotate Object on Y axis according the world origin. */
 mat4x4 rotateYMatrix(const float angle) {
     const float cosa = cosf(angle);
     const float sina = sinf(angle);
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(cosa, 0.f, -sina, 0.f),
         _mm_setr_ps(0.f, 1.f, 0.f, 0.f),
         _mm_setr_ps(sina, 0.f, cosa, 0.f),
         _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
-    };
+    }};
 }
 /* Rotate Object on Z axis according the world origin */
 mat4x4 rotateZMatrix(const float angle) {
     const float cosa = cosf(angle);
     const float sina = sinf(angle);
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(cosa, sina, 0.f, 0.f),
         _mm_setr_ps(-sina, cosa, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 1.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
-    };
+    }};
 }
 /* Orthographic Projection Matrix. l: left, r: right, t: top, b: bottom, n: near, f: far.*/
 mat4x4 orthographicMatrix(const float l, const float r, const float t, const float b, const float n, const float f) {
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(2.f / (r - l), 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 2.f / (b - t), 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 1.0f / (n - f), 0.f),
         _mm_setr_ps(((r + l) / (r - l)), ((b + t) / (b - t)), ((f + n) / (n - f)), 1.f)
-    };
+    }};
 }
 /* Perspective Projection Matrix. */
 mat4x4 perspectiveMatrix(const float fov, const float aspectratio, const float zn, const float zf) {
     const float fovRadius = 1.f / tanf(fov * 0.5f / 180.0f * 3.14159f);
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(fovRadius, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, aspectratio * fovRadius, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, zf / (zf - zn), 1.f),
         _mm_setr_ps(0.f, 0.f, (zf * zn) / (zn - zf), 0.f)
-    };
+    }};
 }
 /* Reverse Perspective Projection Matrix. fov: field of view, ar: aspect ratio. */
 mat4x4 reperspectiveMatrix(const float fov, const float aspectratio) {
     const float fovRadius = 1.f / tanf(fov * 0.5f / 180.0f * 3.14159f);
-    return  (mat4x4) {
+    return  (mat4x4) {{
         _mm_setr_ps(aspectratio / fovRadius, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, aspectratio / fovRadius, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 0.f, 1.f, 1.f)
-    };
+    }};
 }
 /* The Camera Matrix or as used to called the View Matrix.Returns a new 4x4 Matrix. */
 mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
-    return (mat4x4) {
+    return (mat4x4) {{
         U,
         V,
         N,
         P
-    };
+    }};
 }
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
 mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up) {
@@ -108,12 +108,12 @@ mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up) {
     const vec4 U = vecNormalize(crossProduct(Up, N));
     const vec4 V = crossProduct(N, U);
 
-    return (mat4x4) {
+    return (mat4x4) {{
         U,
         V,
         N,
         P
-    };
+    }};
 }
 /* Multiplies a vec4 with the given Matrix and returns a new vec4, leaving the original unmodified. */
 vec4 vec4Mulmat(const vec4 v, const mat4x4 m) {
@@ -219,12 +219,12 @@ mat4x4 transposeMatrix(const mat4x4 m) {
     const vec4 temp3 = _mm_shuffle_ps(m.m[0], m.m[1], _MM_SHUFFLE(3, 2, 3, 2));
     const vec4 temp4 = _mm_shuffle_ps(m.m[2], m.m[3], _MM_SHUFFLE(3, 2, 3, 2));
 
-    return (mat4x4) {
+    return (mat4x4) {{
         _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(2, 0, 2, 0)),
         _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3, 1, 3, 1)),
         _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(2, 0, 2, 0)),
         _mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(3, 1, 3, 1))
-    };
+    }};
 }
 /* Inverts the given Matrix returning a new Matrix. */
 mat4x4 inverseMatrix(const mat4x4 m) {

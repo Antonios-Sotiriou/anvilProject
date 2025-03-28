@@ -35,12 +35,11 @@ static char *composemeshRigidPath(mesh *m) {
 
 	return dynamic_path;
 }
-
-//void loadmeshRigid(mesh *m) {
-//	OBJ obj;
-//	char *dynamic_path = composemeshRigidPath(m);
-//	readOBJ(&obj, dynamic_path);
-//	free(dynamic_path);
+void loadmeshRigid(mesh *m) {
+	OBJ obj;
+	char *dynamic_path = composemeshRigidPath(m);
+	readOBJ(&obj, dynamic_path);
+	free(dynamic_path);
 //
 //	// Initialize the vectors array from .obj file data.
 //	r->v_indexes = (obj.e->v_indexes / 3);
@@ -113,8 +112,8 @@ static char *composemeshRigidPath(mesh *m) {
 //
 //	createRigidVAO(m);
 //	free(r->vbo);
-//	releaseOBJ(&obj);
-//}
+	releaseOBJ(&obj);
+}
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getRigidLimits(rigid *r) {

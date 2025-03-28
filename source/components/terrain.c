@@ -169,7 +169,7 @@ void createTerrain(mesh *m, const char name[]) {
         exit(-1);
     }
 
-    int index = 0, vpad, tpad;
+    int index = 0; //, vpad, tpad;
     for (int i = 0; i < num_of_faces; i++) {
         m->vbo[index]     = v[f[i]].m96_f32[0];
         m->vbo[index + 1] = v[f[i]].m96_f32[1];
@@ -298,9 +298,9 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
 }
 /* Retrieves Terrain Position data tp and Terain position normal tn, at the given mesh's coordinates. */
 void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
-    const float t_scale = SCENE.model[terrain].scale * 2.f;
-    float quad_len = t_scale / SCENE.t.vec_width;
-    const int t_limit = t_scale - quad_len;
+    // const float t_scale = SCENE.model[terrain].scale * 2.f;
+    // float quad_len = t_scale / SCENE.t.vec_width;
+    // const int t_limit = t_scale - quad_len;
 
     vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.model[terrain].coords.v[0], SCENE.model[terrain].scale));
 
@@ -368,8 +368,8 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
 
     /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
         So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
-    const int Upperface = (quad_index * 2) * 24;
-    const int Lowerface = ((quad_index * 2) + 1) * 24;
+    // const int Upperface = (quad_index * 2) * 24;
+    // const int Lowerface = ((quad_index * 2) + 1) * 24;
 
     /* Find in which Quad we are. */
     float x = vec4ExtractX(t_coords) / quad_len;

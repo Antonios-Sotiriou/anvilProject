@@ -1,4 +1,4 @@
-#include "headers/network/TCPServer.h"
+#include "headers/network/c_interface/TCPServer.h"
 
 #define MAX 1024
 #define PORT 8080
@@ -91,8 +91,7 @@ DWORD WINAPI startTCPServer(void *args) {
 pthread_t thread;
 
 void enableNetworkInterface(void) {
-    thread = pthread_create(&thread, NULL, &startTCPServer, NULL);
-    if (thread != 0) {
+    if (pthread_create(&thread, NULL, &startTCPServer, NULL) != 0) {
         debug_log_critical(stderr, "HANDLE thread = CreateThread(NULL, 0, startTCPServer, NULL, 0, NULL)");
         exit(-1);
     }
@@ -101,26 +100,36 @@ void disableNetworkInterface(void) {
     pthread_join(thread, NULL);
 }
 // Function designed to handle Client requests.
-static void connectionHandler(int connfd) {
+static int connectionHandler(int connfd) {
     char buff[MAX];
 
     read(connfd, buff, sizeof(buff));
-    printf("Received: %s\n", buff);
+    printf("Server Received request: {\n%s\n", buff);
+    printf("}\n\n");
 
-    snprintf(buff, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
-    write(connfd, buff, 121);
+    if (strncmp(buff, "Server stop", 12) == 0) {
+        char responce[24] = { 0 };
+        snprintf(responce, 24, "Shuting down Server...");
+        write(connfd, responce, 24);
+        return 1;
+    }
 
-    close(connfd);
+    char responce[121] = { 0 };
+    snprintf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
+    write(connfd, responce, 121);
+
+    return 0;
 }
 // Starting a tcp Server Listening at port: PORT.
 void *startTCPServer(void *args) {
-    int sockfd, connfd, len;
+    socklen_t sockfd, connfd, len;
     struct sockaddr_in servaddr, cli;
 
     // socket create and verification
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         debug_log_critical(stderr, "sockfd == -1\n");
+        close(sockfd);
         exit(-1);
     }
 
@@ -132,12 +141,15 @@ void *startTCPServer(void *args) {
     // Binding newly created socket to given IP and verification
     if (bind(sockfd, (SA*)&servaddr, sizeof(servaddr)) == -1) {
         debug_log_critical(stderr, "bind(sockfd, (SA*)&servaddr, sizeof(servaddr)) == -1");
+        close(sockfd);
+        perror("Error");
         exit(-1);
     }
 
     // Now server is ready to listen and verification
     if (listen(sockfd, 5) == -1) {
         debug_log_critical(stderr, "listen(sockfd, 5) == -1");
+        close(sockfd);
         exit(-1);
     }
 
@@ -147,9 +159,11 @@ void *startTCPServer(void *args) {
     len = sizeof(cli);
     // Accept the data packet from client and verification
     while ((connfd = accept(sockfd, (SA*)&cli, &len)) != -1 )
-        connectionHandler(connfd);
+        if(connectionHandler(connfd) != 0)
+            break;
 
     close(sockfd);
+    printf("Server terminated\n");
 
     int *input = (int*)args;
     return input;

@@ -1,5 +1,5 @@
-#ifndef TCPSERVER_H
-#define TCPSERVER_H 1
+#ifndef REQUESTS_H
+#define REQUESTS_H 1
 
 #if !defined(STDIO_H) || !defined(_STDIO_H)
     #include <stdio.h>
@@ -21,23 +21,12 @@
     #ifndef _WINSOCKAPI_
         #include <WinSock2.h>
     #endif // !_WINSOCK2API_
-
-DWORD WINAPI startTCPServer(void* arg);
 #else
-    #include <netdb.h>
-    #include <netinet/in.h>
-    #include <sys/socket.h>
-    #include <sys/types.h>
     #include <unistd.h>
     #include <arpa/inet.h>
     #include <pthread.h>
-
-void *startTCPServer(void* arg);
 #endif
 
-void enableNetworkInterface(void);
-void disableNetworkInterface(void);
+int sendRequest(const char ip_address[], const uint16_t port, const char req[]);
 
-#endif // !TCPSERVER_H
-
-
+#endif // !REQUESTS_H

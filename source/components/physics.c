@@ -1,6 +1,6 @@
 #include "headers/components/physics.h"
 
-const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
+// const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
 
 /* Responsible to apply all the forces that act on the rigid body and orginise the appropriate Collision detection functions steps. */
 void applyPhysics(void) {

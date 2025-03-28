@@ -58,7 +58,7 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
     /* Compose cname with a NULL terminating string. */
     SCENE.model[idx].cname = malloc(SCENE.model[idx].length_cname + 1); // +1 For the NULL terminating character also.
     if (!SCENE.model[idx].cname) {
-        debug_log_error(stdout, "SCENE.model[idx].cname = malloc(SCENE.model[idx].length_cname + 1)");
+        debug_log_error(stdout, "SCENE.model[%d].cname = malloc(SCENE.model[idx].length_cname + 1)");
         return 1;
     }
     memcpy(SCENE.model[idx].cname, argv[name_index], SCENE.model[idx].length_cname + 1);
@@ -75,7 +75,7 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
     sscanf_os = sscanf;
 #endif
 
-    int idx = *(int*)NotUsed; // Increment value depending on how much times this callback was called. Every invocation populates a mesh with data.
+    // int idx = *(int*)NotUsed; // Increment value depending on how much times this callback was called. Every invocation populates a mesh with data.
 
     //for (int i = 0; i < argc; i++) {
     //    if (strncmp(azColName[i], "pk", 2) == 0) {
@@ -118,7 +118,7 @@ static int meshCallback(void* NotUsed, int argc, char** argv, char** azColName) 
     //    }
     //}
 
-    *(int*)NotUsed += 1;
+    // *(int*)NotUsed += 1;
 
     return 0;
 }

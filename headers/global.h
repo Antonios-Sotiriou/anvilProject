@@ -22,7 +22,7 @@ extern scene SCENE;
 
 /* defined in rasterization.c. */
 extern GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
-extern GLint mainFBO, shadowMapFBO;
+extern GLuint mainFBO, shadowMapFBO;
 extern const GLenum drawBuffers[2];
 
 #endif // !GLOBAL_H

@@ -5,6 +5,11 @@
     #include <smmintrin.h>
 #endif // !_INCLUDED_SMM _SMMINTRIN_H_INCLUDED
 
+/* OpenGL headers. */
+#if !defined(__glew_h__) || !defined(__GLEW_H__)
+    #include "libraries/glew-2.1.0/include/GL/glew.h"
+#endif
+
 // Local created headers.
 #ifndef FLAGS_H
     #include "flags.h"
@@ -102,10 +107,10 @@ typedef struct {
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
-        VAO,                             // VAO id or name represented by an integer.
-        VBO,                             // VBO id or name represented by an integer.
         state,                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
         grounded;                        // Switch which tracks if object in grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
+    GLuint VAO,                          // VAO id or name represented by an unsigned integer.
+        VBO;                             // VBO id or name represented by an unsigned integer.
 } rigid;
 /* Base structure to represent a shape. */
 typedef struct {
@@ -120,11 +125,11 @@ typedef struct {
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
-        VAO,                             // VAO id or name represented by an integer.
-        VBO,                             // VBO id or name represented by an integer.
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
         type,                            // The type of the mesh.
         visible;                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
+    GLuint VAO,                          // VAO id or name represented by an unsigned integer.
+        VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
 } mesh;
 /* Model structure to represent a collection of shapes. */

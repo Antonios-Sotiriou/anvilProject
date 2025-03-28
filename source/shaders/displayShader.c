@@ -1,6 +1,6 @@
 #include "headers/shaders/displayShader.h"
 
-static GLint canvasVBO, canvasVAO;
+static GLuint canvasVBO, canvasVAO;
 static void createCanvas(void);
 
 const static char* displayVertexShaderSource = "#version 450 core\n"

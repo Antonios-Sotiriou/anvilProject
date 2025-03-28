@@ -75,6 +75,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         printf("x: %d    y: %d\n", (int)x, (int)y);
 
         SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
+        sendRequest("127.0.0.1", 8080, "GET /test_request");
 
         //GLint data[2];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
@@ -87,7 +88,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         //glReadBuffer(GL_COLOR_ATTACHMENT0);
         //glReadPixels(x, HEIGHT - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
         //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
-    } else if (button == GLFW_MOUSE_BUTTON_2)
+    } else if (button == GLFW_MOUSE_BUTTON_2) {
         if (action == GLFW_PRESS) {
             /* Register a Cursor position callback function. */
             glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -99,6 +100,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
             lastMouseX = WIDTH * 0.5f;
             lastMouseY = HEIGHT * 0.5f;
         }
+    }
 }
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################
 const static uint64_t epoch = ((uint64_t)116444736000000000ULL);
@@ -202,12 +204,12 @@ int main(int argc, char *argv[]) {
     PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 10.f, INT32_MAX);
 
     initTimeCounter();
-    float time_diff;
+    // float time_diff;
 
-    
     /* Enable NETWORK_INTERFACE */
-    if (NETWORK_ENABLED)
-        enableNetworkInterface();
+#if (NETWORK_INTERFACE)
+    enableNetworkInterface();
+#endif
 
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
@@ -233,9 +235,11 @@ int main(int argc, char *argv[]) {
         //usleep(time_diff);
     }
 
+#if (NETWORK_INTERFACE)
+    startTCPClient(0);
     /* Disable NETWORK_INTERFACE */
-    if (NETWORK_ENABLED)
-        disableNetworkInterface();
+    disableNetworkInterface();
+#endif
 
     glfwTerminate();
 

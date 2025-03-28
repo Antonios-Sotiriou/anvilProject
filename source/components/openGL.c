@@ -2,8 +2,8 @@
 
 /* OpenGL Global veriables. */
 GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
-GLint mainFBO, shadowMapFBO;
-static GLint shadowDepthMap, mainColorMap, mainDepthMap, mainInfoMap;
+GLuint mainFBO, shadowMapFBO;
+static GLuint shadowDepthMap, mainColorMap, mainDepthMap, mainInfoMap;
 const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
 const static void createFrameBuffers(void);

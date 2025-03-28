@@ -34,8 +34,14 @@
 
 // #if (NETWORK_ENABLED)
 #ifndef TCPSERVER_H
-    #include "headers/network/TCPServer.h"
+    #include "headers/network/c_interface/TCPServer.h"
 #endif // !TCPSERVER_H
+#ifndef TCPCLIENT_H
+    #include "headers/network/c_interface/TCPClient.h"
+#endif // !TCPCLIENT_H
+#ifndef REQUESTS_H
+    #include "headers/network/requests/requests.h"
+#endif // !REQUESTS_H
 // #endif // 1(NETWORK_INTERFACE)
 
 

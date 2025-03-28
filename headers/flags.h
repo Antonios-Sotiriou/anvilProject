@@ -1,14 +1,14 @@
 #ifndef FLAGS_H
 #define FLAGS_H 1
 
-#ifndef anvil_VERSION_MAJOR
-    #include "headers/cmake_variables.h"
-#endif // !anvil_VERSION_MAJOR
+/* Include variables which are created from or are available through cmake.
+   The file which is responsible to say to cmake which variables we need is main.h.in.
+   We have to link this file with cmake_variable.c.
+   The command to link those files is configure_file("main.h.in" "${PROJECT_SOURCE_DIR}/headers/cmake_variables.h"). */
+#include "headers/cmake_variables.h"
 
 /* Flag to compile with SSE code or without. */
 #define VECTORIZED_CODE
-/* Flag to enable networking and expose inner data to external apps. */
-#define NETWORK_ENABLED 1
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 
@@ -116,7 +116,8 @@
 
 /* OpenGL debug macro function. */
 #define debug_log_OpenGL()\
-        if (DEBUG_LVL_4) glErrorReport();
+    if (DEBUG_LVL_4) glErrorReport();
+
 /* DEBUG SECTOR ################################################################################### */
 
 #endif // !FLAGS_H
