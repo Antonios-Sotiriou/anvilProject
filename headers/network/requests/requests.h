@@ -20,6 +20,9 @@
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     #ifndef _WINSOCKAPI_
         #include <WinSock2.h>
+        #ifndef _STDINT
+            #include <stdint.h>
+        #endif
     #endif // !_WINSOCK2API_
 #else
     #include <unistd.h>
@@ -30,3 +33,5 @@
 int sendRequest(const char ip_address[], const uint16_t port, const char req[]);
 
 #endif // !REQUESTS_H
+
+

@@ -20,16 +20,27 @@ void disableNetworkInterface(void) {
     CloseHandle(thread);
 }
 // Function designed to handle Client requests.
-static void connectionHandler(unsigned int connfd) {
+static int connectionHandler(unsigned int connfd) {
     char buff[MAX];
 
     recv(connfd, buff, sizeof(buff), 0);
-    printf("Received: %s\n", buff);
+    printf("Server Received request: {\n%s\n", buff);
+    printf("}\n\n");
 
-    snprintf(buff, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
-    send(connfd, buff, 121, 0);
+    if (strncmp(buff, "Server stop", 12) == 0) {
+        char responce[24] = { 0 };
+        snprintf(responce, 24, "Shuting down Server...");
+        send(connfd, responce, 24, 0);
+        closesocket(connfd);
+        return 1;
+    }
 
+    char responce[121] = { 0 };
+    snprintf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
+    send(connfd, responce, 121, 0);
     closesocket(connfd);
+
+    return 0;
 }
 // Starting a tcp Server Listening at port: PORT.
 DWORD WINAPI startTCPServer(void *args) {
@@ -60,6 +71,7 @@ DWORD WINAPI startTCPServer(void *args) {
     // Binding newly created socket to given IP and verification
     if (bind(sockfd, (SA*)&servaddr, sizeof(servaddr)) == SOCKET_ERROR) {
         debug_log_critical(stderr, "bind(sockfd, (SA*)&servaddr, sizeof(servaddr)) == SOCKET_ERROR");
+        closesocket(sockfd);
         WSACleanup();
         exit(-1);
     }
@@ -67,6 +79,7 @@ DWORD WINAPI startTCPServer(void *args) {
     // Now server is ready to listen and verification
     if (listen(sockfd, 5) == SOCKET_ERROR) {
         debug_log_critical(stderr, "listen(sockfd, 5) == SOCKET_ERROR");
+        closesocket(sockfd);
         WSACleanup();
         exit(-1);
     }
@@ -76,13 +89,14 @@ DWORD WINAPI startTCPServer(void *args) {
 
     len = sizeof(cli);
     // Accept the data packet from client and verification
-    while ((connfd = accept(sockfd, (SA*)&cli, &len)) != INVALID_SOCKET) {
-        connectionHandler(connfd);
-    }
+    while ((connfd = accept(sockfd, (SA*)&cli, &len)) != INVALID_SOCKET)
+        if (connectionHandler(connfd) != 0)
+            break;
 
     // Close the socket.
     closesocket(sockfd);
     WSACleanup();
+    printf("Server terminated\n");
 
     return 0;
 }
@@ -129,7 +143,6 @@ void *startTCPServer(void *args) {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         debug_log_critical(stderr, "sockfd == -1\n");
-        close(sockfd);
         exit(-1);
     }
 

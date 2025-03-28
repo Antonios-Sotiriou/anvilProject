@@ -46,7 +46,7 @@ async def main():
 
     transport, protocol = await loop.create_connection(
         lambda: EchoClientProtocol(message, on_con_lost),
-        "127.0.0.1", 8887)
+        "127.0.0.1", 8080)
 
     # Wait until the protocol signals that the connection
     # is lost and close the transport.

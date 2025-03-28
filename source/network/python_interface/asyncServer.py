@@ -46,7 +46,7 @@ async def main():
 
     server = await loop.create_server(
         lambda: EchoServerProtocol(),
-        "127.0.0.1", 8887)
+        "127.0.0.1", 8080)
 
     print("Server running...\n")
     async with server:
