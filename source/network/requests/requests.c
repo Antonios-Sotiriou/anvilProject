@@ -57,7 +57,6 @@ int sendRequest(const char ip_address[], const uint16_t port, const char req[]) 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         debug_log_critical(stderr, "sockfd == -1\n");
-        close(sockfd);
         exit(-1);
     }
 

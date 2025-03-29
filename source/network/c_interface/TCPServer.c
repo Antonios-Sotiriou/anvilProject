@@ -125,12 +125,14 @@ static int connectionHandler(int connfd) {
         char responce[24] = { 0 };
         snprintf(responce, 24, "Shuting down Server...");
         write(connfd, responce, 24);
+        close(connfd);
         return 1;
     }
 
     char responce[121] = { 0 };
     snprintf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
     write(connfd, responce, 121);
+    close(connfd);
 
     return 0;
 }

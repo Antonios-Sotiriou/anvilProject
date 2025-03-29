@@ -6,10 +6,10 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################################ WINDOWS #################################################
 static void connectionHandler(int sockfd) {
-    char buff[MAX] = { 0 };
+    char request[12] = { 0 };
 
-    snprintf(buff, 18, "Server stop");
-    send(sockfd, buff, 18, 0);
+    snprintf(request, 12, "Server stop");
+    send(sockfd, request, 12, 0);
 
     char responce[MAX] = { 0 };
     recv(sockfd, responce, sizeof(responce), 0);
@@ -56,10 +56,10 @@ DWORD WINAPI startTCPClient(void *args) {
 }
 #else // ########################################################### LINUX ######################################################################
 static void connectionHandler(int sockfd) {
-    char buff[MAX] = { 0 };
+    char request[12] = { 0 };
 
-    snprintf(buff, 18, "Server stop");
-    write(sockfd, buff, 18);
+    snprintf(request, 12, "Server stop");
+    write(sockfd, request, 12);
 
     char responce[MAX] = { 0 };
     read(sockfd, responce, sizeof(responce));
@@ -74,7 +74,6 @@ void *startTCPClient(void *args) {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         debug_log_critical(stderr, "sockfd == -1\n");
-        close(sockfd);
         exit(-1);
     }
 
