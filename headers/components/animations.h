@@ -13,9 +13,11 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
-void readBlenderAnimations(animationData *ad, char path[]);
-void releaseBlenderAnimations(animationData* ad);
-void loadModelAnimations(model* m);
+#ifndef ANIMTEXT_H
+    #include "headers/components/animText.h"
+#endif // !ANIMTEXT_H
+
+void loadModelAnimations(model *m);
 
 #endif // !ANIMATIONS_H
 

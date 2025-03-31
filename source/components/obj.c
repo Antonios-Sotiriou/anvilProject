@@ -5,7 +5,7 @@ It's the programmer's responsibillity to rearange the data according to hes need
 Data must be freed when no longer needed. */
 /* Very Compicated function to read an obj file with one iteration. Must be simplified for future readabillity. */
 void readOBJ(OBJ *obj, const char path[]) {
-    FILE* fp = fopen(path, "r");
+    FILE *fp = fopen(path, "r");
     if (!fp) {
         debug_log_error(stdout, "fopen()");
         exit(1);

@@ -2,4 +2,4 @@
 #define anvil_VERSION_MAJOR 1
 #define anvil_VERSION_MINOR 0
 #define anvil_SOURCE_DIR "C:/Users/anton/Desktop/anvilProject"
-#define NETWORK_INTERFACE 1
+#define NETWORK_INTERFACE 0
