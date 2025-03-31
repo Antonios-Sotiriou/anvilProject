@@ -1,5 +1,5 @@
 #include "headers/components/animText.h"
-
+#include "headers/components/logging.h"
 void readAnimText(animTextData *an, char path[]) {
     FILE *fp = fopen(path, "r");
     if (!fp) {
@@ -162,13 +162,16 @@ void readAnimText(animTextData *an, char path[]) {
     fclose(fp);
 }
 void releaseAnimText(animTextData *an) {
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < an->number_of_objects; i++) {
         free(an->object[i].cname);
 
-        for (int x = 0; x < an->object[i].number_of_children; x++)
-            free(an->object[i].children[x]);
+        if (an->object[i].number_of_children > 0) {
+            for (int x = 0; x < an->object[i].number_of_children; x++)
+                free(an->object[i].children[x]);
 
-        free(an->object[i].children);
+            free(an->object[i].children);
+        }
+
         free(an->object[i].location);
         free(an->object[i].rotation_quaternion);
         free(an->object[i].scale);
