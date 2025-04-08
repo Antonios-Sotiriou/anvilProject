@@ -78,6 +78,14 @@ typedef struct {
     vec4 vn[3];         // 3 vectors-normals with 4 dimensions each
 } face;
 
+/* Main struct to hold animations extraxted from blender. */
+typedef struct {
+    int frames;                          // Number of frames which the data are represent. That is also the array length of all the struct members.
+    vec4 *lc;                            // Locations array. Every index represents a frame at a given location.
+    quat *rq;                            // Rotation quaternions array. Every index represents a frame with the given rotation.
+    vec4 *sc;                            // Scales array. Every index represents a frame with a given scale.
+} animation;
+
 typedef struct {
     vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
         *n,                              // Normals array to be used for OBB collision. Normals are unique to save iterations.
@@ -99,7 +107,7 @@ typedef struct {
         VBO;                             // VBO id or name represented by an unsigned integer.
 } rigid;
 /* Base structure to represent a shape. */
-typedef struct {
+typedef struct mesh {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
     char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
@@ -117,8 +125,12 @@ typedef struct {
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
+    struct mesh *children;               // The children mesh array of the mesh
+    struct mesh *parent;                 // The parent at which the mesh belongs.
+    animation anim;
+    int number_of_children;              // The number of the children that the mesh owns
 } mesh;
-/* Model structure to represent a collection of shapes. */
+/* Model structure to represent a collection of shapes. Probably we dont need a Children relation in this struct, because all the meshes it has are its children. */
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.

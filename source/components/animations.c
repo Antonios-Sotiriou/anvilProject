@@ -18,6 +18,7 @@ void loadModelAnimations(model* m) {
     readAnimText(&ad, dynamic_path);
     free(dynamic_path);
 
+
 	releaseAnimText(&ad);
 }
 

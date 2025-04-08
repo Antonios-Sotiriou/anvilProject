@@ -174,7 +174,7 @@ void readOBJ(OBJ *obj, const char path[]) {
     obj->e_indexes = e_index;
 }
 /* Frees OBJ allocated data releasing sources. */
-void releaseOBJ(OBJ* obj) {
+void releaseOBJ(OBJ *obj) {
     for (int i = 0; i < obj->e_indexes; i++) {
         free(obj->e[i].cname);
         free(obj->e[i].v);

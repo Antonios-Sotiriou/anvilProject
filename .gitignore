@@ -2,5 +2,6 @@
 .vs/
 out/
 *.asm
+temp
 
 
