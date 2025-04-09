@@ -149,6 +149,7 @@ typedef struct {
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
+    animation anim;
 } model;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {

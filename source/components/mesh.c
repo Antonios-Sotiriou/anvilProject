@@ -45,6 +45,7 @@ void createMesh(mesh *m, ENTRY obj) {
 /* Releases allocated ressources of a mesh. */
 void releaseMesh(mesh *m) {
     free(m->cname);
+    free(m->children);
     glDeleteVertexArrays(1, &m->VAO);
     glDeleteBuffers(1, &m->VBO);
     glDisableVertexAttribArray(0);

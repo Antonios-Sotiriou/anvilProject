@@ -1,6 +1,6 @@
 no 15
 nf 3
-nm model_main
+nm robot
 nc 3
 ch oberkoerper
 ch bein.r

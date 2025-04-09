@@ -18,6 +18,51 @@ void loadModelAnimations(model* m) {
     readAnimText(&ad, dynamic_path);
     free(dynamic_path);
 
+    m->anim.frames = ad.number_of_frames;
+    for (int i = 0; i < ad.number_of_objects; i++) {
+        if (strncmp(m->cname, ad.object[i].cname, strlen(m->cname)) == 0) {
+            printf("Main Mesh %s\n", m->cname);
+            printf("Anim Mesh %s\n", ad.object[i].cname);
+
+            if (ad.object[i].number_of_children) {
+
+                for (int c = 0; c < ad.object[i].number_of_children; c++) {
+                    for (int z = 0; z < m->mesh_indexes; z++) {
+
+                        if (strncmp(m->mesh[z].cname, ad.object[i].children[c], strlen(m->mesh[z].cname)) == 0) {
+                            printf("Child Mesh %s\n", m->mesh[z].cname);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int x = 0; x < m->mesh_indexes; x++) {
+
+        for (int y = 0; y < ad.number_of_objects; y++) {
+
+            if (strncmp(m->mesh[x].cname, ad.object[y].cname, strlen(m->mesh[x].cname)) == 0) {
+                printf("Model Mesh %s\n", m->mesh[x].cname);
+                printf("Anim Mesh %s\n", ad.object[y].cname);
+
+                if (ad.object[y].number_of_children) {
+
+                    for (int c = 0; c < ad.object[y].number_of_children; c++) {
+                        for (int z = 0; z < m->mesh_indexes; z++) {
+
+                            if (strncmp(m->mesh[z].cname, ad.object[y].children[c], strlen(m->mesh[z].cname)) == 0) {
+                                printf("Child Mesh %s\n", m->mesh[z].cname);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        printf("\n");
+
+    }
 
 	releaseAnimText(&ad);
 }

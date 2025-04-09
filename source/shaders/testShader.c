@@ -95,7 +95,7 @@ void testShader(void) {
 
             for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-                if (strncmp(SCENE.model[i].mesh[x].cname, "rechte_arm", 10) == 0)
+                if (strncmp(SCENE.model[i].mesh[x].cname, "arm.r", 10) == 0)
                     meshMatrix = modelMatfromQST(multiplyQuats(SCENE.model[i].mesh[x].q, q), SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
                 else
                     meshMatrix = identityMatrix();
