@@ -25,7 +25,7 @@ void createModel(model *m) {
         createMesh(&m->mesh[i], obj.e[i]);
 
         /* Inherit model translations to meshes. */
-        m->mesh[i].scale = 1.f;
+        m->mesh[i].scale = setvec4(1, 1, 1, 0);
         m->mesh[i].q = unitQuat();
         m->mesh[i].coords.v[0] = setvec4(0, 0, 0, 1);
     }
@@ -40,6 +40,8 @@ void releaseModel(model *m) {
     free(m->mesh);
     if (m->rigid.state == ENABLED)
         releaseRigid(&m->rigid);
+
+    releaseAnimations(&m->anim);
 }
 
 

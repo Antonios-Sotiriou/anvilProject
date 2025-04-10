@@ -14,9 +14,10 @@ void createScene(void) {
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         createModel(&SCENE.model[i]);
-        //if (model.animations)      // Here we must load the animations probably.
+
+        if (SCENE.model[i].has_anim)
+            loadModelAnimations(&SCENE.model[i]);
     }
-    loadModelAnimations(&SCENE.model[0]);
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {

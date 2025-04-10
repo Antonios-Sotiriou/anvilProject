@@ -110,9 +110,9 @@ typedef struct {
 typedef struct mesh {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
+    vec4 scale;                          // Vector to store the scale of the model.
     char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
-        scale,                           // Value to store the scale of the mesh.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
     int length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         vbo_indexes,                     // Number of vbo indexes as individual floats.
@@ -121,7 +121,8 @@ typedef struct mesh {
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
         type,                            // The type of the mesh.
-        visible;                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
+        visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
+        has_anim;                        // Wether or not the mesh has an animation.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
@@ -134,10 +135,10 @@ typedef struct mesh {
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
-    vec4 velocity;                       // Velocity of a model.
+    vec4 velocity,                       // Velocity of a model.
+        scale;                           // Vector to store the scale of the model.
     char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
-    float scale,                         // Value to store the scale of the model.
-        outer_radius,                    // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
+    float outer_radius,                  // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
         rotate;                          // The rotation angle of the rigid body.
     mesh *mesh;                          // Meshes array from which the model is consisting.
     int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
@@ -145,6 +146,7 @@ typedef struct {
         pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
         type,                            // The type of the model.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
+        has_anim,                        // Wether or not the model has an animation.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.

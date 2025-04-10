@@ -63,8 +63,9 @@ void logmesh(const mesh m) {
 	logcoords(m.coords);
 	printf("Quat           : ");
 	logvec4(m.q);
+	printf("scale          : ");
+	logvec4(m.scale);
 	printf("vbo            : %p\n", m.vbo);
-	printf("scale          : %f\n", m.scale);
 	printf("outer_radius   : %f\n", m.outer_radius);
 	printf("vbo_indexes    : %d\n", m.vbo_indexes);
 	printf("faces_indexes  : %d\n", m.faces_indexes);
@@ -82,8 +83,9 @@ void logmodel(const model m) {
 	logvec4(m.q);
 	printf("velocity       : ");
 	logvec4(m.velocity);
+	printf("scale          : ");
+	logvec4(m.scale);
 	printf("cname          : %s\n", m.cname);
-	printf("scale          : %f\n", m.scale);
 	printf("outer_radius   : %f\n", m.outer_radius);
 	printf("rotate         : %f\n", m.rotate);
 	printf("mesh           : %p\n", &m.mesh);

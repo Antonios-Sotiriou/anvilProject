@@ -43,7 +43,7 @@ quat addQuats(const quat q1, const quat q2);
 quat eulertoQuat(const float roll, const float yaw, const float pitch);
 quat multiplyQuats(const quat q1, const quat q2);
 mat4x4 matfromQuat(const quat q, const vec4 t);
-mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t);
+mat4x4 modelMatfromQST(const quat q, const vec4 s, const vec4 t);
 quat quatFromMat(mat4x4 m);
 quat slerp(const quat q1, const quat q2, const float t);
 quat lerp(const quat q1, const quat q2, const float t);

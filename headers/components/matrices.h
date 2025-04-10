@@ -19,7 +19,7 @@
 #endif // !VEC_MATH_H
 
 mat4x4 identityMatrix(void);
-mat4x4 scaleMatrix(const float scale);
+mat4x4 scaleMatrix(const float scale_x, const float scale_y, const float scale_z);
 mat4x4 translationMatrix(const float x, const float y, const float z);
 mat4x4 rotateXMatrix(const float angle);
 mat4x4 rotateYMatrix(const float angle);

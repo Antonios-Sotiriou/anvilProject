@@ -136,29 +136,6 @@ void readAnimText(animTextData *an, char path[]) {
             }
         }
     }
-
-    printf("number_of_objects      : %d\n", an->number_of_objects);
-    printf("number_of_frames       : %d\n", an->number_of_frames);
-    for (int x = 0; x < an->number_of_objects; x++) {
-        printf("cname              : %s\n", an->object[x].cname);
-        printf("number_of_children : %d\n", an->object[x].number_of_children);
-
-        printf("Children           : ");
-        for (int i = 0; i < an->object[x].number_of_children; i++)
-            printf("%s ", an->object[x].children[i]);
-        printf("\n");
-
-        for (int y = 0; y < an->number_of_frames; y++) {
-            logvec4(an->object[x].location[y]);
-        }
-        for (int y = 0; y < an->number_of_frames; y++) {
-            logvec4(an->object[x].rotation_quaternion[y]);
-        }
-        for (int y = 0; y < an->number_of_frames; y++) {
-            logvec4(an->object[x].scale[y]);
-        }
-    }
-
     fclose(fp);
 }
 void releaseAnimText(animTextData *an) {

@@ -142,20 +142,20 @@ mat4x4 matfromQuat(const quat q, const vec4 t) {
     return m;
 }
 /* Creates a model matrix from a given quaternion (q), s scale value (s) and a translation vector (t). */
-mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t) {
+mat4x4 modelMatfromQST(const quat q, const vec4 s, const vec4 t) {
     mat4x4 m;
-    vec4 scale = _mm_set_ps1(s);
+
     vec4 r1 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 1, 1, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 2, 0)));
     vec4 r2 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 0, 0, 1)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 2, 3, 1)));
-    m.m[0] = _mm_mul_ps(_mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor1, r2)), twos), ones1), scale);
+    m.m[0] = _mm_mul_ps(_mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor1, r2)), twos), ones1), s);
 
     r1 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 2, 0, 1)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 0, 2)));
     r2 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 0, 2, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 1, 2, 3)));
-    m.m[1] = _mm_mul_ps(_mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor2, r2)), twos), ones2), scale);
+    m.m[1] = _mm_mul_ps(_mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor2, r2)), twos), ones2), s);
 
     r1 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 0, 2, 1)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 0, 3, 3)));
     r2 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 0, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 1, 2)));
-    m.m[2] = _mm_mul_ps(_mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor3, r2)), twos), ones3), scale);
+    m.m[2] = _mm_mul_ps(_mm_sub_ps(_mm_mul_ps(_mm_add_ps(r1, _mm_xor_ps(mfqor3, r2)), twos), ones3), s);
 
     m.m[3] = t;
 
@@ -361,21 +361,21 @@ mat4x4 matfromQuat(const quat q, const vec4 t) {
     return m;
 }
 /* Creates a model matrix from a given quaternion (q), s scale value (s) and a translation vector (t). */
-mat4x4 modelMatfromQST(const quat q, const float s, const vec4 t) {
+mat4x4 modelMatfromQST(const quat q, const vec4 s, const vec4 t) {
     mat4x4 m;
-    m.m[0].m128_f32[0] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[1] * q.m128_f32[1])) - 1.0f) * s;
-    m.m[0].m128_f32[1] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) - (q.m128_f32[0] * q.m128_f32[3]))) * s;
-    m.m[0].m128_f32[2] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[2]))) * s;
+    m.m[0].m128_f32[0] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[1] * q.m128_f32[1])) - 1.0f) * s.m128_f32[0];
+    m.m[0].m128_f32[1] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) - (q.m128_f32[0] * q.m128_f32[3]))) * s.m128_f32[0];
+    m.m[0].m128_f32[2] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[2]))) * s.m128_f32[0];
     m.m[0].m128_f32[3] = 0.0f;
 
-    m.m[1].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) + (q.m128_f32[0] * q.m128_f32[3]))) * s;
-    m.m[1].m128_f32[1] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[2] * q.m128_f32[2])) - 1.0) * s;
-    m.m[1].m128_f32[2] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[1]))) * s;
+    m.m[1].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) + (q.m128_f32[0] * q.m128_f32[3]))) * s.m128_f32[1];
+    m.m[1].m128_f32[1] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[2] * q.m128_f32[2])) - 1.0) * s.m128_f32[1];
+    m.m[1].m128_f32[2] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[1]))) * s.m128_f32[1];
     m.m[1].m128_f32[3] = 0.0f;
 
-    m.m[2].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[2]))) * s;
-    m.m[2].m128_f32[1] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[1]))) * s;
-    m.m[2].m128_f32[2] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[3] * q.m128_f32[3])) - 1.0) * s;
+    m.m[2].m128_f32[0] = (2.0f * ((q.m128_f32[1] * q.m128_f32[3]) - (q.m128_f32[0] * q.m128_f32[2]))) * s.m128_f32[2];
+    m.m[2].m128_f32[1] = (2.0f * ((q.m128_f32[2] * q.m128_f32[3]) + (q.m128_f32[0] * q.m128_f32[1]))) * s.m128_f32[2];
+    m.m[2].m128_f32[2] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[3] * q.m128_f32[3])) - 1.0) * s.m128_f32[2];
     m.m[2].m128_f32[3] = 0.0f;
 
     m.m[3].m128_f32[0] = t.m128_f32[0];

@@ -35,9 +35,11 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
             SCENE.model[idx].q = rotationQuat(q[0], q[1], q[2], q[3]);
             SCENE.model[idx].rigid.q = SCENE.model[idx].q;
         } else if (strncmp(azColName[i], "scale", 5) == 0) {
-            SCENE.model[idx].scale = strtof(argv[i], NULL);
+            float s[4];
+            sscanf_os(argv[i], "{%f %f %f %f}", &s[0], &s[1], &s[2], &s[3]);
+            SCENE.model[idx].scale = setvec4(s[0], s[1], s[2], s[3]);
         } else if (strncmp(azColName[i], "outer_radius", 12) == 0) {
-            float rad2 = SCENE.model[idx].scale * SCENE.model[idx].scale;
+            float rad2 = vec4ExtractX(SCENE.model[idx].scale) * vec4ExtractX(SCENE.model[idx].scale); // Posible bugg here after we changed scale to vec4
             SCENE.model[idx].outer_radius = sqrtf(rad2 + rad2);
         } else if (strncmp(azColName[i], "state", 5) == 0) {
             SCENE.model[idx].rigid.state = atoi(argv[i]);
@@ -53,6 +55,8 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
             name_index = i;
         } else if (strncmp(azColName[i], "length_cname", 12) == 0) {
             SCENE.model[idx].length_cname = atoi(argv[i]);
+        } else if (strncmp(azColName[i], "animation", 9) == 0) {
+            SCENE.model[idx].has_anim = atoi(argv[i]);
         }
     }
     /* Compose cname with a NULL terminating string. */

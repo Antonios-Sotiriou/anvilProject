@@ -75,6 +75,7 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         printf("x: %d    y: %d\n", (int)x, (int)y);
 
         SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
+        logmodel(SCENE.model[0]);
 
 #if (NETWORK_INTERFACE)
         sendRequest("127.0.0.1", 8080, "GET /test_request");

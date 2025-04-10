@@ -18,6 +18,7 @@
 #endif // !ANIMTEXT_H
 
 void loadModelAnimations(model *m);
+void releaseAnimations(animation *m);
 
 #endif // !ANIMATIONS_H
 

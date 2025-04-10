@@ -268,11 +268,11 @@ void removeModelFromQuad(model *m) {
 }
 /* Retrieves Terrain Quad index and terrain triangle at given coords. Terrain triangle Can either be UPPER: 0 or LOWER: 1. Returns Terrain quad index -1 if outside of terrain.*/
 void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
-    const float t_scale = SCENE.model[terrain].scale * 2.f;
+    const float t_scale = vec4ExtractX(SCENE.model[terrain].scale) * 2.f;
     float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.model[terrain].coords.v[0], SCENE.model[terrain].scale));
+    vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.model[terrain].coords.v[0], vec4ExtractX(SCENE.model[terrain].scale)));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
         debug_log_error(stdout, "Out of terrain boundaries");
@@ -302,7 +302,7 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
     // float quad_len = t_scale / SCENE.t.vec_width;
     // const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.model[terrain].coords.v[0], SCENE.model[terrain].scale));
+    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.model[terrain].coords.v[0], vec4ExtractX(SCENE.model[terrain].scale)));
 
     if ( m->quad_index == -1 ) {
         debug_log_warning(stdout, "Out of terrain boundaries");
@@ -350,11 +350,11 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
 /* Retrieves Terrain *t height at given coords and, sets given meshes *m terain quadIndex to the id of the quad at those coords. */
 const TerrainPointInfo getvec4PositionData(const vec4 v) {
     TerrainPointInfo tp = { 0 };
-    const float t_scale = SCENE.model[terrain].scale * 2.f;
+    const float t_scale = vec4ExtractX(SCENE.model[terrain].scale) * 2.f;
     float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(v, vecSubf32(SCENE.model[terrain].coords.v[0], SCENE.model[terrain].scale));
+    vec4 t_coords = vecSubvec(v, vecSubf32(SCENE.model[terrain].coords.v[0], vec4ExtractX(SCENE.model[terrain].scale)));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
         debug_log_warning(stdout, "Out of terrain boundaries");

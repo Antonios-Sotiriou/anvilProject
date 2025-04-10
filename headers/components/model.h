@@ -21,6 +21,10 @@
     #include "headers/components/obj.h"
 #endif // !OBJ_H
 
+#ifndef ANIMATIONS_H
+    #include "headers/components/animations.h"
+#endif // !ANIMATIONS_H
+
 void createModel(model *m);
 void releaseModel(model *m);
 

@@ -14,11 +14,11 @@ mat4x4 identityMatrix(void) {
     }};
 }
 /* Scale Matrix. */
-mat4x4 scaleMatrix(const float scale) {
+mat4x4 scaleMatrix(const float scale_x, const float scale_y, const float scale_z) {
     return  (mat4x4) {{
-        _mm_setr_ps(scale, 0.f, 0.f, 0.f),
-        _mm_setr_ps(0.f, scale, 0.f, 0.f),
-        _mm_setr_ps(0.f, 0.f, scale, 0.f),
+        _mm_setr_ps(scale_x, 0.f, 0.f, 0.f),
+        _mm_setr_ps(0.f, scale_y, 0.f, 0.f),
+        _mm_setr_ps(0.f, 0.f, scale_z, 0.f),
         _mm_setr_ps(0.f, 0.f, 0.f, 1.f)
     }};
 }
@@ -262,11 +262,11 @@ mat4x4 identityMatrix(void) {
     return m;
 }
 /* Scale Matrix. */
-mat4x4 scaleMatrix(const float scale) {
+mat4x4 scaleMatrix(const float scale_x, const float scale_y, const float scale_z) {
     mat4x4 m = { 0 };
-    m.m[0].m128_f32[0] = scale;
-    m.m[1].m128_f32[1] = scale;
-    m.m[2].m128_f32[2] = scale;
+    m.m[0].m128_f32[0] = scale_x;
+    m.m[1].m128_f32[1] = scale_y;
+    m.m[2].m128_f32[2] = scale_z;
     m.m[3].m128_f32[3] = 1.0f;
     return m;
 }

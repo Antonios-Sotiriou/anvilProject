@@ -53,6 +53,8 @@ void releaseMesh(mesh *m) {
     glDisableVertexAttribArray(2);
     if (m->rigid.state == ENABLED)
         releaseRigid(&m->rigid);
+
+    releaseAnimations(&m->anim);
 }
 
 

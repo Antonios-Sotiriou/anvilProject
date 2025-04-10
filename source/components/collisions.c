@@ -20,7 +20,7 @@ void modelTerrainCollision(model *m) {
     vec4 pos, normal;
     getModelPositionData(m, &pos, &normal);
 
-    float height_diff = -vec4ExtractY(pos) - (vec4ExtractY(m->coords.v[0]) - m->scale);
+    float height_diff = vec4ExtractY(vecSubvec(vecSubvec(pos, m->coords.v[0]), m->scale));   // Posible bugg with height here after changed scale to vec4.
     if (height_diff >= 0) {
         m->rigid.grounded = 1;
         m->rigid.falling_time = 0;

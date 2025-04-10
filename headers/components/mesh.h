@@ -21,6 +21,10 @@
     #include "headers/components/rigid.h"
 #endif // !RIGID_H
 
+#ifndef ANIMATIONS_H
+    #include "headers/components/animations.h"
+#endif // !ANIMATIONS_H
+
 void createMesh(mesh *m, ENTRY obj);
 void releaseMesh(mesh *m);
 
