@@ -101,7 +101,6 @@ typedef struct {
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
-        state,                           // State of the rigid of the mesh. Can be either ENABLE: 1 or DISABLE: 0.
         grounded;                        // Switch which tracks if object in grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
@@ -122,14 +121,15 @@ typedef struct mesh {
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
         type,                            // The type of the mesh.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
-        has_anim;                        // Wether or not the mesh has an animation.
+        owns_anim;                        // Wether or not the mesh has an animation.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     struct mesh **children;               // The children mesh array of the mesh
     struct mesh *parent;                 // The parent at which the mesh belongs.
     animation anim;
-    int number_of_children;              // The number of the children that the mesh owns
+    int number_of_children,              // The number of the children that the mesh owns
+        owns_rigid;                      // Wether or not the model has a rigid body attached to it.
 } mesh;
 /* Model structure to represent a collection of shapes. Probably we dont need a Children relation in this struct, because all the meshes it has are its children. */
 typedef struct {
@@ -146,7 +146,8 @@ typedef struct {
         pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
         type,                            // The type of the model.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
-        has_anim,                        // Wether or not the model has an animation.
+        owns_anim,                       // Wether or not the model has an animation.
+        owns_rigid,                      // Wether or not the model has a rigid body attached to it.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.

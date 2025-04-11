@@ -1,7 +1,5 @@
 #include "headers/shaders/testShader.h"
 
-int COUNT = 0;
-int index = 0;
 const static char *vertexShaderSource = "#version 450 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
 "layout (location = 1) in vec2 vsTexels;\n"
@@ -79,66 +77,21 @@ void testShader(void) {
     /* Just for testing purposes code. ##################### */
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
-    if ((COUNT % 1000) == 0) {
-        index += 1;
-
-        if (index > 2)
-            index = 0;
-    }
-    COUNT++;
-
-    mat4x4 modelMatrix, meshMatrix;
+    mat4x4 modelMatrix, meshMatrix, childMatrix;
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
 
-            if (SCENE.model[i].has_anim) {
-                //SCENE.model[i].q = multiplyQuats(SCENE.model[i].q, SCENE.model[i].anim.rq[index]);
-                modelMatrix = modelMatfromQST(SCENE.model[i].anim.rq[index], SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
-                glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+            modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
-                for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-                    //SCENE.model[i].mesh[x].q = multiplyQuats(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].anim.rq[index]);
-                    meshMatrix = modelMatfromQST(SCENE.model[i].mesh[x].anim.rq[index], SCENE.model[i].mesh[x].anim.sc[index], SCENE.model[i].mesh[x].coords.v[0]);
+            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-                    if (SCENE.model[i].mesh[x].number_of_children) {
-                        for (int y = 0; y < SCENE.model[i].mesh[x].number_of_children; y++) {
-                            //setvec4arrayMulmat(SCENE.model[i].mesh[x].children[y].coords.v, 4, meshMatrix);
-                            SCENE.model[i].mesh[x].children[y]->anim.rq[index] = multiplyQuats(SCENE.model[i].mesh[x].children[y]->anim.rq[index], SCENE.model[i].mesh[x].anim.rq[index]);
-                            //SCENE.model[i].mesh[x].children[y]->q = setQuat(1, 2, 3123, 4);
-                            //printf("cname: %s\n", SCENE.model[i].mesh[x].children[y]->cname);
-                            //printf("log quat 1:  ");
-                            //logvec4(SCENE.model[i].mesh[x].children[y]->q);
-                            //for (int d = i; d < SCENE.model[i].mesh_indexes; d++) {
-                            //    if (strncmp(SCENE.model[i].mesh[d].cname, "fuss.l", strlen(SCENE.model[i].mesh[d].cname)) == 0) {
-                            //        printf("cname: %s\n", SCENE.model[i].mesh[x].children[y]->cname);
-                            //        printf("log quat 2:  ");
-                            //        logvec4(SCENE.model[i].mesh[d].q);
-                            //    }
-                            //}
-                        }
-                    }
+                meshMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
 
-                    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&meshMatrix);
-                    //glUniform1i(2, i + 1);
-                    glBindVertexArray(SCENE.model[i].mesh[x].VAO);
-                    glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
-                }
-            } else {
-                modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
-                glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
-
-                for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-
-                    if (strncmp(SCENE.model[i].mesh[x].cname, "arm.r", 10) == 0)
-                        meshMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
-                    else
-                        meshMatrix = identityMatrix();
-
-                    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&meshMatrix);
-                    //glUniform1i(2, i + 1);
-                    glBindVertexArray(SCENE.model[i].mesh[x].VAO);
-                    glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
-                }
+                glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&meshMatrix);
+                //glUniform1i(2, i + 1);
+                glBindVertexArray(SCENE.model[i].mesh[x].VAO);
+                glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
             }
         }
     }

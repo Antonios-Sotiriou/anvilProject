@@ -76,10 +76,6 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
 
         SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
 
-        //addChild(SCENE.model[0].mesh[9], SCENE.model[0].mesh[8]);
-        //addChild(&SCENE.model[0].mesh[8], &SCENE.model[0].mesh[2]);
-        //removeChild(&SCENE.model[0].mesh[8], &SCENE.model[0].mesh[2]);
-
 #if (NETWORK_INTERFACE)
         sendRequest("127.0.0.1", 8080, "GET /test_request");
 #endif
@@ -228,6 +224,9 @@ int main(int argc, char *argv[]) {
 
         /* Apply physics */
         applyPhysics();
+
+        /* Animate models */
+        animateModels();
 
         /* Draw the Global SCENE. */
         rasterize();

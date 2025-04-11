@@ -18,8 +18,13 @@
     #include "headers/components/vec_math.h"
 #endif // !VEC_MATH_H
 
+#ifndef ANIMATIONS_H
+    #include "headers/components/animations.h"
+#endif // !ANIMATIONS_H
+
 void logvec4(const vec4 v);
 void logmat4x4(const mat4x4 m);
+void loganim(const animation an);
 void logcoords(const coords c);
 void logrigid(const rigid r);
 void logmesh(const mesh m);

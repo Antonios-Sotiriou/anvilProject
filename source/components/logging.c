@@ -1,6 +1,5 @@
 #include "headers/components/logging.h"
 
-#ifdef VECTORIZED_CODE // #######################################################################################
 void logvec4(const vec4 v) {
 	printf("%f %f %f %f\n", vec4ExtractX(v), vec4ExtractY(v), vec4ExtractZ(v), vec4ExtractW(v));
 }
@@ -10,17 +9,14 @@ void logmat4x4(const mat4x4 m) {
 	printf("%f %f %f %f\n", vec4ExtractX(m.m[2]), vec4ExtractY(m.m[2]), vec4ExtractZ(m.m[2]), vec4ExtractW(m.m[2]));
 	printf("%f %f %f %f\n", vec4ExtractX(m.m[3]), vec4ExtractY(m.m[3]), vec4ExtractZ(m.m[3]), vec4ExtractW(m.m[3]));
 }
-#else // ITERATIVE_CODE #########################################################################################
-void logvec4(const vec4 v) {
-	printf("%f %f %f %f\n", v.m128_f32[0], v.m128_f32[1], v.m128_f32[2], v.m128_f32[3]);
+void loganim(const animation an) {
+	printf("animation {\n");
+	printf("    frames              : %d\n", an.frames);
+	printf("    location            : %p\n", &an.lc);
+	printf("    rotation_quaternion : %p\n", &an.rq);
+	printf("    scale               : %p\n", &an.sc);
+	printf("}\n");
 }
-void logmat4x4(const mat4x4 m) {
-	printf("%f %f %f %f\n", m.m[0].m128_f32[0], m.m[0].m128_f32[1], m.m[0].m128_f32[2], m.m[0].m128_f32[3]);
-	printf("%f %f %f %f\n", m.m[1].m128_f32[0], m.m[1].m128_f32[1], m.m[1].m128_f32[2], m.m[1].m128_f32[3]);
-	printf("%f %f %f %f\n", m.m[2].m128_f32[0], m.m[2].m128_f32[1], m.m[2].m128_f32[2], m.m[2].m128_f32[3]);
-	printf("%f %f %f %f\n", m.m[3].m128_f32[0], m.m[3].m128_f32[1], m.m[3].m128_f32[2], m.m[3].m128_f32[3]);
-}
-#endif // VECTORIZED_CODE #######################################################################################
 void logcoords(const coords c) {
 	printf("Coords {\n");
 	printf("    Pos: ");
@@ -55,7 +51,6 @@ void logrigid(const rigid r) {
 	printf("    vbo_size      : %d\n", r.vbo_size);
 	printf("    VAO           : %d\n", r.VAO);
 	printf("    VBO           : %d\n", r.VBO);
-	printf("    state         : %d\n", r.state);
 	printf("    grounded      : %d\n", r.grounded);
 	printf("}\n");
 }
@@ -65,6 +60,8 @@ void logmesh(const mesh m) {
 	logvec4(m.q);
 	printf("scale          : ");
 	logvec4(m.scale);
+	printf("cname          : %s\n", m.cname);
+	printf("length_cname   : %d\n", m.length_cname);
 	printf("vbo            : %p\n", m.vbo);
 	printf("outer_radius   : %f\n", m.outer_radius);
 	printf("vbo_indexes    : %d\n", m.vbo_indexes);
@@ -75,7 +72,16 @@ void logmesh(const mesh m) {
 	printf("VBO            : %d\n", m.VBO);
 	printf("pk             : %d\n", m.pk);
 	printf("type           : %d\n", m.type);
-	logrigid(m.rigid);
+	printf("visible        : %d\n", m.visible);
+	printf("number_of_children : %d\n", m.owns_anim);
+	printf("children       : %p\n", &m.children);
+	printf("parent         : %p\n", &m.parent);
+	printf("owns_rigid     : %d\n", m.owns_rigid);
+	if (m.owns_rigid)
+	    logrigid(m.rigid);
+	printf("owns_anim       : %d\n", m.owns_anim);
+	if (m.owns_anim)
+		loganim(m.anim);
 }
 void logmodel(const model m) {
 	logcoords(m.coords);
@@ -86,6 +92,7 @@ void logmodel(const model m) {
 	printf("scale          : ");
 	logvec4(m.scale);
 	printf("cname          : %s\n", m.cname);
+	printf("length_cname   : %d\n", m.length_cname);
 	printf("outer_radius   : %f\n", m.outer_radius);
 	printf("rotate         : %f\n", m.rotate);
 	printf("mesh           : %p\n", &m.mesh);
@@ -93,10 +100,16 @@ void logmodel(const model m) {
 	printf("cname_length   : %d\n", m.length_cname);
 	printf("pk             : %d\n", m.pk);
 	printf("type           : %d\n", m.type);
+	printf("visible        : %d\n", m.visible);
 	printf("quadInit       : %d\n", m.quad_init);
 	printf("quadIndex      : %d\n", m.quad_index);
 	printf("quadIndex      : %d\n", m.quad_face);
-	logrigid(m.rigid);
+	printf("owns_rigid     : %d\n", m.owns_rigid);
+	if (m.owns_rigid)
+		logrigid(m.rigid);
+	printf("owns_anim      : %d\n", m.owns_anim);
+	if (m.owns_anim)
+		loganim(m.anim);
 }
 void logscene(const scene s) {
 	printf("mesh_indexes         : %d\n", s.model_indexes);

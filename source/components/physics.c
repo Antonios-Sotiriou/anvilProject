@@ -6,7 +6,7 @@
 void applyPhysics(void) {
 
 	for (int i = 0; i < SCENE.model_indexes; i++) {
-		if (SCENE.model[i].rigid.state == ENABLED && (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rotate)) {
+		if (SCENE.model[i].owns_rigid == ENABLED && (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rotate)) {
 
 			initModelQuadInfo(&SCENE.model[i]);
 			printf("Physics ENABLED\n");

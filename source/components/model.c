@@ -38,10 +38,11 @@ void releaseModel(model *m) {
         releaseMesh(&m->mesh[i]);
     }
     free(m->mesh);
-    if (m->rigid.state == ENABLED)
+    if (m->owns_rigid == ENABLED)
         releaseRigid(&m->rigid);
 
-    releaseAnimations(&m->anim);
+    if (m->owns_anim == ENABLED)
+        releaseAnimations(&m->anim);
 }
 
 

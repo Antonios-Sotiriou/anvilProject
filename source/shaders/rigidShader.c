@@ -73,7 +73,7 @@ void rigidShader(void) {
     for (int i = 0; i < SCENE.model_indexes; i++) {
         for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-            if (SCENE.model[i].mesh[x].rigid.state == ENABLED) {
+            if (SCENE.model[i].mesh[x].owns_rigid == ENABLED) {
                 modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
 
                 glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);

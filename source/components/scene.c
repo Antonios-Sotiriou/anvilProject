@@ -15,7 +15,7 @@ void createScene(void) {
     for (int i = 0; i < SCENE.model_indexes; i++) {
         createModel(&SCENE.model[i]);
 
-        if (SCENE.model[i].has_anim)
+        if (SCENE.model[i].owns_anim)
             loadModelAnimations(&SCENE.model[i]);
     }
 }
