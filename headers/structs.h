@@ -126,7 +126,7 @@ typedef struct mesh {
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
-    struct mesh *children;               // The children mesh array of the mesh
+    struct mesh **children;               // The children mesh array of the mesh
     struct mesh *parent;                 // The parent at which the mesh belongs.
     animation anim;
     int number_of_children;              // The number of the children that the mesh owns

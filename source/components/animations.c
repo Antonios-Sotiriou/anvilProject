@@ -51,14 +51,15 @@ void loadModelAnimations(model* m) {
 
                 if (ad.object[y].number_of_children) {
                     m->mesh[x].number_of_children = ad.object[y].number_of_children;
-                    m->mesh[x].children = malloc(sizeof(mesh) * ad.object[y].number_of_children);
+                    m->mesh[x].children = malloc(8 * ad.object[y].number_of_children);
 
                     for (int c = 0; c < ad.object[y].number_of_children; c++) {
                         for (int z = 0; z < m->mesh_indexes; z++) {
 
                             if (strncmp(m->mesh[z].cname, ad.object[y].children[c], strlen(m->mesh[z].cname)) == 0) {
-                                m->mesh[x].children[c] = m->mesh[z];
+                                m->mesh[x].children[c] = &m->mesh[z];
                                 m->mesh[z].parent = &m->mesh[x];
+                                //addChild(m->mesh[x], m->mesh[z]);
                             }
                         }
                     }

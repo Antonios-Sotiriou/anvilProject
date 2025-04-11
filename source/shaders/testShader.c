@@ -95,18 +95,26 @@ void testShader(void) {
                 //SCENE.model[i].q = multiplyQuats(SCENE.model[i].q, SCENE.model[i].anim.rq[index]);
                 modelMatrix = modelMatfromQST(SCENE.model[i].anim.rq[index], SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
                 glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
-                printf("model: %s\n", SCENE.model[i].cname);
 
                 for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
                     //SCENE.model[i].mesh[x].q = multiplyQuats(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].anim.rq[index]);
                     meshMatrix = modelMatfromQST(SCENE.model[i].mesh[x].anim.rq[index], SCENE.model[i].mesh[x].anim.sc[index], SCENE.model[i].mesh[x].coords.v[0]);
-                    printf("mesh: %s\n", SCENE.model[i].mesh[x].cname);
-                    if (SCENE.model[i].mesh[x].number_of_children > 0) {
+
+                    if (SCENE.model[i].mesh[x].number_of_children) {
                         for (int y = 0; y < SCENE.model[i].mesh[x].number_of_children; y++) {
                             //setvec4arrayMulmat(SCENE.model[i].mesh[x].children[y].coords.v, 4, meshMatrix);
-                            printf("child: %s, index: %d\n", SCENE.model[i].mesh[x].children[y].cname, SCENE.model[i].mesh[x].number_of_children);
-                            logvec4(SCENE.model[i].mesh[x].children[y].anim.rq[index]);
-                            SCENE.model[i].mesh[x].children[y].anim.rq[index] = multiplyQuats(SCENE.model[i].mesh[x].children[y].anim.rq[index], SCENE.model[i].mesh[x].anim.rq[index]);
+                            SCENE.model[i].mesh[x].children[y]->anim.rq[index] = multiplyQuats(SCENE.model[i].mesh[x].children[y]->anim.rq[index], SCENE.model[i].mesh[x].anim.rq[index]);
+                            //SCENE.model[i].mesh[x].children[y]->q = setQuat(1, 2, 3123, 4);
+                            //printf("cname: %s\n", SCENE.model[i].mesh[x].children[y]->cname);
+                            //printf("log quat 1:  ");
+                            //logvec4(SCENE.model[i].mesh[x].children[y]->q);
+                            //for (int d = i; d < SCENE.model[i].mesh_indexes; d++) {
+                            //    if (strncmp(SCENE.model[i].mesh[d].cname, "fuss.l", strlen(SCENE.model[i].mesh[d].cname)) == 0) {
+                            //        printf("cname: %s\n", SCENE.model[i].mesh[x].children[y]->cname);
+                            //        printf("log quat 2:  ");
+                            //        logvec4(SCENE.model[i].mesh[d].q);
+                            //    }
+                            //}
                         }
                     }
 
