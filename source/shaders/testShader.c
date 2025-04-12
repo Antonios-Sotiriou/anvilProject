@@ -77,18 +77,14 @@ void testShader(void) {
     /* Just for testing purposes code. ##################### */
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
-    mat4x4 modelMatrix, meshMatrix, childMatrix;
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
 
-            modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
-            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&SCENE.model[i].model_matrix);
 
             for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-                meshMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
-
-                glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&meshMatrix);
+                glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&SCENE.model[i].mesh[x].model_matrix);
                 //glUniform1i(2, i + 1);
                 glBindVertexArray(SCENE.model[i].mesh[x].VAO);
                 glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);

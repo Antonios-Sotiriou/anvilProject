@@ -25,6 +25,10 @@
     #include "headers/components/animations.h"
 #endif // !ANIMATIONS_H
 
+#ifndef MATRICES_H
+    #include "headers/components/matrices.h"
+#endif // !MATRICES_H
+
 void createModel(model *m);
 void releaseModel(model *m);
 

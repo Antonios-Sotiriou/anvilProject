@@ -73,13 +73,13 @@ void logmesh(const mesh m) {
 	printf("pk             : %d\n", m.pk);
 	printf("type           : %d\n", m.type);
 	printf("visible        : %d\n", m.visible);
-	printf("number_of_children : %d\n", m.owns_anim);
+	printf("number_of_children : %d\n", m.number_of_children);
 	printf("children       : %p\n", &m.children);
 	printf("parent         : %p\n", &m.parent);
 	printf("owns_rigid     : %d\n", m.owns_rigid);
 	if (m.owns_rigid)
 	    logrigid(m.rigid);
-	printf("owns_anim       : %d\n", m.owns_anim);
+	printf("owns_anim      : %d\n", m.owns_anim);
 	if (m.owns_anim)
 		loganim(m.anim);
 }

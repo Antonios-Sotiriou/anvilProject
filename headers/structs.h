@@ -110,6 +110,7 @@ typedef struct mesh {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
     vec4 scale;                          // Vector to store the scale of the model.
+    mat4x4 model_matrix;
     char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
@@ -137,6 +138,7 @@ typedef struct {
     quat q;                              // Quaternion to save rotations.
     vec4 velocity,                       // Velocity of a model.
         scale;                           // Vector to store the scale of the model.
+    mat4x4 model_matrix;
     char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
     float outer_radius,                  // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
         rotate;                          // The rotation angle of the rigid body.

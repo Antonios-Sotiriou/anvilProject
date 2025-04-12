@@ -31,6 +31,10 @@
     #include "headers/components/quaternions.h"
 #endif // !QUATERNIONS_H
 
+#ifndef MATRICES_H
+    #include "headers/components/matrices.h"
+#endif // !MATRICES_H
+
 void loadModelAnimations(model *m);
 void animateModels(void);
 void releaseAnimations(animation *m);

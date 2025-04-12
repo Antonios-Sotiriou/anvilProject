@@ -20,14 +20,17 @@ void createModel(model *m) {
 
     m->mesh = calloc(obj.e_indexes, sizeof(mesh));
     m->mesh_indexes = obj.e_indexes;
+    m->model_matrix = identityMatrix();
     for (int i = 0; i < m->mesh_indexes; i++) {
         /* Creating the meshes from ENTRIES of obj file. */
         createMesh(&m->mesh[i], obj.e[i]);
 
         /* Inherit model translations to meshes. */
+        memcpy(m->mesh[i].coords.v, m->coords.v, 64);
         m->mesh[i].scale = setvec4(1, 1, 1, 0);
         m->mesh[i].q = unitQuat();
         m->mesh[i].coords.v[0] = setvec4(0, 0, 0, 1);
+        m->mesh[i].model_matrix = identityMatrix();
     }
 
     releaseOBJ(&obj);
