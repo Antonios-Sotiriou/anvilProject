@@ -214,6 +214,11 @@ int main(int argc, char *argv[]) {
     enableNetworkInterface();
 #endif
 
+    /* Enable PYTHON_INTERFACE */
+#if (PYTHON_INTERFACE)
+    enablePythonAPI();
+#endif
+
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
         /* Timing functions. */
@@ -245,6 +250,11 @@ int main(int argc, char *argv[]) {
     startTCPClient(0);
     /* Disable NETWORK_INTERFACE */
     disableNetworkInterface();
+#endif
+
+#if (PYTHON_INTERFACE)
+    /* Disable PYTHON_INTERFACE */
+    disablePythonAPI();
 #endif
 
     glfwTerminate();

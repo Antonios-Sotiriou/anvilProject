@@ -32,18 +32,21 @@
 #include "headers/components/camera.h"
 #include "headers/components/physics.h"
 
-// #if (NETWORK_ENABLED)
-#ifndef TCPSERVER_H
-    #include "headers/network/c_interface/TCPServer.h"
-#endif // !TCPSERVER_H
-#ifndef TCPCLIENT_H
-    #include "headers/network/c_interface/TCPClient.h"
-#endif // !TCPCLIENT_H
-#ifndef REQUESTS_H
-    #include "headers/network/requests/requests.h"
-#endif // !REQUESTS_H
-// #endif // 1(NETWORK_INTERFACE)
+ #if (NETWORK_INTERFACE)
+    #ifndef TCPSERVER_H
+        #include "headers/network/c_interface/TCPServer.h"
+    #endif // !TCPSERVER_H
+    #ifndef TCPCLIENT_H
+        #include "headers/network/c_interface/TCPClient.h"
+    #endif // !TCPCLIENT_H
+    #ifndef REQUESTS_H
+        #include "headers/network/requests/requests.h"
+    #endif // !REQUESTS_H
+ #endif // !(NETWORK_INTERFACE)
 
+#if (PYTHON_INTERFACE)
+    #include "headers/pythonAPI/anvilPy.h"
+#endif // !(PYTHON_INTERFACE)
 
 /* External Libraries. */
 #ifndef _glfw3_h_

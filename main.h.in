@@ -1,6 +1,12 @@
 // Global variables and settings for the project which cmake is going to set.
-#define PROJECT_NAME            "@PROJECT_NAME@"
-#define anvil_VERSION_MAJOR     @anvil_VERSION_MAJOR@
-#define anvil_VERSION_MINOR     @anvil_VERSION_MINOR@
-#define anvil_SOURCE_DIR        "@anvil_SOURCE_DIR@"
-#define NETWORK_INTERFACE       @NETWORK_INTERFACE@
+#define PROJECT_NAME                 "@PROJECT_NAME@"
+#define anvil_VERSION_MAJOR          @anvil_VERSION_MAJOR@
+#define anvil_VERSION_MINOR          @anvil_VERSION_MINOR@
+#define anvil_SOURCE_DIR             "@anvil_SOURCE_DIR@"
+#define NETWORK_INTERFACE            @NETWORK_INTERFACE@
+#define Python_RUNTIME_LIBRARY_DIRS  "@Python_RUNTIME_LIBRARY_DIRS@"
+#define Python_INCLUDE_DIRS          "@Python_INCLUDE_DIRS@"
+#define Python_LIBRARIES             "@Python_LIBRARIES@"
+#define Python_LIBRARY_DIRS          "@Python_LIBRARY_DIRS@"
+#define PYTHONHOME                   "@Python_RUNTIME_LIBRARY_DIRS@"
+#define PYTHON_INTERFACE             @PYTHON_INTERFACE@

@@ -10,17 +10,25 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 # Whether or not compile with networking enabled.
 set(NETWORK_INTERFACE 0)
+# Whether or not compile with embeded python enabled.
+set(PYTHON_INTERFACE 1)
+
+
 if (NETWORK_INTERFACE)
     set(Network_Files "source/network/c_interface/TCPServer.c" "source/network/c_interface/TCPClient.c" "source/network/requests/requests.c")
+endif()
+
+if (PYTHON_INTERFACE)
+    set(Python_Files "source/pythonAPI/anvilPy.c")
 endif()
 
 # Creates an executable.
 if (LINUX)
     set(CMAKE_C_FLAGS "-Wall -Werror -msse4.1 -g" CACHE STRING "" FORCE)
-    add_executable(anvil "${Network_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "libraries/sqlite/sqlite3.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c")
+    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "libraries/sqlite/sqlite3.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c")
 elseif (WIN32)
     set(CMAKE_C_FLAGS "" CACHE STRING "" FORCE)
-    add_executable(anvil "${Network_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "libraries/sqlite/shell.c" "libraries/sqlite/sqlite3.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c" "source/components/relations.c")
+    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "libraries/sqlite/shell.c" "libraries/sqlite/sqlite3.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c" "source/components/relations.c")
 endif()
 
 # LIBRARIES  ####################################################################################
@@ -69,6 +77,16 @@ if (NETWORK_INTERFACE)
     message(STATUS "Network Enabled  :    ${NETWORK_INTERFACE}")
     message(STATUS "NETWORK_INTERFACE:    ${NETWORK_INTERFACE}")
     message(STATUS "Network_files    :    ${Network_Files}")
+endif()
+
+if (PYTHON_INTERFACE)
+    find_package (Python COMPONENTS Interpreter Development)
+    if (Python_FOUND)
+        file(COPY "${Python_RUNTIME_LIBRARY_DIRS}/python313.dll" DESTINATION "${PROJECT_BINARY_DIR}")
+
+        target_include_directories(anvil PUBLIC "${Python_INCLUDE_DIRS}")
+        target_link_libraries(anvil PUBLIC "${Python_LIBRARIES}")
+    endif()
 endif()
 
 configure_file("main.h.in" "${PROJECT_SOURCE_DIR}/headers/cmake_variables.h")
