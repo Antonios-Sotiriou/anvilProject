@@ -11,7 +11,7 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 # Whether or not compile with networking enabled.
 set(NETWORK_INTERFACE 0)
 # Whether or not compile with embeded python enabled.
-set(PYTHON_INTERFACE 1)
+set(PYTHON_INTERFACE 0)
 
 
 if (NETWORK_INTERFACE)

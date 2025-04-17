@@ -19,6 +19,7 @@ static void Custom_dealloc(meshPy *self) {
     printf("Called Custom_dealloc()\n");
     printf("reference: %lld\n", self->cname->ob_refcnt);
     Py_DECREF(self->cname);
+    Py_XDECREF(self->children);
     Py_XDECREF(self->parent);
     Py_TYPE(self)->tp_free((PyObject*)self);
 };
@@ -86,7 +87,7 @@ static PyGetSetDef Custom_getsetters[] = {
 
     {NULL}  /* Sentinel */
 };
-static PyObject *Custom_name(meshPy *self, PyObject *Py_UNUSED(ignored)) {
+static PyObject *Custom_name(meshPy *self, PyObject* Py_UNUSED(ignored)) {
     printf("Called Custom_name()\n");
     if (self->cname == NULL) {
         PyErr_SetString(PyExc_AttributeError, "name");
@@ -95,43 +96,63 @@ static PyObject *Custom_name(meshPy *self, PyObject *Py_UNUSED(ignored)) {
     return PyUnicode_FromFormat("%s", self->cname);
 }
 static meshPy *meshPy_FromMesh(mesh *m) {
-    printf("Creating %s\n", m->cname);
-    meshPy *self;
-    self = (meshPy*)meshPyType.tp_alloc(&meshPyType, 0);
-    if (self != NULL) {
-        self->cname = PyUnicode_FromString(m->cname);
-        if (!self->cname) {
-            Py_DECREF(self->cname);
-            Py_DECREF(self);
-            debug_log_INFO();
-            return NULL;
-        }
-
-        self->number_of_children = m->number_of_children;
-
-        //if (!m->parent)
-        //    self->parent = NULL;
+    meshPy* self = (meshPy*)meshPyType.tp_alloc(&meshPyType, 0);
+    if (!self) {
+        Py_DECREF(self);
+        debug_log_INFO();
+        return NULL;
+    } else {
+        self->coords                = m->coords;
+        self->q                     = m->q;
+        self->scale                 = m->scale;
+        self->model_matrix          = m->model_matrix;
+        self->cname                 = PyUnicode_FromString(m->cname);
+        self->vbo                   = m->vbo;
+        self->outer_radius          = m->outer_radius;
+        self->length_cname          = m->length_cname;
+        self->vbo_indexes           = m->vbo_indexes;
+        self->faces_indexes         = m->faces_indexes;
+        self->vecs_indexes          = m->vecs_indexes;
+        self->vbo_size              = m->vbo_size;
+        self->pk                    = m->pk;
+        self->type                  = m->type;
+        self->visible               = m->visible;
+        self->owns_anim             = m->owns_anim;
+        self->VAO                   = m->VAO;
+        self->VBO                   = m->VBO;
+        self->rigid                 = m->rigid;
+        self->children              = m->children;
+        self->parent                = m->parent;
+        self->anim                  = m->anim;
+        self->number_of_children    = m->number_of_children;
+        self->owns_rigid            = m->owns_rigid;
     }
-
     return self;
 }
-static PyObject *childrenPy_FromMesh(mesh *m) {
-    PyObject *temp_list = PyList_New(0);
-    if (!temp_list) {
-        Py_DECREF(temp_list);
-    } else {
-        for (int i = 0; i < m->number_of_children; i++) {
-            //PyObject *list_entry = Py_BuildValue("O", meshPy_FromMesh(m->children[i]));
-            if (PyList_Append(temp_list, (PyObject*)meshPy_FromMesh(m->children[i])) != 0) {
-                debug_log_INFO();
-                //Py_DECREF(list_entry);
-                Py_DECREF(temp_list);
-            }
-            //Py_DECREF(list_entry);
-            printf("Added %s to %s\n", m->children[i]->cname, m->cname);
-        }
+static void meshPy_Children(meshPy *self, mesh *m) {
+    if (!m->children) {
+        self->children = NULL;
+        return;
     }
-    return temp_list;
+
+    self->children = PyList_New(0);
+    for (int i = 0; i < self->number_of_children; i++) {
+        meshPy *list_entry = meshPy_FromMesh(m->children[i]);
+        if (PyList_Append(self->children, (PyObject*)list_entry) != 0) {
+            debug_log_INFO();
+            Py_DECREF(self->children[i]);
+            Py_DECREF(self->children);
+        }
+        Py_DECREF(list_entry);
+    }
+}
+static void meshPy_Parent(meshPy *self, mesh *m) {
+    if (!m->parent) {
+        self->parent = NULL;
+        return;
+    }
+
+    self->parent = meshPy_FromMesh(m->parent);
 }
 static PyObject *Custom_get_meshPy(PyTypeObject *type, PyObject *args) {
     printf("Called Custom_get_meshPy()\n");
@@ -142,29 +163,22 @@ static PyObject *Custom_get_meshPy(PyTypeObject *type, PyObject *args) {
     }
     printf("gathering information for %s\n", SCENE.model[model_idx].mesh[mesh_idx].cname);
 
-    //meshPy *self = { 0 };
     meshPy *self = meshPy_FromMesh(&SCENE.model[model_idx].mesh[mesh_idx]);
-    if (!self)
-        Py_DECREF(self);
-    if (SCENE.model[model_idx].mesh[mesh_idx].number_of_children)
-        self->children = childrenPy_FromMesh(&SCENE.model[model_idx].mesh[mesh_idx]);
-    //if (self->parent != NULL) {
-        //PyObject *temp_parent = Py_BuildValue("O", meshPy_FromMesh(SCENE.model[model_idx].mesh[mesh_idx].parent));
-        self->parent = (PyObject*)meshPy_FromMesh(SCENE.model[model_idx].mesh[mesh_idx].parent);
-        //Py_DECREF(temp_parent);
-    //}
+    meshPy_Children(self, &SCENE.model[model_idx].mesh[mesh_idx]);
+    meshPy_Parent(self, &SCENE.model[model_idx].mesh[mesh_idx]);
 
     return (PyObject*)self;
 }
 static PyMethodDef Custom_methods[] = {
-    { "get", (PyCFunction)Custom_get_meshPy, METH_VARARGS, "Return the meshPy with the given name. Name must be string.\n" },
+    //{ "parent", (PyCFunction)meshPy_Parent, METH_NOARGS, "Object.Return the parent of the Object.\n" },
+
     //{ "name", (PyCFunction)Custom_name, METH_NOARGS, "Return the name of the meshPy\n" },
 
     {NULL}  /* Sentinel */
 };
 static PyTypeObject meshPyType = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "meshPy.meshPy",
+    .tp_name = "meshPy",
     .tp_doc = PyDoc_STR("Private Custom OBJ"),
     .tp_basicsize = sizeof(meshPy),
     .tp_itemsize = 0,
@@ -270,6 +284,7 @@ static DWORD WINAPI startPythonAPI(void *args) {
 
     PyRun_SimpleString("import meshPy\n");
     PyRun_SimpleString("mesh = meshPy.get(0, 3)\n");
+    PyRun_SimpleString("print(mesh.parent.cname)\n");
 
     return Py_RunMain();
 }

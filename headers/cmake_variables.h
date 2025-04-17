@@ -4,9 +4,9 @@
 #define anvil_VERSION_MINOR          0
 #define anvil_SOURCE_DIR             "C:/Users/anton/Desktop/anvilProject"
 #define NETWORK_INTERFACE            0
-#define Python_RUNTIME_LIBRARY_DIRS  "C:/Users/anton/AppData/Local/Programs/Python/Python313"
-#define Python_INCLUDE_DIRS          "C:/Users/anton/AppData/Local/Programs/Python/Python313/include"
-#define Python_LIBRARIES             "C:/Users/anton/AppData/Local/Programs/Python/Python313/libs/python313.lib"
-#define Python_LIBRARY_DIRS          "C:/Users/anton/AppData/Local/Programs/Python/Python313/libs"
-#define PYTHONHOME                   "C:/Users/anton/AppData/Local/Programs/Python/Python313"
-#define PYTHON_INTERFACE             1
+#define Python_RUNTIME_LIBRARY_DIRS  ""
+#define Python_INCLUDE_DIRS          ""
+#define Python_LIBRARIES             ""
+#define Python_LIBRARY_DIRS          ""
+#define PYTHONHOME                   ""
+#define PYTHON_INTERFACE             0
