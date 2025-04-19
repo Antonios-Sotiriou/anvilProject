@@ -81,7 +81,7 @@ void animateModels(void) {
     if ((COUNT % 500) == 0) {
         f_index += 1;
 
-        if (f_index > 2)
+        if (f_index > 7)
             f_index = 0;
         rot += 0.5f;
     }
@@ -102,23 +102,21 @@ void animateModels(void) {
 
                 for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-                    lc = SCENE.model[i].mesh[x].anim.lc[f_index];
-                    rq = SCENE.model[i].mesh[x].anim.rq[f_index];
-                    sc = SCENE.model[i].mesh[x].anim.sc[f_index];
+                    //if (strncmp(SCENE.model[i].mesh[x].cname, "oberarm.r", strlen("oberarm.r")) == 0) {
 
-                    //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                    SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+                        lc = SCENE.model[i].mesh[x].anim.lc[f_index];
+                        rq = SCENE.model[i].mesh[x].anim.rq[f_index];
+                        sc = SCENE.model[i].mesh[x].anim.sc[f_index];
 
-                    if (SCENE.model[i].mesh[x].number_of_children) {
-                        for (int y = 0; y < SCENE.model[i].mesh[x].number_of_children; y++) {
+                        SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+                        //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
 
-                            lc = SCENE.model[i].mesh[x].children[y]->anim.lc[f_index];
-                            rq = SCENE.model[i].mesh[x].children[y]->anim.rq[f_index];
-                            sc = SCENE.model[i].mesh[x].children[y]->anim.sc[f_index];
-
-                            SCENE.model[i].mesh[x].children[y]->anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+                        if (SCENE.model[i].mesh[x].number_of_children) {
+                            for (int y = 0; y < SCENE.model[i].mesh[x].number_of_children; y++) {
+                                SCENE.model[i].mesh[x].children[y]->anim.anim_matrix = SCENE.model[i].mesh[x].anim.anim_matrix;
+                            }
                         }
-                    }
+                    //}
                 }
             }
         }
