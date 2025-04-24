@@ -105,7 +105,7 @@ void readAnimText(animTextData *an, char path[]) {
                 if ((ch = getc(fp)) == ' ') {
 
                     float data[4];
-                    if (fscanf(fp, "%f %f %f %f", &data[0], &data[2], &data[1], &data[3]) == 4) {
+                    if (fscanf(fp, "%f %f %f %f", &data[0], &data[1], &data[2], &data[3]) == 4) {
                         memcpy(&an->object[an_idx].location[lc_idx], &data, 16);
                         lc_idx++;
                     }
