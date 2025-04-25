@@ -76,8 +76,8 @@ void loadModelAnimations(model* m) {
 	releaseAnimText(&ad);
 }
 void animateModels(void) {
-    quat test_rq = rotationQuat(rot, 1.f, 0.f, 0.f);
-    quat rtest_rq = rotationQuat(-rot, 1.f, 0.f, 0.f);
+    //quat test_rq = rotationQuat(rot, 1.f, 0.f, 0.f);
+    //quat rtest_rq = rotationQuat(-rot, 1.f, 0.f, 0.f);
     if ((COUNT % 500) == 0) {
         f_index += 1;
 
