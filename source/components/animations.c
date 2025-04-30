@@ -110,8 +110,8 @@ void animateModels(void) {
                         //if (SCENE.model[i].mesh[x].parent)
                             //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].parent->anim.anim_matrix, modelMatfromQST(rq, sc, lc));
                         //else
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                        SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+                            SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
 
                         if (SCENE.model[i].mesh[x].number_of_children) {
                             for (int y = 0; y < SCENE.model[i].mesh[x].number_of_children; y++) {

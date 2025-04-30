@@ -20,7 +20,6 @@ set(NETWORK_INTERFACE 0)
 # Whether or not compile with embeded python enabled.
 set(PYTHON_INTERFACE 0)
 
-
 if (NETWORK_INTERFACE)
     set(Network_Files "source/network/c_interface/TCPServer.c" "source/network/c_interface/TCPClient.c" "source/network/requests/requests.c")
 endif()
@@ -53,27 +52,19 @@ endif()
 # LIBRARIES  ####################################################################################
 
 # LINK TO COMPILE  ##############################################################################
+target_link_libraries(anvil PUBLIC glfw)
+target_link_libraries(anvil PUBLIC glew)
+
 if (WIN32)
     target_link_libraries(anvil PUBLIC "opengl32.lib")
-    target_link_libraries(anvil PUBLIC "${PROJECT_SOURCE_DIR}/libraries/glfw-3.4/build/src/release/glfw3.lib")
-    target_link_libraries(anvil PUBLIC "${PROJECT_SOURCE_DIR}/libraries/glew-2.1.0/lib/release/x64/glew32.lib")
+
     if(NETWORK_INTERFACE)
         target_link_libraries(anvil PUBLIC "Ws2_32.lib")
     endif()
 elseif (LINUX)
-    #target_link_libraries(anvil PUBLIC OpenGL)
-    #target_link_libraries(anvil PUBLIC GLX)
-    target_link_libraries(anvil PUBLIC glfw)
-    target_link_libraries(anvil PUBLIC glew)
     #list(REMOVE_ITEM anvil "${PROJECT_SOURCE_DIR}/libraries/sqlite/shell.c")
 endif()
 # LINK TO COMPILE  ##############################################################################
-
-# PRINT USEFULL VARIABLES  ######################################################################
-#include(CMakePrintHelpers)
-#cmake_print_properties(TARGETS anvil PROPERTIES LOCATION INTERFACE_INCLUDE_DIRECTORIES)
-#cmake_print_variables(PROJECT_BINARY_DIR PROJECT_SOURCE_DIR)
-# PRINT USEFULL VARIABLES  ######################################################################
 
 # add directories to compiler include path.  ####################################################
 target_include_directories(anvil PUBLIC "${PROJECT_SOURCE_DIR}")
