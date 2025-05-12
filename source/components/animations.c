@@ -75,45 +75,33 @@ void loadModelAnimations(model* m) {
     }
 	releaseAnimText(&ad);
 }
-void applyRecursiveTranformation(mesh *m) {
+void applyRecursiveTranformation(mesh *m, mat4x4 *mat) {
     vec4 lc, sc;
     quat rq;
-    lc = m->anim.lc[f_index];
-    rq = m->anim.rq[f_index];
-    sc = m->anim.sc[f_index];
-    m->anim.anim_matrix = modelMatfromQST(rq, sc, lc);
     if (m->number_of_children) {
         for (int i = 0; i < m->number_of_children; i++) {
-            //printf("        %s\n", m->parent->cname);
             lc = m->children[i]->anim.lc[f_index];
             rq = m->children[i]->anim.rq[f_index];
             sc = m->children[i]->anim.sc[f_index];
             m->children[i]->anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-            m->anim.anim_matrix = matMulmat(m->anim.anim_matrix, m->children[i]->anim.anim_matrix);
-            applyRecursiveTranformation(m->children[i]);
+            m->anim.anim_matrix = matMulmat(*mat, m->children[i]->anim.anim_matrix);
+            applyRecursiveTranformation(m->children[i], mat);
         }
     }
 }
-void applyReverseTranformation(mesh *m) {
-    vec4 lc, sc;
-    quat rq;
-    lc = m->anim.lc[f_index];
-    rq = m->anim.rq[f_index];
-    sc = m->anim.sc[f_index];
-    m->anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+int applyReverseTranformation(mesh *m, mat4x4 *mat) {
     if (m->parent) {
-        //printf("        %s\n", m->parent->cname);
-        lc = m->parent->anim.lc[f_index];
-        rq = m->parent->anim.rq[f_index];
-        sc = m->parent->anim.sc[f_index];
+        vec4 lc = m->parent->anim.lc[f_index];
+        quat rq = m->parent->anim.rq[f_index];
+        vec4 sc = m->parent->anim.sc[f_index];
         m->parent->anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-        m->anim.anim_matrix = matMulmat(m->anim.anim_matrix, m->parent->anim.anim_matrix);
-        applyReverseTranformation(m->parent);
+        *mat = matMulmat(*mat, m->parent->anim.anim_matrix);
+        //m->anim.anim_matrix = *mat;
+        applyReverseTranformation(m->parent, mat);
+        //m->anim.anim_matrix = *mat;
     }
 }
 void animateModels(void) {
-    //quat test_rq = rotationQuat(rot, 1.f, 0.f, 0.f);
-    //quat rtest_rq = rotationQuat(-rot, 1.f, 0.f, 0.f);
     if ((COUNT % 500) == 0) {
         f_index += 1;
 
@@ -123,43 +111,84 @@ void animateModels(void) {
     }
     COUNT++;
 
+    for (int i = 0; i < SCENE.model_indexes; i++) {
+        if (SCENE.model[i].visible) {
+            if (SCENE.model[i].owns_anim) {
+                vec4 lc = SCENE.model[i].anim.lc[f_index];
+                quat rq = SCENE.model[i].anim.rq[f_index];
+                vec4 sc = SCENE.model[i].anim.sc[f_index];
+                SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+
+                for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+                    //if (SCENE.model[i].mesh[x].parent) {
+                    //if (strncmp(SCENE.model[i].mesh[x].cname, "hand.l", 6) == 0) {
+                        vec4 lc = SCENE.model[i].mesh[x].anim.lc[f_index];
+                        quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
+                        vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
+                        SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
+                    //}
+                }
+            }
+        }
+    }
+
     //for (int i = 0; i < SCENE.model_indexes; i++) {
     //    if (SCENE.model[i].visible) {
     //        if (SCENE.model[i].owns_anim) {
-    //            //printf("model: %s {\n", SCENE.model[i].cname);
+    //            vec4 lc = SCENE.model[i].anim.lc[f_index];
+    //            quat rq = SCENE.model[i].anim.rq[f_index];
+    //            vec4 sc = SCENE.model[i].anim.sc[f_index];
+
     //            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-    //                //printf("    child: %s {\n", SCENE.model[i].mesh[x].cname);
-    //                //if (SCENE.model[i].mesh[x].parent) {
-    //                    applyReverseTranformation(&SCENE.model[i].mesh[x]);
-    //                //    printf("        %s\n", SCENE.model[i].mesh[x].parent->cname);
-    //                //}
-    //                //printf("    }\n");
+    //                vec4 lc = SCENE.model[i].mesh[x].anim.lc[f_index];
+    //                quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
+    //                vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
+    //                SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+    //                applyRecursiveTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
     //            }
-    //            //printf("}\n");
-    //            //exit(0);
     //        }
     //    }
     //}
 
-    for (int i = 0; i < SCENE.model_indexes; i++) {
-        if (SCENE.model[i].visible) {
-            if (SCENE.model[i].owns_anim) {
-                //printf("model: %s {\n", SCENE.model[i].cname);
-                for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-                    applyRecursiveTranformation(&SCENE.model[i].mesh[x]);
-                    //if (SCENE.model[i].mesh[x].children) {
-                        //printf("    mesh: %s {\n", SCENE.model[i].mesh[x].cname);
-                        //for (int y = 0; y < SCENE.model[i].mesh[x].number_of_children; y++) {
-                            //printf("        %s\n", SCENE.model[i].mesh[x].children[y]->cname);
-                        //}
-                        //printf("    }\n");
-                    //}
-                }
-                //printf("}");
-                //exit(0);
-            }
-        }
-    }
+    //for (int i = 0; i < SCENE.model_indexes; i++) {
+    //    if (SCENE.model[i].visible) {
+    //        if (SCENE.model[i].owns_anim) {
+    //            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+    //                if (strncmp(SCENE.model[i].mesh[x].cname, "hand.l", 6) == 0) {
+
+    //                    vec4 lc = SCENE.model[i].mesh[x].anim.lc[f_index];
+    //                    quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
+    //                    vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
+    //                    SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+
+    //                    if (SCENE.model[i].mesh[x].parent) {
+    //                        lc = SCENE.model[i].mesh[x].parent->anim.lc[f_index];
+    //                        rq = SCENE.model[i].mesh[x].parent->anim.rq[f_index];
+    //                        sc = SCENE.model[i].mesh[x].parent->anim.sc[f_index];
+    //                        SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+
+    //                        if (SCENE.model[i].mesh[x].parent->parent) {
+    //                            lc = SCENE.model[i].mesh[x].parent->parent->anim.lc[f_index];
+    //                            rq = SCENE.model[i].mesh[x].parent->parent->anim.rq[f_index];
+    //                            sc = SCENE.model[i].mesh[x].parent->parent->anim.sc[f_index];
+    //                            SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+
+    //                            if (SCENE.model[i].mesh[x].parent->parent->parent) {
+
+    //                                lc = SCENE.model[i].mesh[x].parent->parent->parent->anim.lc[f_index];
+    //                                rq = SCENE.model[i].mesh[x].parent->parent->parent->anim.rq[f_index];
+    //                                sc = SCENE.model[i].mesh[x].parent->parent->parent->anim.sc[f_index];
+    //                                SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(rq, sc, lc));
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+
+    //        }
+    //    }
+    //}
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
