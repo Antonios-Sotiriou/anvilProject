@@ -91,11 +91,12 @@ void applyRecursiveTranformation(mesh *m, mat4x4 *mat) {
 }
 int applyReverseTranformation(mesh *m, mat4x4 *mat) {
     if (m->parent) {
+        //printf("%s ", m->parent->cname);
         vec4 lc = m->parent->anim.lc[f_index];
         quat rq = m->parent->anim.rq[f_index];
         vec4 sc = m->parent->anim.sc[f_index];
-        m->parent->anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-        *mat = matMulmat(*mat, m->parent->anim.anim_matrix);
+        //m->parent->anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+        *mat = matMulmat(*mat, modelMatfromQST(rq, sc, lc));
         //m->anim.anim_matrix = *mat;
         applyReverseTranformation(m->parent, mat);
         //m->anim.anim_matrix = *mat;
@@ -105,7 +106,7 @@ void animateModels(void) {
     if ((COUNT % 500) == 0) {
         f_index += 1;
 
-        if (f_index > 7)
+        if (f_index > 24)
             f_index = 0;
         rot += 0.5f;
     }
@@ -118,8 +119,9 @@ void animateModels(void) {
                 quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
                 SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-
+                //printf("model: %s", SCENE.model[i].cname);
                 for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+                    //printf("\nmesh: %s\n chain: ", SCENE.model[i].mesh[x].cname);
                     //if (SCENE.model[i].mesh[x].parent) {
                     //if (strncmp(SCENE.model[i].mesh[x].cname, "hand.l", 6) == 0) {
                         vec4 lc = SCENE.model[i].mesh[x].anim.lc[f_index];
@@ -129,10 +131,11 @@ void animateModels(void) {
                         applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
                     //}
                 }
+                //printf("\n");
             }
         }
     }
-
+    //exit(0);
     //for (int i = 0; i < SCENE.model_indexes; i++) {
     //    if (SCENE.model[i].visible) {
     //        if (SCENE.model[i].owns_anim) {
