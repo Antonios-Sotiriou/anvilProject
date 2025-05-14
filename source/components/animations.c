@@ -25,7 +25,7 @@ void loadModelAnimations(model* m) {
     const int gm_size = 16 * ad.number_of_frames;
 
     /* Load Model animations. May will change in the future to load model and meshes, which belong to the model in one iteration. */
-    m->anim.frames = ad.number_of_frames;
+    m->anim.frames = ad.number_of_frames - 1;  // Minus 1 here because frames start from zero when we iterate them.
     for (int i = 0; i < ad.number_of_objects; i++) {
         if (strncmp(m->cname, ad.object[i].cname, strlen(m->cname)) == 0) {
 
@@ -103,18 +103,22 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
     }
 }
 void animateModels(void) {
-    if ((COUNT % 500) == 0) {
-        f_index += 1;
-
-        if (f_index > 24)
-            f_index = 0;
-        rot += 0.5f;
-    }
-    COUNT++;
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
             if (SCENE.model[i].owns_anim) {
+
+                if ((COUNT % 500) == 0) {
+                    f_index += 1;
+
+                    if (f_index > SCENE.model[i].anim.frames)
+                        f_index = 0;
+                    rot += 0.5f; 
+
+                    printf("model: %s    frames: %d    current frame: %d\n", SCENE.model[i].cname, SCENE.model[i].anim.frames, f_index);
+                }
+                COUNT++;
+
                 vec4 lc = SCENE.model[i].anim.lc[f_index];
                 quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
@@ -135,6 +139,7 @@ void animateModels(void) {
             }
         }
     }
+
     //exit(0);
     //for (int i = 0; i < SCENE.model_indexes; i++) {
     //    if (SCENE.model[i].visible) {

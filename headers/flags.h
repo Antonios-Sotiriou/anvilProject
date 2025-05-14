@@ -36,7 +36,8 @@
     #define MODEL_TYPE_TERRAIN             0
     #define MODEL_TYPE_CAMERA              1
     #define MODEL_TYPE_LIGHT               2
-    #define MODEL_TYPE_GENERAL             3
+    #define MODEL_TYPE_PLAYER              3
+    #define MODEL_TYPE_GENERAL             4
 
 #endif // !anvil_MAJOR_VERSION
 
