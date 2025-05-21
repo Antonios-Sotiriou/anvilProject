@@ -48,7 +48,7 @@ def aquire_animation_data(context, filepath, settings):
             scene.frame_set(fr)
             general_data["animation_data"][i]["location"].append(bone.location.x)
             general_data["animation_data"][i]["location"].append(bone.location.y)
-            general_data["animation_data"][i]["location"].append(bone.location.z)
+            general_data["animation_data"][i]["location"].append(bone.location.z * -1)
             general_data["animation_data"][i]["location"].append(1.0)
             general_data["animation_data"][i]["rotation_quaternion"].append(bone.rotation_quaternion.w)
             general_data["animation_data"][i]["rotation_quaternion"].append(bone.rotation_quaternion.x)
