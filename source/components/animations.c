@@ -2,7 +2,7 @@
 
 static int COUNT = 0;
 static int f_index = 0;
-float rot = 1.f;
+float rot = 0.f;
 
 void loadModelAnimations(model* m) {
     int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 36; // Plus 1 here for the null termination \0.
@@ -102,27 +102,9 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
     }
 }
 void animateModels(void) {
-
-    mat4x4 test = {
-        .m[0] = { 1.0, 0.0, 0.0, 0.0 },
-        .m[1] = { 0.0, 0.0, -1.0, 0.0 },
-        .m[2] = { 0.0, 1.0, 0.0, 0.0 },
-        .m[3] = { 0.0, 0.0, 0.0, 1.0 }
-    };
-    //mat4x4 test = {
-    //    .m[0] = { -0.0509, 0.1411, 0.9887, 0.0000 },
-    //    .m[1] = { 0.0546, 0.9889, -0.1383, 0.0000 },
-    //    .m[2] = { -0.9972, 0.0469, -0.0581, 0.0000 },
-    //    .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 }
-    //};
-    
-    //mat4x4 test = {
-    //    .m[0] = { 1.0000, 0.0000, 0.0000, 0.0000 },
-    //    .m[1] = { 0.0000, 0.9996, -0.0295, 0.0000 },
-    //    .m[2] = { 0.0000, 0.0295, 0.9996, 0.0000 },
-    //    .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 }
-    //};
-    quat rq = rotationQuat(rot, 0, 1, 0);
+    vec4 vc = { 0.5, 0.5, 0.0, 0.0 };
+    vc = vecNormalize(vc);
+    quat rq = rotationQuat(rot, vc.m128_f32[0], vc.m128_f32[1], vc.m128_f32[2]);
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
@@ -133,17 +115,16 @@ void animateModels(void) {
 
                     if (f_index > SCENE.model[i].anim.frames)
                         f_index = 0;
-                    rot += 1.f; 
+                    rot += 10.0f;
 
                     printf("model: %s    frames: %d    current frame: %d\n", SCENE.model[i].cname, SCENE.model[i].anim.frames, f_index);
                 }
                 COUNT++;
 
                 vec4 lc = SCENE.model[i].anim.lc[f_index];
-                quat rq = SCENE.model[i].anim.rq[f_index];
+                //quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
-                //SCENE.model[i].anim.anim_matrix = matMulmat(matMulmat(inverseMatrix(test), modelMatfromQST(rq, sc, lc)), test);
                 SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
 
                 if (SCENE.model[i].mesh_indexes > 1) {
