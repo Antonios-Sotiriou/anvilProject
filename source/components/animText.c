@@ -118,6 +118,11 @@ void readAnimText(animTextData *an, char path[]) {
 
                     float data[4];
                     if (fscanf(fp, "%f %f %f %f", &data[0], &data[1], &data[2], &data[3]) == 4) {
+
+                        //vec4 axis = { data[1], data[2], data[3], 0.f };
+                        //axis = vecNormalize(axis);
+                        //an->object[an_idx].rotation_quaternion[rq_idx] = setQuat(data[0], vec4ExtractX(axis), vec4ExtractY(axis), vec4ExtractZ(axis));
+
                         memcpy(&an->object[an_idx].rotation_quaternion[rq_idx], &data, 16);
                         rq_idx++;
                     }
@@ -129,6 +134,7 @@ void readAnimText(animTextData *an, char path[]) {
 
                     float data[4];
                     if (fscanf(fp, "%f %f %f %f", &data[0], &data[1], &data[2], &data[3]) == 4) {
+                        //an->object[an_idx].scale[sc_idx] = setvec4(data[0], data[1], data[2], data[3]);
                         memcpy(&an->object[an_idx].scale[sc_idx], &data, 16);
                         sc_idx++;
                     }

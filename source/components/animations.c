@@ -122,7 +122,7 @@ void animateModels(void) {
                 COUNT++;
 
                 vec4 lc = SCENE.model[i].anim.lc[f_index];
-                //quat rq = SCENE.model[i].anim.rq[f_index];
+                quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
                 SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
