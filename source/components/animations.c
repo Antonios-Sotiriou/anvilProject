@@ -102,9 +102,49 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
     }
 }
 void animateModels(void) {
-    vec4 vc = { 0.5, 0.5, 0.0, 0.0 };
+    vec4 vc = { 1.0, 0.0, 0.0, 0.0 };
     vc = vecNormalize(vc);
-    quat rq = rotationQuat(rot, vc.m128_f32[0], vc.m128_f32[1], vc.m128_f32[2]);
+    quat rotq = rotationQuat(rot, vc.m128_f32[0], vc.m128_f32[1], vc.m128_f32[2]);
+
+    mat4x4 oberarm = {
+        .m[0] = { 1.0000,  0.0000, -0.0000, 2.8862 },
+        .m[1] = { 0.0000,  0.0000,  1.0000, 0.0261 },
+        .m[2] = { 0.0000, -1.0000,  0.0000, 6.1376 },
+        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
+    };
+
+    mat4x4 arm = {
+        .m[0] = { 1.0000,  0.0000, -0.0000, 2.8862 },
+        .m[1] = { 0.0000,  0.0000,  1.0000, 0.026 },
+        .m[2] = { 0.0000, -1.0000,  0.0000, 3.475 },
+        .m[3] = { 0.0000,  0.0000,  0.0000, 1.000 },
+    };
+
+    mat4x4 hand = {
+        .m[0] = { 1.0000, 0.0000, -0.0000, 2.8862 },
+        .m[1] = { 0.0000, 0.0000, 1.0000, 0.0261 },
+        .m[2] = { 0.0000, -1.0000, 0.0000, 0.8659 },
+        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
+    };
+
+    mat4x4 upper = {
+        .m[0] = { 1.0000, 0.0000, 0.0000, 0.0000 },
+        .m[1] = { 0.0000, 0.0000, -1.0000, 0.0000 },
+        .m[2] = { 0.0000, 1.0000, 0.0000, 1.0020 },
+        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
+    };
+    mat4x4 lower = {
+        .m[0] = { 1.0000, 0.0000, 0.0000, 0.0000 },
+        .m[1] = { 0.0000, 0.0000, -1.0000, 0.0000 },
+        .m[2] = { 0.0000, 1.0000, 0.0000, -0.2255 },
+        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
+    };
+    mat4x4 mechArm = {
+        .m[0] = { -1.0000, 0.0000, 0.0000, 0.0000 },
+        .m[1] = { 0.0000, -1.0000, 0.0000, -3.9760 },
+        .m[2] = { 0.0000, 0.0000, 1.0000, -0.2255 },
+        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
+    };
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
@@ -134,9 +174,16 @@ void animateModels(void) {
                         quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
                         vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
 
-                        SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        if (strncmp(SCENE.model[i].mesh[x].cname, "upper", 5) == 0) {
 
-                        applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
+                            SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(inverseMatrix(lower), modelMatfromQST(rotq, sc, lc));
+                            //applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
+                        } else {
+
+                            SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+
+                            applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
+                        }
                     }
                 }
             }
