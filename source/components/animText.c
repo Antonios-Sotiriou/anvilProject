@@ -9,7 +9,7 @@ void readAnimText(animTextData *an, char path[]) {
 
     /* Incremental values. an_idx starts from -1 and increments imediatly when we get to the first object.
        Thats mandatory because we want to reade the whole file in one iteration.  */
-    int an_idx = -1, child_idx = 0, lc_idx = 0, rq_idx = 0, sc_idx = 0;
+    int an_idx = -1, child_idx = 0, lc_idx = 0, rq_idx = 0, sc_idx = 0, bm_idx = 0;
     char ch;
     while (!feof(fp)) {
 
@@ -62,6 +62,7 @@ void readAnimText(animTextData *an, char path[]) {
                     an->object[an_idx].location = malloc(16 * an->number_of_frames);
                     an->object[an_idx].rotation_quaternion = malloc(16 * an->number_of_frames);
                     an->object[an_idx].scale = malloc(16 * an->number_of_frames);
+                    an->object[an_idx].bone_matrix = malloc(64 * an->number_of_frames);
                 }
             /* Get number of children of each object in animText file. */
             } else if (ch == 'c') {
@@ -134,13 +135,32 @@ void readAnimText(animTextData *an, char path[]) {
 
                     float data[4];
                     if (fscanf(fp, "%f %f %f %f", &data[0], &data[1], &data[2], &data[3]) == 4) {
-                        //an->object[an_idx].scale[sc_idx] = setvec4(data[0], data[1], data[2], data[3]);
                         memcpy(&an->object[an_idx].scale[sc_idx], &data, 16);
                         sc_idx++;
                     }
                 }
             }
+        } else if (ch == 'b') {
+            if ((ch = getc(fp)) == 'm') {
+                if ((ch = getc(fp)) == ' ') {
+
+                    float data[16];
+                    if (fscanf(fp, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+                        &data[0],  &data[1], &data[2],  &data[3],
+                        &data[4],  &data[5], &data[6],  &data[7],
+                        &data[8],  &data[9], &data[10], &data[11], 
+                        &data[12], &data[13],&data[14], &data[15]) == 16) {
+
+                        memcpy(&an->object[an_idx].bone_matrix[bm_idx], &data, 64);
+                        bm_idx++;
+                    }
+                }
+            }
         }
+    }
+    for (int i = 0; i < an->number_of_frames; i++) {
+        printf("cname: %s\n", an->object[2].cname);
+        logmat4x4(an->object[0].bone_matrix[i]);
     }
     fclose(fp);
 }
@@ -158,6 +178,7 @@ void releaseAnimText(animTextData *an) {
         free(an->object[i].location);
         free(an->object[i].rotation_quaternion);
         free(an->object[i].scale);
+        free(an->object[i].bone_matrix);
     }
     free(an->object);
 }

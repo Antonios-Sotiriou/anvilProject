@@ -22,21 +22,24 @@ void loadModelAnimations(model* m) {
     readAnimText(&ad, dynamic_path);
     free(dynamic_path);
 
-    const int gm_size = 16 * ad.number_of_frames;
+    const int vec_size = 16 * ad.number_of_frames;
+    const int mat_size = 64 * ad.number_of_frames;
 
     /* Load Model animations. May will change in the future to load model and meshes, which belong to the model in one iteration. */
     m->anim.frames = ad.number_of_frames - 1;  // Minus 1 here because frames start from zero when we iterate them.
     for (int i = 0; i < ad.number_of_objects; i++) {
         if (strncmp(m->cname, ad.object[i].cname, strlen(m->cname)) == 0) {
 
-            m->anim.lc = malloc(gm_size);
-            m->anim.rq = malloc(gm_size);
-            m->anim.sc = malloc(gm_size);
+            m->anim.lc = malloc(vec_size);
+            m->anim.rq = malloc(vec_size);
+            m->anim.sc = malloc(vec_size);
+            m->anim.bm = malloc(mat_size);
             m->anim.anim_matrix = identityMatrix();
 
-            memcpy(m->anim.lc, ad.object[i].location, gm_size);
-            memcpy(m->anim.rq, ad.object[i].rotation_quaternion, gm_size);
-            memcpy(m->anim.sc, ad.object[i].scale, gm_size);
+            memcpy(m->anim.lc, ad.object[i].location, vec_size);
+            memcpy(m->anim.rq, ad.object[i].rotation_quaternion, vec_size);
+            memcpy(m->anim.sc, ad.object[i].scale, vec_size);
+            memcpy(m->anim.bm, ad.object[i].bone_matrix, mat_size);
         }
     }
     if (m->mesh_indexes == 1) {
@@ -46,17 +49,19 @@ void loadModelAnimations(model* m) {
         For relations we could also use the relations.c file but with assigning, we save us the function calls. */
         for (int x = 0; x < m->mesh_indexes; x++) {
 
-            m->mesh[x].anim.lc = malloc(gm_size);
-            m->mesh[x].anim.rq = malloc(gm_size);
-            m->mesh[x].anim.sc = malloc(gm_size);
+            m->mesh[x].anim.lc = malloc(vec_size);
+            m->mesh[x].anim.rq = malloc(vec_size);
+            m->mesh[x].anim.sc = malloc(vec_size);
+            m->mesh[x].anim.bm = malloc(mat_size);
             m->anim.anim_matrix = identityMatrix();
 
             for (int y = 0; y < ad.number_of_objects; y++) {
 
                 if (strncmp(m->mesh[x].cname, ad.object[y].cname, strlen(m->mesh[x].cname)) == 0) {
-                    memcpy(m->mesh[x].anim.lc, ad.object[y].location, gm_size);
-                    memcpy(m->mesh[x].anim.rq, ad.object[y].rotation_quaternion, gm_size);
-                    memcpy(m->mesh[x].anim.sc, ad.object[y].scale, gm_size);
+                    memcpy(m->mesh[x].anim.lc, ad.object[y].location, vec_size);
+                    memcpy(m->mesh[x].anim.rq, ad.object[y].rotation_quaternion, vec_size);
+                    memcpy(m->mesh[x].anim.sc, ad.object[y].scale, vec_size);
+                    memcpy(m->mesh[x].anim.bm, ad.object[y].bone_matrix, mat_size);
 
                     if (ad.object[y].number_of_children) {
                         m->mesh[x].number_of_children = ad.object[y].number_of_children;
@@ -102,53 +107,8 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
     }
 }
 void animateModels(void) {
-    mat4x4 oberarm = {
-        .m[0] = { 1.0000,  0.0000, -0.0000, 2.8862 },
-        .m[1] = { 0.0000,  0.0000,  1.0000, 0.0261 },
-        .m[2] = { 0.0000, -1.0000,  0.0000, 6.1376 },
-        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
-    };
-
-    mat4x4 arm = {
-        .m[0] = { 1.0000,  0.0000, -0.0000, 2.8862 },
-        .m[1] = { 0.0000,  0.0000,  1.0000, 0.026 },
-        .m[2] = { 0.0000, -1.0000,  0.0000, 3.475 },
-        .m[3] = { 0.0000,  0.0000,  0.0000, 1.000 },
-    };
-
-    mat4x4 hand = {
-        .m[0] = { 1.0000, 0.0000, -0.0000, 2.8862 },
-        .m[1] = { 0.0000, 0.0000, 1.0000, 0.0261 },
-        .m[2] = { 0.0000, -1.0000, 0.0000, 0.8659 },
-        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
-    };
-
-    mat4x4 upper = {
-        .m[0] = { 1.0000, 0.0000, 0.0000, 0.0000 },
-        .m[1] = { 0.0000, 0.0000, -1.0000, 0.0000 },
-        .m[2] = { 0.0000, 1.0000, 0.0000, 1.0020 },
-        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
-    };
-    mat4x4 lower = {
-        .m[0] = { 1.0000, 0.0000, 0.0000, 0.0000 },
-        .m[1] = { 0.0000, 0.0000, -1.0000, 0.0000 },
-        .m[2] = { 0.0000, 1.0000, 0.0000, -0.2255 },
-        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
-    };
-    mat4x4 mechArm = {
-        .m[0] = { -1.0000, 0.0000, 0.0000, 0.0000 },
-        .m[1] = { 0.0000, -1.0000, 0.0000, -3.9760 },
-        .m[2] = { 0.0000, 0.0000, 1.0000, -0.2255 },
-        .m[3] = { 0.0000, 0.0000, 0.0000, 1.0000 },
-    };
 
     vec4 vc = { 1.0, 0.0, 0.0, 1.0 };
-    //vec4 tail = { 0.0000, 0.0000, 2.6277, 0.0 };
-    //vec4 tail = { 0.0000, -2.5000, 0.0000, 0.0 };
-    //vec4 head = { 0.0000, 0.0000, 3.8777, 0.0 };
-    //vec4 head = { 0.0000, -1.2500, 0.0000, 0.0 };
-    mat4x4 trm = translationMatrix(10.0, 0.0, 0.0);
-    vc = vec4Mulmat(vc, trm);
     vc = vecNormalize(vc);
     quat rotq = rotationQuat(rot, vc.m128_f32[0], vc.m128_f32[1], vc.m128_f32[2]);
 
@@ -215,6 +175,7 @@ void releaseAnimations(animation *an) {
     free(an->lc);
     free(an->rq);
     free(an->sc);
+    free(an->bm);
 }
 
 

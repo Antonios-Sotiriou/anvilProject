@@ -80,11 +80,12 @@ typedef struct {
 
 /* Main struct to hold animations extraxted from blender. */
 typedef struct {
-    int frames;                          // Number of frames which the data are represent. That is also the array length of all the struct members.
     vec4 *lc;                            // Locations array. Every index represents a frame at a given location.
     quat *rq;                            // Rotation quaternions array. Every index represents a frame with the given rotation.
     vec4 *sc;                            // Scales array. Every index represents a frame with a given scale.
+    mat4x4 *bm;                          // Bone matrices array.Every index represents a bone matrix frame.
     mat4x4 anim_matrix;
+    int frames;                          // Number of frames which the data are represent. That is also the array length of all the struct members.
 } animation;
 
 typedef struct {

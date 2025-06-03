@@ -22,6 +22,7 @@ typedef struct {
     vec4 *location;               // location per frame 
     quat *rotation_quaternion;    // rotation per frame
     vec4 *scale;                  // scale per frame
+    mat4x4 *bone_matrix;          // bone matrix per frame
 } Object;
 /* Base struct to organize animations Data importedd from Blender. */
 typedef struct {

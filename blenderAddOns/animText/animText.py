@@ -20,26 +20,28 @@ def aquire_animation_data(context, filepath, settings):
 
     general_data = {
         "number_of_frames" : 0,
-        "number_of_objects" : 0,
+        "number_of_bones" : 0,
         "animation_data" : []
      }
 
     general_data["number_of_frames"] = int((settings.frame_end - settings.frame_start) / settings.frame_step) + 1
+    # general_data["number_of_frames"] = settings.frame_end - settings.frame_start
     for bone in armature.pose.bones:
         animation_data = {
-            "object_name" : "",
+            "bone_name" : "",
             "number_of_children" : 0,
             "children" : [],
             "location" : [],
             "rotation_quaternion" : [],
-            "scale" : []
+            "scale" : [],
+            "bone_matrix" : []
         }
-        animation_data["object_name"] = bone.name
+        animation_data["bone_name"] = bone.name
         animation_data["number_of_children"] = len(bone.children)
         for child in bone.children:
             animation_data["children"].append(child.name)
     
-        general_data["number_of_objects"] += 1
+        general_data["number_of_bones"] += 1
         general_data["animation_data"].append(animation_data)
 
     i = 0
@@ -58,6 +60,10 @@ def aquire_animation_data(context, filepath, settings):
             general_data["animation_data"][i]["scale"].append(bone.scale.y)
             general_data["animation_data"][i]["scale"].append(bone.scale.z)
             general_data["animation_data"][i]["scale"].append(1.0)
+            for x in range(0, 4):
+                for y in range(0, 4):
+                    general_data["animation_data"][i]["bone_matrix"].append(bone.matrix[x][y])
+
         i += 1
 
     write_animation_data(filepath, general_data)
@@ -72,11 +78,11 @@ def aquire_animation_data(context, filepath, settings):
 def write_animation_data(filepath, data):
     f = open(filepath, "w", encoding= "utf-8")
 
-    f.write("no %d\n" % (data["number_of_objects"]))
+    f.write("no %d\n" % (data["number_of_bones"]))
     f.write("nf %d\n" % (data["number_of_frames"]))
 
     for i in data["animation_data"]:
-        f.write("nm %s\n" % (i["object_name"]))
+        f.write("nm %s\n" % (i["bone_name"]))
         f.write("nc %d\n" % (i["number_of_children"]))
 
         for x in range(0, len(i["children"])):
@@ -87,6 +93,13 @@ def write_animation_data(filepath, data):
             f.write("rq %f %f %f %f\n" % (i["rotation_quaternion"][x], i["rotation_quaternion"][x + 1], i["rotation_quaternion"][x + 2], i["rotation_quaternion"][x + 3]))
         for x in range(0, len(i["scale"]), 4):
             f.write("sc %f %f %f %f\n" % (i["scale"][x], i["scale"][x + 1], i["scale"][x + 2], i["scale"][x + 3]))
+        for x in range(0, len(i["bone_matrix"]), 16):
+            f.write("bm %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n" % (
+                i["bone_matrix"][x],      i["bone_matrix"][x + 1],  i["bone_matrix"][x + 2],  i["bone_matrix"][x + 3],
+                i["bone_matrix"][x + 4],  i["bone_matrix"][x + 5],  i["bone_matrix"][x + 6],  i["bone_matrix"][x + 7],
+                i["bone_matrix"][x + 8],  i["bone_matrix"][x + 9],  i["bone_matrix"][x + 10], i["bone_matrix"][x + 11],
+                i["bone_matrix"][x + 12], i["bone_matrix"][x + 13], i["bone_matrix"][x + 14], i["bone_matrix"][x + 15]
+            ))
 
     f.close()
     
@@ -129,7 +142,7 @@ class ExportAnimationData(Operator, ExportHelper):
     frame_end: IntProperty(
         name = "Frame End",
         description = "The last frame to be Exported",
-        default = 240
+        default = 24
     )
     frame_step: IntProperty(
         name = "Frame Step",
