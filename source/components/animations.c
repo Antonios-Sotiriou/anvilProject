@@ -53,7 +53,7 @@ void loadModelAnimations(model* m) {
             m->mesh[x].anim.rq = malloc(vec_size);
             m->mesh[x].anim.sc = malloc(vec_size);
             m->mesh[x].anim.bm = malloc(mat_size);
-            m->anim.anim_matrix = identityMatrix();
+            m->mesh[x].anim.anim_matrix = identityMatrix();
 
             for (int y = 0; y < ad.number_of_objects; y++) {
 

@@ -1,5 +1,5 @@
 #include "headers/components/animText.h"
-#include "headers/components/logging.h"
+
 void readAnimText(animTextData *an, char path[]) {
     FILE *fp = fopen(path, "r");
     if (!fp) {
@@ -36,7 +36,7 @@ void readAnimText(animTextData *an, char path[]) {
             } else if (ch == 'm') {
                 /* Set the appropriate incremental values for each object's data arrays. */
                 an_idx++;
-                child_idx = 0, lc_idx = 0, rq_idx = 0, sc_idx = 0;
+                child_idx = 0, lc_idx = 0, rq_idx = 0, sc_idx = 0, bm_idx = 0;
 
                 if ((ch = getc(fp)) == ' ') {
                     int ch_inc = 1, ch_idx = 0;
@@ -158,10 +158,7 @@ void readAnimText(animTextData *an, char path[]) {
             }
         }
     }
-    for (int i = 0; i < an->number_of_frames; i++) {
-        printf("cname: %s\n", an->object[2].cname);
-        logmat4x4(an->object[0].bone_matrix[i]);
-    }
+
     fclose(fp);
 }
 void releaseAnimText(animTextData *an) {
