@@ -102,7 +102,7 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
         vec4 lc = m->parent->anim.lc[f_index];
         quat rq = m->parent->anim.rq[f_index];
         vec4 sc = m->parent->anim.sc[f_index];
-        *mat = matMulmat(*mat, modelMatfromQST(rq, sc, lc));
+        *mat = matMulmat(*mat, transposeMatrix(m->parent->anim.bm[f_index]));
         applyReverseTranformation(m->parent, mat);
     }
 }
@@ -131,7 +131,8 @@ void animateModels(void) {
                 quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
-                SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                //SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                SCENE.model[i].anim.anim_matrix = transposeMatrix(SCENE.model[i].anim.bm[f_index]);
 
                 if (SCENE.model[i].mesh_indexes > 1) {
                     for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
@@ -140,16 +141,19 @@ void animateModels(void) {
                         quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
                         vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
 
-                        if (strncmp(SCENE.model[i].mesh[x].cname, "upper", 5) == 0) {
+                        //if (strncmp(SCENE.model[i].mesh[x].cname, "upper", 5) == 0) {
 
-                            SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rotq, sc, lc);
-                            //applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
-                        } else {
-
-                            SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-
+                            //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                            SCENE.model[i].mesh[x].anim.anim_matrix = transposeMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]);
+                            //SCENE.model[i].mesh[x].anim.anim_matrix = inverseMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]);
+                            //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(modelMatfromQST(rq, sc, lc), transposeMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]));
+                            //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(modelMatfromQST(rq, sc, lc), inverseMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]));
                             applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
-                        }
+                        //} //else {
+
+                        //    SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        //    applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
+                        //}
                     }
                 }
             }
