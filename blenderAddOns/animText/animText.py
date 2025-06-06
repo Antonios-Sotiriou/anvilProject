@@ -60,9 +60,11 @@ def aquire_animation_data(context, filepath, settings):
             general_data["animation_data"][i]["scale"].append(bone.scale.y)
             general_data["animation_data"][i]["scale"].append(bone.scale.z)
             general_data["animation_data"][i]["scale"].append(1.0)
+
+            matrix = bone.matrix_channel.transposed()
             for x in range(0, 4):
                 for y in range(0, 4):
-                    general_data["animation_data"][i]["bone_matrix"].append(bone.matrix[x][y])
+                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][y])
 
         i += 1
 
@@ -142,7 +144,7 @@ class ExportAnimationData(Operator, ExportHelper):
     frame_end: IntProperty(
         name = "Frame End",
         description = "The last frame to be Exported",
-        default = 24
+        default = 41
     )
     frame_step: IntProperty(
         name = "Frame Step",
