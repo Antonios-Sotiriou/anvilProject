@@ -112,6 +112,22 @@ void animateModels(void) {
     vec4 vc = { 1.0, 0.0, 0.0, 1.0 };
     vc = vecNormalize(vc);
     quat rotq = rotationQuat(rot, vc.m128_f32[0], vc.m128_f32[1], vc.m128_f32[2]);
+    mat4x4 arm = {
+        .m[0] = { 1.f, 0.f, 0.f, 0.f },
+        .m[1] = { 0.f, 1.f, 0.f, 0.f },
+        .m[2] = { 0.f, 0.f, 1.f, 0.f },
+        .m[3] = { 0.f, -1.f, 0.f, 1.f }
+    };
+
+    //1.000000 0.000000 0.000000 0.000000
+    //0.000000 0.026178 -0.999657 0.000000
+    //0.000000 0.999657 0.026178 0.000000
+    //0.000000 -0.026178 0.999657 1.000000
+
+    //1.000000 0.000000 0.000000 0.000000
+    //0.000000 0.026178 -0.999657 0.000000
+    //0.000000 0.999657 0.026178 0.000000
+    //0.000000 -0.026178 0.999657 1.000000
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
@@ -135,7 +151,8 @@ void animateModels(void) {
                 //SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
                 //SCENE.model[i].anim.anim_matrix = transposeMatrix(SCENE.model[i].anim.bm[f_index]);
                 SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
-
+                logmat4x4(SCENE.model[i].anim.anim_matrix);
+                exit(0);
                 if (SCENE.model[i].mesh_indexes > 1) {
                     for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 

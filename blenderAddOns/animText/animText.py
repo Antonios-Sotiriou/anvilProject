@@ -61,10 +61,18 @@ def aquire_animation_data(context, filepath, settings):
             general_data["animation_data"][i]["scale"].append(bone.scale.z)
             general_data["animation_data"][i]["scale"].append(1.0)
 
-            matrix = bone.matrix_channel.transposed()
+            matrix = armature.matrix_world.transposed() @ bone.matrix
             for x in range(0, 4):
-                for y in range(0, 4):
-                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][y])
+                if x == 3:
+                    # We must swap the matrix Translation part y and z values because they are different in blender than our engine.
+                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][0])
+                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][2])
+                    # We must reverse z value here because in blender -z is forward.
+                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][1] * -1)
+                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][3])
+                else:
+                    for y in range(0, 4):
+                        general_data["animation_data"][i]["bone_matrix"].append(matrix[x][y])
 
         i += 1
 
