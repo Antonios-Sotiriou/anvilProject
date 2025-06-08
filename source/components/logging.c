@@ -71,7 +71,8 @@ void logmesh(const mesh m) {
 	printf("VAO            : %d\n", m.VAO);
 	printf("VBO            : %d\n", m.VBO);
 	printf("pk             : %d\n", m.pk);
-	printf("type           : %d\n", m.type);
+	printf("asset_type     : %d\n", m.asset_type);
+	printf("mesh_type      : %d\n", m.mesh_type);
 	printf("visible        : %d\n", m.visible);
 	printf("number_of_children : %d\n", m.number_of_children);
 	printf("children       : %p\n", &m.children);
@@ -99,7 +100,8 @@ void logmodel(const model m) {
 	printf("mesh_indexes   : %d\n", m.mesh_indexes);
 	printf("cname_length   : %d\n", m.length_cname);
 	printf("pk             : %d\n", m.pk);
-	printf("type           : %d\n", m.type);
+	printf("asset_type     : %d\n", m.asset_type);
+	printf("model_type     : %d\n", m.model_type);
 	printf("visible        : %d\n", m.visible);
 	printf("quadInit       : %d\n", m.quad_init);
 	printf("quadIndex      : %d\n", m.quad_index);

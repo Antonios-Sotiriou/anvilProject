@@ -5,7 +5,7 @@ static char *composemeshRigidPath(mesh *m);
 /* Create the rigid file path according to the type of the mesh. Different types of meshes may have diferent file paths. Thats why we must generalize them. */
 static char *composemeshRigidPath(mesh *m) {
 	char *dynamic_path = { 0 };
-	if (m->type == MODEL_TYPE_TERRAIN) {
+	if (m->asset_type == ASSET_TYPE_TERRAIN) {
 		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 22; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
 		if (!dynamic_path) {

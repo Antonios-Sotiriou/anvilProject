@@ -48,31 +48,38 @@ def aquire_animation_data(context, filepath, settings):
     for bone in armature.pose.bones:
         for fr in range(settings.frame_start, settings.frame_end, settings.frame_step):
             scene.frame_set(fr)
-            general_data["animation_data"][i]["location"].append(bone.location.x)
-            general_data["animation_data"][i]["location"].append(bone.location.y)
-            general_data["animation_data"][i]["location"].append(bone.location.z)
+
+            bone_mat = armature.matrix_world.transposed() @ bone.matrix
+            mat_transp = bone_mat.transposed()
+            loc = mat_transp.to_translation()
+            rot = bone_mat.to_quaternion()
+            scl = bone_mat.to_scale()
+
+            general_data["animation_data"][i]["location"].append(loc.x)
+            general_data["animation_data"][i]["location"].append(loc.z)
+            general_data["animation_data"][i]["location"].append(loc.y * -1)
             general_data["animation_data"][i]["location"].append(1.0)
-            general_data["animation_data"][i]["rotation_quaternion"].append(bone.rotation_quaternion.w)
-            general_data["animation_data"][i]["rotation_quaternion"].append(bone.rotation_quaternion.x)
-            general_data["animation_data"][i]["rotation_quaternion"].append(bone.rotation_quaternion.y)
-            general_data["animation_data"][i]["rotation_quaternion"].append(bone.rotation_quaternion.z)
-            general_data["animation_data"][i]["scale"].append(bone.scale.x)
-            general_data["animation_data"][i]["scale"].append(bone.scale.y)
-            general_data["animation_data"][i]["scale"].append(bone.scale.z)
+            general_data["animation_data"][i]["rotation_quaternion"].append(rot.w)
+            general_data["animation_data"][i]["rotation_quaternion"].append(rot.x)
+            general_data["animation_data"][i]["rotation_quaternion"].append(rot.y)
+            general_data["animation_data"][i]["rotation_quaternion"].append(rot.z)
+            general_data["animation_data"][i]["scale"].append(scl.x)
+            general_data["animation_data"][i]["scale"].append(scl.y)
+            general_data["animation_data"][i]["scale"].append(scl.z)
             general_data["animation_data"][i]["scale"].append(1.0)
 
-            matrix = armature.matrix_world.transposed() @ bone.matrix
+            
             for x in range(0, 4):
                 if x == 3:
                     # We must swap the matrix Translation part y and z values because they are different in blender than our engine.
-                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][0])
-                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][2])
+                    general_data["animation_data"][i]["bone_matrix"].append(bone_mat[x][0])
+                    general_data["animation_data"][i]["bone_matrix"].append(bone_mat[x][2])
                     # We must reverse z value here because in blender -z is forward.
-                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][1] * -1)
-                    general_data["animation_data"][i]["bone_matrix"].append(matrix[x][3])
+                    general_data["animation_data"][i]["bone_matrix"].append(bone_mat[x][1] * -1)
+                    general_data["animation_data"][i]["bone_matrix"].append(bone_mat[x][3])
                 else:
                     for y in range(0, 4):
-                        general_data["animation_data"][i]["bone_matrix"].append(matrix[x][y])
+                        general_data["animation_data"][i]["bone_matrix"].append(bone_mat[x][y])
 
         i += 1
 

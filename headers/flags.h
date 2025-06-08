@@ -29,8 +29,9 @@
     #define OFF                 0
 
     /* Assets Types types. */
-    #define ASSET_TYPE_MESH          0
-    #define ASSET_TYPE_MODEL         1
+    #define ASSET_TYPE_TERRAIN         0
+    #define ASSET_TYPE_MODEL           1
+    #define ASSET_TYPE_MESH            2
 
     /* Models types. */
     #define MODEL_TYPE_TERRAIN             0

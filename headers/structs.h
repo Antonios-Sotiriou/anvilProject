@@ -122,7 +122,8 @@ typedef struct mesh {
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
-        type,                            // The type of the mesh.
+        asset_type,                      // The type of the asset.Can be terrain, model, mesh, etc.Identifies a base structure. 
+        mesh_type,                       // The type of the mesh.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
         owns_anim;                        // Wether or not the mesh has an animation.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
@@ -148,7 +149,8 @@ typedef struct {
     int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
         length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
-        type,                            // The type of the model.
+        asset_type,                      // The type of the asset.Can be terrain, model, mesh, etc.Identifies a base structure. 
+        model_type,                      // The type of the model.Can be Player, camera, light source etc.Identifies types of the same Primitive.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
         owns_anim,                       // Wether or not the model has an animation.
         owns_rigid,                      // Wether or not the model has a rigid body attached to it.

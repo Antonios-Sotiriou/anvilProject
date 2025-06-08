@@ -31,6 +31,7 @@ void createModel(model *m) {
         m->mesh[i].q = unitQuat();
         m->mesh[i].coords.v[0] = setvec4(0, 0, 0, 1);
         m->mesh[i].model_matrix = identityMatrix();
+        m->mesh[i].asset_type = ASSET_TYPE_MESH;
     }
 
     releaseOBJ(&obj);

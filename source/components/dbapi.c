@@ -20,8 +20,10 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
     for (int i = 0; i < argc; i++) {
         if (strncmp(azColName[i], "pk", 2) == 0) {
             SCENE.model[idx].pk = atoi(argv[i]);
-        } else if (strncmp(azColName[i], "type", 4) == 0) {
-            SCENE.model[idx].type = atoi(argv[i]);
+        } else if (strncmp(azColName[i], "asset_type", 10) == 0) {
+            SCENE.model[idx].asset_type = atoi(argv[i]);
+        } else if (strncmp(azColName[i], "model_type", 10) == 0) {
+            SCENE.model[idx].model_type = atoi(argv[i]);
         } else if (strncmp(azColName[i], "coords", 6) == 0) {
             float vecs[16];
             sscanf_os(argv[i], "{%f %f %f %f} {%f %f %f %f} {%f %f %f %f} {%f %f %f %f}",
