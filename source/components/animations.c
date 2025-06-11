@@ -109,6 +109,13 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
 }
 void animateModels(void) {
 
+    mat4x4 arm = {
+        .m[0] = { 1, 0, 0, 0 },
+        .m[1] = { 0, 1, 0, 0 },
+        .m[2] = { 0, 0, 1, 0 },
+        .m[3] = { 5, 5, 5, 1 },
+    };
+
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
             if (SCENE.model[i].owns_anim) {
@@ -128,9 +135,13 @@ void animateModels(void) {
                 quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
-                SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                //SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
                 //SCENE.model[i].anim.anim_matrix = transposeMatrix(SCENE.model[i].anim.bm[f_index]);
-                //SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
+                //if (strncmp(SCENE.model[i].cname, "mechArm", 7) == 0) {
+                //    SCENE.model[i].anim.anim_matrix = matMulmat(arm, SCENE.model[i].anim.bm[f_index]);
+                //}else {
+                    SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
+                //}
                 //logmat4x4(SCENE.model[i].anim.anim_matrix);
                 //exit(0);
 
@@ -143,8 +154,8 @@ void animateModels(void) {
 
                         //if (strncmp(SCENE.model[i].mesh[x].cname, "arm.l", 5) == 0) {
 
-                            SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
+                            //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                            SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
                             //logmat4x4(SCENE.model[i].mesh[x].anim.anim_matrix);
                             //exit(0);
                             //SCENE.model[i].mesh[x].anim.anim_matrix = inverseMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]);

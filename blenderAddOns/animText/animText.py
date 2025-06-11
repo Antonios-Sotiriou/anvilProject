@@ -15,15 +15,13 @@ import bpy
 import time
 
 def recursiveTransformation(arm, bone, mat):
-    local = arm.data.bones[bone.name].matrix_local
-    basis = arm.pose.bones[bone.name].matrix_basis
-
-    parent = arm.data.bones[bone.name].parent
-    if parent == None:
-        mat = local @ basis
+    if bone.parent == None:
+        mat = arm.data.bones[bone.name].matrix_local.transposed() @ bone.matrix_basis
     else:
-        parent_local = arm.data.bones[parent.name].matrix_local
-        mat = recursiveTransformation(arm, parent, mat) @ (parent_local @ local) @ basis
+        parent_local = arm.data.bones[bone.parent.name].matrix_local
+        parent_basis = arm.pose.bones[bone.parent.name].matrix_basis
+        mat =  mat @ (parent_basis)
+        recursiveTransformation(arm, bone.parent, mat)
 
     return mat
 
@@ -62,7 +60,9 @@ def aquire_animation_data(context, filepath, settings):
         for fr in range(settings.frame_start, settings.frame_end, settings.frame_step):
             scene.frame_set(fr)
 
-            bone_mat = armature.matrix_world.transposed() @ bone.matrix_basis
+            bone_mat = recursiveTransformation(armature, bone, bone.matrix_basis)
+            #bone_mat = bone.matrix_basis
+
             mat_transp = bone_mat.transposed()
             loc = mat_transp.to_translation()
             rot = bone_mat.to_quaternion()
