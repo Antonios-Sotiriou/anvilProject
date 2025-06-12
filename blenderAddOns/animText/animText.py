@@ -60,8 +60,9 @@ def aquire_animation_data(context, filepath, settings):
         for fr in range(settings.frame_start, settings.frame_end, settings.frame_step):
             scene.frame_set(fr)
 
-            bone_mat = recursiveTransformation(armature, bone, bone.matrix_basis)
-            #bone_mat = bone.matrix_basis
+            #bone_mat = recursiveTransformation(armature, bone, bone.matrix_basis)
+            #bone_mat = (armature.matrix_world @ bone.matrix_basis @ armature.data.bones[bone.name].matrix_local).transposed()
+            bone_mat = bone.matrix_channel.transposed()
 
             mat_transp = bone_mat.transposed()
             loc = mat_transp.to_translation()
