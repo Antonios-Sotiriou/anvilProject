@@ -102,8 +102,8 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
         vec4 lc = m->parent->anim.lc[f_index];
         quat rq = m->parent->anim.rq[f_index];
         vec4 sc = m->parent->anim.sc[f_index];
-        //*mat = matMulmat(*mat, m->parent->anim.bm[f_index]);
-        *mat = matMulmat(*mat, modelMatfromQST(rq, sc, lc));
+        *mat = matMulmat(m->parent->anim.bm[f_index], *mat);
+        //*mat = matMulmat(modelMatfromQST(rq, sc, lc), inverseMatrix(*mat));
         applyReverseTranformation(m->parent, mat);
     }
 }
@@ -137,13 +137,13 @@ void animateModels(void) {
 
                 //SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
                 //SCENE.model[i].anim.anim_matrix = transposeMatrix(SCENE.model[i].anim.bm[f_index]);
+                SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
+
                 //if (strncmp(SCENE.model[i].cname, "mechArm", 7) == 0) {
-                //    SCENE.model[i].anim.anim_matrix = matMulmat(arm, SCENE.model[i].anim.bm[f_index]);
-                //}else {
-                    SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
+                //    printf("Animation index: %d\n", f_index);
+                //    logmat4x4(SCENE.model[i].anim.bm[f_index]);
+                //    exit(0);
                 //}
-                //logmat4x4(SCENE.model[i].anim.anim_matrix);
-                //exit(0);
 
                 if (SCENE.model[i].mesh_indexes > 1) {
                     for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
@@ -156,12 +156,12 @@ void animateModels(void) {
 
                             //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
                             SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
-                            //logmat4x4(SCENE.model[i].mesh[x].anim.anim_matrix);
-                            //exit(0);
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = inverseMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]);
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(modelMatfromQST(rq, sc, lc), transposeMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]));
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(modelMatfromQST(rq, sc, lc), inverseMatrix(SCENE.model[i].mesh[x].anim.bm[f_index]));
-                            applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
+
+
+                            //applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.bm[f_index]);
+                            //mat4x4 id_mat = identityMatrix();
+                            //applyReverseTranformation(&SCENE.model[i].mesh[x], &id_mat);
+                            //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.bm[f_index], id_mat);
                         //} //else {
 
                         //    SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);

@@ -14,16 +14,12 @@ bl_info = {
 import bpy
 import time
 
-def recursiveTransformation(arm, bone, mat):
-    if bone.parent == None:
-        mat = arm.data.bones[bone.name].matrix_local.transposed() @ bone.matrix_basis
-    else:
-        parent_local = arm.data.bones[bone.parent.name].matrix_local
-        parent_basis = arm.pose.bones[bone.parent.name].matrix_basis
-        mat =  mat @ (parent_basis)
-        recursiveTransformation(arm, bone.parent, mat)
+def recursiveTransformation(arm, bone):
 
-    return mat
+    if bone.parent == None:
+        return (bone.matrix_channel @ bone.bone.matrix_local @ arm.matrix_world).transposed()
+    else:
+        return (bone.matrix_channel).transposed()
 
 def aquire_animation_data(context, filepath, settings):
     scene = context.scene
@@ -60,9 +56,13 @@ def aquire_animation_data(context, filepath, settings):
         for fr in range(settings.frame_start, settings.frame_end, settings.frame_step):
             scene.frame_set(fr)
 
-            #bone_mat = recursiveTransformation(armature, bone, bone.matrix_basis)
-            #bone_mat = (armature.matrix_world @ bone.matrix_basis @ armature.data.bones[bone.name].matrix_local).transposed()
-            bone_mat = bone.matrix_channel.transposed()
+            #bone_mat = recursiveTransformation(armature, bone, bone.matrix_channel).transposed()
+            #bone_mat = (armature.matrix_world @ bone.bone.matrix_local @ bone.matrix_channel).transposed()
+
+            # Close solutions for robot.
+            #bone_mat = (armature.matrix_world @ armature.data.bones[bone.name].matrix_local @ bone.matrix_channel).transposed()
+            #bone_mat = bone.matrix_channel.transposed()
+            bone_mat = recursiveTransformation(armature, bone)
 
             mat_transp = bone_mat.transposed()
             loc = mat_transp.to_translation()
