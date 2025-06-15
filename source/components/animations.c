@@ -136,14 +136,7 @@ void animateModels(void) {
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
                 //SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                //SCENE.model[i].anim.anim_matrix = transposeMatrix(SCENE.model[i].anim.bm[f_index]);
                 SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
-
-                //if (strncmp(SCENE.model[i].cname, "mechArm", 7) == 0) {
-                //    printf("Animation index: %d\n", f_index);
-                //    logmat4x4(SCENE.model[i].anim.bm[f_index]);
-                //    exit(0);
-                //}
 
                 if (SCENE.model[i].mesh_indexes > 1) {
                     for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
@@ -152,32 +145,13 @@ void animateModels(void) {
                         quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
                         vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
 
-                        //if (strncmp(SCENE.model[i].mesh[x].cname, "arm.l", 5) == 0) {
-
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                            SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
-
-
-                            //applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.bm[f_index]);
-                            //mat4x4 id_mat = identityMatrix();
-                            //applyReverseTranformation(&SCENE.model[i].mesh[x], &id_mat);
-                            //SCENE.model[i].mesh[x].anim.anim_matrix = matMulmat(SCENE.model[i].mesh[x].anim.bm[f_index], id_mat);
-                        //} //else {
-
-                        //    SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                        //    applyReverseTranformation(&SCENE.model[i].mesh[x], &SCENE.model[i].mesh[x].anim.anim_matrix);
-                        //}
+                        //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
                     }
                 }
             }
         }
     }
-    //logmodel(SCENE.model[3]);
-    //for (int i = 0; i < SCENE.model[3].mesh_indexes; i++) {
-    //    //printf("mesh_cname: %s\n", SCENE.model[3].mesh[i].cname);
-    //    logmesh(SCENE.model[3].mesh[i]);
-    //}
-    //exit(0);
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
