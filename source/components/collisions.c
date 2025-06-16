@@ -29,8 +29,7 @@ void modelTerrainCollision(model *m) {
         tm = translationMatrix(0, height_diff, 0);
 
         setvec4arrayMulmat(m->coords.v, 4, tm);
-        setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, tm);
-        setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, tm);
+        setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, tm);
     }
 }
 //const void terrainHeightDifference(Mesh* terrain, Mesh* obj) {
@@ -169,8 +168,7 @@ const int sweptAABBCollision(model *m, const int pks[]) {
                 mat4x4 trans = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
 
                 setvec4arrayMulmat(m->coords.v, 4, trans);
-                setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, trans);
-                setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, trans);
+                setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, trans);
 
                 //obj->momentum *= cache->fr_coef;
                 //float dot = dot_product(normal, obj->mvdir);
@@ -363,8 +361,7 @@ const int sweptAABBCollision(model *m, const int pks[]) {
                 mat4x4 trans = translationMatrix(m->velocity.m128_f32[0], m->velocity.m128_f32[1], m->velocity.m128_f32[2]);
 
                 setvec4arrayMulmat(m->coords.v, 4, trans);
-                setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, trans);
-                setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, trans);
+                setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, trans);
 
                 //obj->momentum *= cache->fr_coef;
                 //float dot = dot_product(normal, obj->mvdir);
@@ -482,84 +479,6 @@ const int staticOBBCollision(model *m, const int pk) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOBBCollisions().\n", m->quad_index);
         return 0;
     }
-
-    const int sum_norms = m->rigid.n_indexes + SCENE.model[pk].rigid.n_indexes;
-    /* Implement Oriented bounding boxes collision detection. */
-    mat4x4 tm = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
-    vec4* vec4s = vec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, tm);
-    vec4* norms = vec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, tm);
-    vec4* temp = realloc(norms, 16 * sum_norms);;
-    if (!temp) {
-        debug_log_error(stdout, "malloc()");
-        free(vec4s);
-        free(norms);
-        return 0;
-    }
-    norms = temp;
-    memcpy(&norms[m->rigid.n_indexes], SCENE.model[pk].rigid.n, 16 * SCENE.model[pk].rigid.n_indexes);
-
-    float depth = (float)INT_MAX;
-    vec4 normal = { 0 };
-    float dot = 0.f, min_outer, min_inner, max_outer, max_inner;
-
-    //printf("\x1b[H\x1b[J");
-
-    for (int i = 0; i < sum_norms; i++) {
-        min_outer = (float)INT_MAX, min_inner = (float)INT_MAX, max_outer = (float)-INT_MAX, max_inner = (float)-INT_MAX;
-        for (int x = 0; x < m->rigid.v_indexes; x++) {
-            min_outer = (dot = dotProduct(norms[i], vec4s[x])) < min_outer ? dot : min_outer;
-            max_outer = dot > max_outer ? dot : max_outer;
-        }
-
-        for (int y = 0; y < SCENE.model[pk].rigid.v_indexes; y++) {
-            min_inner = (dot = dotProduct(norms[i], SCENE.model[pk].rigid.v[y])) < min_inner ? dot : min_inner;
-            max_inner = dot > max_inner ? dot : max_inner;
-        }
-
-        if ((min_outer > max_inner) || (max_outer < min_inner)) {
-            free(vec4s);
-            free(norms);
-            return 0;
-        }
-
-        float da = (max_outer - min_inner);
-        float db = (max_inner - min_outer);
-        float axisDepth = da < db ? da : db;
-        if (axisDepth < depth) {
-            depth = axisDepth;
-            normal = norms[i];
-        }
-    }
-
-    depth = vecLength(m->velocity);
-    //if (dotProduct(vecSubvec(m->coords.v[0], SCENE.model[pk].coords.v[0]), normal) < 0) {
-    //    normal = vecMulf32(normal, -1.f);
-    //}
-    //normal = vecNormalize(normal);
-
-    //printf("depth_normal: %f\n", depth / vecLength(normal));
-    //printf("depth_velocity: %f\n", depth / vecLength(m->velocity));
-    if (depth == 0)
-        printf("Sliding... depth_velocity: %f\n", depth);
-    if (depth > 0 && depth <= 1.f) {
-
-        vec4 velocity = vecMulf32(m->velocity, -depth);
-        mat4x4 trans = translationMatrix(vec4ExtractX(velocity), vec4ExtractY(velocity), vec4ExtractZ(velocity));
-        setvec4arrayMulmat(m->coords.v, 4, trans);
-        setvec4arrayMulmat(m->rigid.v, m->rigid.v_indexes, trans);
-        setvec4arrayMulmat(m->rigid.n, m->rigid.n_indexes, trans);
-    }
-    float col_dot = dotProduct(m->velocity, normal);
-    m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
-
-    //printf("t_min: %f    t_max: %f    t_near: %f\n", t_min, t_max, t_near);
-    //printf("Collision Detected...depth: %f    col_dot: %f\n", depth, col_dot);
-    printf("depth_velocity: %f\n", depth);
-    //printf("Collision Detected...\n");
-
-    free(vec4s);
-    free(norms);
-    //getc(stdin);
     return 1;
 }
 

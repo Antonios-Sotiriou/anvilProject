@@ -170,12 +170,6 @@ face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
             z = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
             w = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
             r[i].v[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
-
-            x = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
-            y = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
-            z = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
-            w = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
-            r[i].vn[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
         }
     }
     return r;
@@ -190,12 +184,6 @@ void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
             z = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
             w = _mm_mul_ps(_mm_shuffle_ps(f[i].v[j], f[i].v[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
             f[i].v[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
-
-            x = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
-            y = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(1, 1, 1, 1)), m.m[1]);
-            z = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(2, 2, 2, 2)), m.m[2]);
-            w = _mm_mul_ps(_mm_shuffle_ps(f[i].vn[j], f[i].vn[j], _MM_SHUFFLE(3, 3, 3, 3)), m.m[3]);
-            f[i].vn[j] = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
         }
     }
 }
@@ -416,11 +404,6 @@ face* facearrayMulmat(face f[], const int len, const mat4x4 m) {
             r[i].v[j].m128_f32[1] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[1] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[1] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[1] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[1];
             r[i].v[j].m128_f32[2] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[2] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[2] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[2] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[2];
             r[i].v[j].m128_f32[3] = f[i].v[j].m128_f32[0] * m.m[0].m128_f32[3] + f[i].v[j].m128_f32[1] * m.m[1].m128_f32[3] + f[i].v[j].m128_f32[2] * m.m[2].m128_f32[3] + f[i].v[j].m128_f32[3] * m.m[3].m128_f32[3];
-
-            r[i].vn[j].m128_f32[0] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[0] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[0] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[0] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[0];
-            r[i].vn[j].m128_f32[1] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[1] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[1] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[1] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[1];
-            r[i].vn[j].m128_f32[2] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[2] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[2] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[2] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[2];
-            r[i].vn[j].m128_f32[3] = f[i].vn[j].m128_f32[0] * m.m[0].m128_f32[3] + f[i].vn[j].m128_f32[1] * m.m[1].m128_f32[3] + f[i].vn[j].m128_f32[2] * m.m[2].m128_f32[3] + f[i].vn[j].m128_f32[3] * m.m[3].m128_f32[3];
         }
     }
     return r;
@@ -435,11 +418,6 @@ void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
             f[i].v[j].m128_f32[1] = r.v[j].m128_f32[0] * m.m[0].m128_f32[1] + r.v[j].m128_f32[1] * m.m[1].m128_f32[1] + r.v[j].m128_f32[2] * m.m[2].m128_f32[1] + r.v[j].m128_f32[3] * m.m[3].m128_f32[1];
             f[i].v[j].m128_f32[2] = r.v[j].m128_f32[0] * m.m[0].m128_f32[2] + r.v[j].m128_f32[1] * m.m[1].m128_f32[2] + r.v[j].m128_f32[2] * m.m[2].m128_f32[2] + r.v[j].m128_f32[3] * m.m[3].m128_f32[2];
             f[i].v[j].m128_f32[3] = r.v[j].m128_f32[0] * m.m[0].m128_f32[3] + r.v[j].m128_f32[1] * m.m[1].m128_f32[3] + r.v[j].m128_f32[2] * m.m[2].m128_f32[3] + r.v[j].m128_f32[3] * m.m[3].m128_f32[3];
-
-            f[i].vn[j].m128_f32[0] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[0] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[0] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[0] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[0];
-            f[i].vn[j].m128_f32[1] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[1] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[1] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[1] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[1];
-            f[i].vn[j].m128_f32[2] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[2] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[2] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[2] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[2];
-            f[i].vn[j].m128_f32[3] = r.vn[j].m128_f32[0] * m.m[0].m128_f32[3] + r.vn[j].m128_f32[1] * m.m[1].m128_f32[3] + r.vn[j].m128_f32[2] * m.m[2].m128_f32[3] + r.vn[j].m128_f32[3] * m.m[3].m128_f32[3];
         }
     }
 }

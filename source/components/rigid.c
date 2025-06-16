@@ -119,9 +119,11 @@ void loadmeshRigid(mesh *m) {
 void getRigidLimits(rigid *r) {
 	r->min = _mm_set_ps1(INT_MAX);
 	r->max = _mm_set_ps1(-INT_MAX);
-	for (int i = 0; i < r->v_indexes; i++) {
-		r->min = _mm_min_ps(r->min, r->v[i]);
-		r->max = _mm_max_ps(r->max, r->v[i]);
+	for (int x = 0; x < r->faces_indexes; x++) {
+		for (int y = 0; y < 3; y++) {
+			r->min = _mm_min_ps(r->min, r->f[x].v[y]);
+			r->max = _mm_max_ps(r->max, r->f[x].v[y]);
+		}
 	}
 }
 #else // ITERATIVE_CODE #########################################################################################
@@ -129,30 +131,31 @@ void getRigidLimits(rigid *r) {
 void getRigidLimits(rigid *r) {
 	r->min = setvec4(INT_MAX, INT_MAX, INT_MAX, INT_MAX);
     r->max = setvec4(-INT_MAX, -INT_MAX, -INT_MAX, -INT_MAX);
-    for (int i = 0; i < r->v_indexes; i++) {
-        if (r->min.m128_f32[0] > r->v[i].m128_f32[0])
-            r->min.m128_f32[0] = r->v[i].m128_f32[0];
+    for (int x = 0; x < r->faces_indexes; x++) {
+		for (int y = 0; y < 3; y++) {
+			if (r->min.m128_f32[0] > r->f[x].v[y].m128_f32[0])
+				r->min.m128_f32[0] = r->f[x].v[y].m128_f32[0];
 
-        if (r->max.m128_f32[0] < r->v[i].m128_f32[0])
-            r->max.m128_f32[0] = r->v[i].m128_f32[0];
+			if (r->max.m128_f32[0] < r->f[x].v[y].m128_f32[0])
+				r->max.m128_f32[0] = r->f[x].v[y].m128_f32[0];
 
-        if (r->min.m128_f32[1] > r->v[i].m128_f32[1])
-            r->min.m128_f32[1] = r->v[i].m128_f32[1];
+			if (r->min.m128_f32[1] > r->f[x].v[y].m128_f32[1])
+				r->min.m128_f32[1] = r->f[x].v[y].m128_f32[1];
 
-        if (r->max.m128_f32[1] < r->v[i].m128_f32[1])
-            r->max.m128_f32[1] = r->v[i].m128_f32[1];
+			if (r->max.m128_f32[1] < r->f[x].v[y].m128_f32[1])
+				r->max.m128_f32[1] = r->f[x].v[y].m128_f32[1];
 
-        if (r->min.m128_f32[2] > r->v[i].m128_f32[2])
-            r->min.m128_f32[2] = r->v[i].m128_f32[2];
+			if (r->min.m128_f32[2] > r->f[x].v[y].m128_f32[2])
+				r->min.m128_f32[2] = r->f[x].v[y].m128_f32[2];
 
-        if (r->max.m128_f32[2] < r->v[i].m128_f32[2])
-            r->max.m128_f32[2] = r->v[i].m128_f32[2];
+			if (r->max.m128_f32[2] < r->f[x].v[y].m128_f32[2])
+				r->max.m128_f32[2] = r->f[x].v[y].m128_f32[2];
+		}
     }
 }
 #endif // VECTORIZED_CODE #######################################################################################
 void releaseRigid(rigid *r) {
-	free(r->v);
-	free(r->n);
+	free(r->f);
 	glDeleteVertexArrays(1, &r->VAO);
 	glDeleteBuffers(1, &r->VBO);
 	glDisableVertexAttribArray(0);

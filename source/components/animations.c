@@ -103,7 +103,7 @@ int applyReverseTranformation(mesh *m, mat4x4 *mat) {
         quat rq = m->parent->anim.rq[f_index];
         vec4 sc = m->parent->anim.sc[f_index];
         *mat = matMulmat(m->parent->anim.bm[f_index], *mat);
-        //*mat = matMulmat(modelMatfromQST(rq, sc, lc), inverseMatrix(*mat));
+        //*mat = matMulmat(modelMatfromQST(rq, sc, lc), *mat);
         applyReverseTranformation(m->parent, mat);
     }
 }
@@ -126,8 +126,6 @@ void animateModels(void) {
                     if (f_index > SCENE.model[i].anim.frames)
                         f_index = 0;
                     rot += 10.0f;
-
-                    printf("model: %s    frames: %d    current frame: %d\n", SCENE.model[i].cname, SCENE.model[i].anim.frames, f_index);
                 }
                 COUNT++;
 

@@ -31,8 +31,6 @@ void logcoords(const coords c) {
 }
 void logrigid(const rigid r) {
 	printf("rigid {\n");
-	printf("    *v            : %p\n", r.v);
-	printf("    *n            : %p\n", r.n);
 	printf("    min           : ");
 	logvec4(r.min);
 	printf("    max           : ");
@@ -43,8 +41,6 @@ void logrigid(const rigid r) {
 	printf("    vbo           : %p\n", r.vbo);
 	printf("    falling_time  : %f\n", r.falling_time);
 
-	printf("    n_indexes     : %d\n", r.v_indexes);
-	printf("    n_indexes     : %d\n", r.n_indexes);
 	printf("    vbo_indexes   : %d\n", r.vbo_indexes);
 	printf("    faces_indexes : %d\n", r.faces_indexes);
 	printf("    vecs_indexes  : %d\n", r.vecs_indexes);
@@ -52,6 +48,7 @@ void logrigid(const rigid r) {
 	printf("    VAO           : %d\n", r.VAO);
 	printf("    VBO           : %d\n", r.VBO);
 	printf("    grounded      : %d\n", r.grounded);
+	printf("    faces:        : %p\n", r.f);
 	printf("}\n");
 }
 void logmesh(const mesh m) {

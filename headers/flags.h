@@ -8,7 +8,7 @@
 #include "headers/cmake_variables.h"
 
 /* Flag to compile with SSE code or without. */
-#define VECTORIZED_CODE
+//#define VECTORIZED_CODE
 
 #ifdef anvil_VERSION_MAJOR
     /* The meshes which consist the scene enumeration. */ 
@@ -18,9 +18,9 @@
     #define GITANA_DB           anvil_SOURCE_DIR"/databases/gitana.db"
 
     /* Database entries Types. */
-    #define MESH_TABLE                0
+    #define TERRAIN_TABLE             0
     #define MODEL_TABLE               1
-    #define SCENE_TABLE               2
+    #define MESH_TABLE                2
 
     /* Flags for states changing. */
     #define ENABLED             1

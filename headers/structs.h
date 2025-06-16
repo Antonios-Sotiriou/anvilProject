@@ -74,8 +74,8 @@ typedef struct {
 /* Base struct to represent a face. */
 typedef struct {
     vec4 v[3];          // 3 vectors with 4 dimensions each
-    vec2 vt[3];         // 3 texels with 2 dimensions each
-    vec4 vn[3];         // 3 vectors-normals with 4 dimensions each
+    //vec2 vt[3];         // 3 texels with 2 dimensions each
+    //vec4 vn[3];         // 3 vectors-normals with 4 dimensions each
 } face;
 
 /* Main struct to hold animations extraxted from blender. */
@@ -89,23 +89,20 @@ typedef struct {
 } animation;
 
 typedef struct {
-    vec4 *v,                             // Vectors array to be used for primitive AABB collision. Vectors are unique to save iterations when aquairing min and max 3d values.
-        *n,                              // Normals array to be used for OBB collision. Normals are unique to save iterations.
-        min,                             // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
+    vec4 min,                            // Minimum values for X, Y, Z, W. The minimum limits of the mesh.
         max;                             // Maximum values for X, Y, Z, W. The maximum limits of the mesh.
     quat q;                              // Rotation quaternion W, X, Y, Z.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         falling_time,                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
         collision_t;                     // The time of collision to help us sort them.Used in sortCollisions function, to find out which collision take place earlier.
-    int v_indexes,
-        n_indexes,
-        vbo_indexes,                     // Number of vbo indexes as individual floats.
+    int vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
         grounded;                        // Switch which tracks if object in grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
+    face *f;                             // The faces from them our rigid body consists.
 } rigid;
 /* Base structure to represent a shape. */
 typedef struct mesh {
