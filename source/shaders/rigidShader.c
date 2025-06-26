@@ -5,6 +5,7 @@ const static char *vertexShaderSource = "#version 450 core\n"
 
 "uniform mat4 vpMatrix;\n"
 "uniform mat4 modelMatrix;\n"
+"uniform mat4 meshMatrix;\n"
 
 "void main() {\n"
 "    gl_Position = (vpMatrix * modelMatrix) * vec4(vsPos, 1.f);\n"
@@ -71,16 +72,22 @@ void rigidShader(void) {
 
     mat4x4 modelMatrix;
     for (int i = 0; i < SCENE.model_indexes; i++) {
-        for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+        if (SCENE.model[i].owns_rigid) {
 
-            if (SCENE.model[i].mesh[x].owns_rigid == ENABLED) {
-                modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
+            modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+            glBindVertexArray(SCENE.model[i].rigid.VAO);
 
-                glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-                glBindVertexArray(SCENE.model[i].mesh[x].VAO);
-                //glBufferSubData(GL_ARRAY_BUFFER, 0, SCENE.model[i].mesh[x].rigid.f_indexes * 36, arr);
-                glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].rigid.vecs_indexes);
+                if (SCENE.model[i].mesh[x].owns_rigid) {
+
+                    modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
+                    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+
+                    glBindVertexArray(SCENE.model[i].mesh[x].rigid.VAO);
+                    glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].rigid.vecs_indexes);
+                }
             }
         }
     }

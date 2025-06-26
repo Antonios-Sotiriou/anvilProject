@@ -14,7 +14,7 @@ bl_info = {
 import bpy
 import time
 
-def recursiveTransformation(arm, bone):
+def extractBoneMatrix(arm, bone):
 
     if bone.parent == None:
         return (bone.matrix_channel @ bone.bone.matrix_local @ arm.matrix_world).transposed()
@@ -56,14 +56,7 @@ def aquire_animation_data(context, filepath, settings):
         for fr in range(settings.frame_start, settings.frame_end, settings.frame_step):
             scene.frame_set(fr)
 
-            #bone_mat = recursiveTransformation(armature, bone, bone.matrix_channel).transposed()
-            #bone_mat = (armature.matrix_world @ bone.bone.matrix_local @ bone.matrix_channel).transposed()
-
-            # Close solutions for robot.
-            #bone_mat = (armature.matrix_world @ armature.data.bones[bone.name].matrix_local @ bone.matrix_channel).transposed()
-            #bone_mat = bone.matrix_channel.transposed()
-            bone_mat = recursiveTransformation(armature, bone)
-
+            bone_mat = extractBoneMatrix(armature, bone)
             mat_transp = bone_mat.transposed()
             loc = mat_transp.to_translation()
             rot = bone_mat.to_quaternion()

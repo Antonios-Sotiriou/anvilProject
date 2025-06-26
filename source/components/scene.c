@@ -10,10 +10,13 @@ void createScene(void) {
     SCENE.model_indexes = model_entries;
 
     /* Loads from database the default model values and populates GLOBAL SCENE with those. Models are indexed according to their position in database. */
-    dbloadTable(GITANA_DB, MODEL_TABLE, "SELECT * FROM model;");
+    dbloadTable(GITANA_DB, TABLE_MODEL, "SELECT * FROM model;");
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         createModel(&SCENE.model[i]);
+
+        if (SCENE.model[i].owns_rigid)
+            loadModelRigid(&SCENE.model[i]);
 
         if (SCENE.model[i].owns_anim)
             loadModelAnimations(&SCENE.model[i]);

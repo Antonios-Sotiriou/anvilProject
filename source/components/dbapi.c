@@ -170,9 +170,9 @@ void dbloadTable(const char path[], const int type, const char sql_cmd[]) {
         return;
     }
 
-    if (type == MODEL_TABLE)
+    if (type == TABLE_MODEL)
         callback = &modelCallback;
-    if (type == MESH_TABLE)
+    if (type == TABLE_MESH)
         callback = &meshCallback;
 
     int param = 0; // Passing an increment value to the calback, to initialize the a SCENE mesh every invocation.

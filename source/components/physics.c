@@ -33,6 +33,8 @@ void applyPhysics(void) {
 			if (SCENE.model[i].pk == camera) {
 				staticOBBCollision(&SCENE.model[i], 3);
 				//staticOBBCollision(&SCENE.model[i], 4);
+				//logmodel(SCENE.model[i]);
+				logvec4(SCENE.model[i].coords.v[0]);
 			}
 
 			/* 4th Collision Detection lvl. */

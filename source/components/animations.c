@@ -84,29 +84,30 @@ void loadModelAnimations(model* m) {
     }
 	releaseAnimText(&ad);
 }
-void applyRecursiveTranformation(mesh *m, mat4x4 *mat) {
-    vec4 lc, sc;
-    quat rq;
-    if (m->number_of_children) {
-        for (int i = 0; i < m->number_of_children; i++) {
-            lc = m->children[i]->anim.lc[f_index];
-            rq = m->children[i]->anim.rq[f_index];
-            sc = m->children[i]->anim.sc[f_index];
-            *mat = matMulmat(*mat, modelMatfromQST(rq, sc, lc));
-            applyRecursiveTranformation(m->children[i], mat);
-        }
-    }
-}
-int applyReverseTranformation(mesh *m, mat4x4 *mat) {
-    if (m->parent) {
-        vec4 lc = m->parent->anim.lc[f_index];
-        quat rq = m->parent->anim.rq[f_index];
-        vec4 sc = m->parent->anim.sc[f_index];
-        *mat = matMulmat(m->parent->anim.bm[f_index], *mat);
-        //*mat = matMulmat(modelMatfromQST(rq, sc, lc), *mat);
-        applyReverseTranformation(m->parent, mat);
-    }
-}
+//void applyRecursiveTranformation(mesh *m, mat4x4 *mat) {
+//    vec4 lc, sc;
+//    quat rq;
+//    if (m->number_of_children) {
+//        for (int i = 0; i < m->number_of_children; i++) {
+//            lc = m->children[i]->anim.lc[f_index];
+//            rq = m->children[i]->anim.rq[f_index];
+//            sc = m->children[i]->anim.sc[f_index];
+//            *mat = matMulmat(m->children[i]->anim.bm[f_index], *mat);
+//            //*mat = matMulmat(modelMatfromQST(rq, sc, lc), *mat);
+//            applyRecursiveTranformation(m->children[i], mat);
+//        }
+//    }
+//}
+//int applyReverseTranformation(mesh *m, mat4x4 *mat) {
+//    if (m->parent) {
+//        vec4 lc = m->parent->anim.lc[f_index];
+//        quat rq = m->parent->anim.rq[f_index];
+//        vec4 sc = m->parent->anim.sc[f_index];
+//        *mat = matMulmat(m->parent->anim.bm[f_index], *mat);
+//        //*mat = matMulmat(modelMatfromQST(rq, sc, lc), *mat);
+//        applyReverseTranformation(m->parent, mat);
+//    }
+//}
 void animateModels(void) {
 
     mat4x4 arm = {

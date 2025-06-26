@@ -59,7 +59,7 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     mat4x4 tm = matfromQuat(SCENE.model[camera].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
 
     setvec4arrayMulmat(SCENE.model[camera].coords.v, 4, tm);
-    setvec4arrayMulmat(SCENE.model[camera].rigid.f, SCENE.model[camera].rigid.faces_indexes, tm);
+    setfacearrayMulmat(SCENE.model[camera].rigid.f, SCENE.model[camera].rigid.faces_indexes, tm);
 
     SCENE.model[camera].q = multiplyQuats(SCENE.model[camera].q, SCENE.model[camera].rigid.q);
 

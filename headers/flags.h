@@ -18,9 +18,9 @@
     #define GITANA_DB           anvil_SOURCE_DIR"/databases/gitana.db"
 
     /* Database entries Types. */
-    #define TERRAIN_TABLE             0
-    #define MODEL_TABLE               1
-    #define MESH_TABLE                2
+    #define TABLE_TERRAIN             0
+    #define TABLE_MODEL               1
+    #define TABLE_MESH                2
 
     /* Flags for states changing. */
     #define ENABLED             1

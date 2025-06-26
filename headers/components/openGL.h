@@ -25,7 +25,7 @@
 
 const int initOpenGLComponents(void);
 void createMeshVAO(mesh *m);
-void createRigidVAO(mesh *m);
+void createRigidVAO(rigid *r);
 void releaseOpenGLComponents(void);
 void glErrorReport(void);
 
