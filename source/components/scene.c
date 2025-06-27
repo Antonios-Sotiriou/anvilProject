@@ -21,6 +21,11 @@ void createScene(void) {
         if (SCENE.model[i].owns_anim)
             loadModelAnimations(&SCENE.model[i]);
     }
+
+    /* Loads the main Terrain from the database and increases the Scene model indexes value by one. Terrain is appended on the end to be rendered last.
+       At this point we could calculate also the player position to load the appropriate terrain in the future when we will enter more terrains. */
+    //createTerrain(&SCENE.model[SCENE.model_indexes]);
+    //SCENE.model_indexes += 1;
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(void) {

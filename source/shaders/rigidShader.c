@@ -76,7 +76,9 @@ void rigidShader(void) {
 
             modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+
             glBindVertexArray(SCENE.model[i].rigid.VAO);
+            glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].rigid.vecs_indexes);
 
             for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 

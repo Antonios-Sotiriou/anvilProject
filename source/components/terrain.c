@@ -1,26 +1,33 @@
 #include "headers/components/terrain.h"
 
-void createTerrain(mesh *m, const char name[]) {
-    int path_length = (strlen(name) * 2) + 22; // Plus 1 here for the null termination \0.
+static vec3 *initTerrainVectors(model *m, BMP *bmp, const int emvadon);
+static vec2 *initTerrainTextors(model *m, BMP *bmp, const int emvadon);
+static vec3 *initTerrainNormals(model *m, BMP *bmp, const int emvadon);
+static int *initTerrainFaces(model *m, BMP *bmp, const int num_of_faces);
+
+void createTerrain(model *m) {
+    int path_length = (strlen(m->cname) * 2) + 22; // Plus 1 here for the null termination \0.
     char *dynamic_path = malloc(path_length);
     if (!dynamic_path) {
         debug_log_error(stdout, "malloc()");
-        debug_log_info(stdout, "%s\n", name);
+        debug_log_info(stdout, "%s\n", m->cname);
         return;
     }
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", name, name);
+    sprintf_s(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", m->cname, m->cname);
 #elif defined(LINUX) || defined(__linux__)
-    snprintf(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", name, name);
+    snprintf(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", m->cname, m->cname);
 #endif
 
     BMP bmp;
 	readBMP(&bmp, dynamic_path);
     free(dynamic_path);
 
-    const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height : 0;
+    const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height :
+        (bmp.info.Width == 0) ? bmp.info.Height :
+        (bmp.info.Height == 0) ? bmp.info.Width : 0;
     if (!emvadon) {
-        debug_log_critical(stdout, "Null value for Emvadon");
+        debug_log_critical(stdout, "Null value for Terrain Emvadon");
         releaseBMP(&bmp);
         exit(-1);
     }
@@ -43,77 +50,140 @@ void createTerrain(mesh *m, const char name[]) {
     SCENE.t.quad_indexes = quads;
     SCENE.t.quad = calloc(SCENE.t.quad_indexes, sizeof(Quad));
 
-    /* Faces. */
-    const int faces_per_row = quad_vrows * 2;
-    const int num_of_faces = quads * 2 * 9;
-
-    vec3 *v = calloc(emvadon, 12);
-    vec2 *t = calloc(emvadon, 8);
-    vec3 *n = calloc(emvadon, 12);
-    int *f = calloc(num_of_faces, 4);
-
     /* Vectors initialization. ############################## */
-    float step_x = 2.f / bmp.info.Width;
-    float step_z = 2.f / bmp.info.Height;
+    vec3 *v = initTerrainVectors(m, &bmp, emvadon);
+    releaseBMP(&bmp);
+    /* Textors initialization. ############################## */
+    vec2 *t = initTerrainTextors(m, &bmp, emvadon);
+    /* Normals initialization. ############################## */
+    vec3 *n = initTerrainNormals(m, &bmp, emvadon);
+    /* faces initialization. ############################## */
+    const int num_of_faces = quads * 2 * 9;
+    int *f = initTerrainFaces(m, &bmp, num_of_faces);
+
+    /* Mesh info initialization. ############################## */
+    m->mesh[0].vbo_indexes = (num_of_faces / 9) * 24;
+    m->mesh[0].faces_indexes = m->mesh[0].vbo_indexes / 24;
+    m->mesh[0].vecs_indexes = m->mesh[0].faces_indexes * 3;
+    m->mesh[0].vbo_size = m->mesh[0].vbo_indexes * 4;
+
+    /* Mesh vbo initialization. ############################## */
+    m->mesh[0].vbo = malloc(m->mesh[0].vbo_size);
+    if (!m->mesh[0].vbo)
+        debug_log_critical(stdout, "m->mesh[0].vbo = malloc(m->mesh[0].vbo_size)");
+    int index = 0; //, vpad, tpad;
+    for (int i = 0; i < num_of_faces; i++) {
+        m->mesh[0].vbo[index]     = v[f[i]].m96_f32[0];
+        m->mesh[0].vbo[index + 1] = v[f[i]].m96_f32[1];
+        m->mesh[0].vbo[index + 2] = v[f[i]].m96_f32[2];
+        i++;
+        m->mesh[0].vbo[index + 3] = t[f[i]].m64_f32[0];
+        m->mesh[0].vbo[index + 4] = t[f[i]].m64_f32[1];
+        i++;
+        m->mesh[0].vbo[index + 5] = n[f[i]].m96_f32[0];
+        m->mesh[0].vbo[index + 6] = n[f[i]].m96_f32[1];
+        m->mesh[0].vbo[index + 7] = n[f[i]].m96_f32[2];
+        index += 8;
+    }
+
+    createMeshVAO(&m->mesh[0]);
+    free(m->mesh[0].vbo);
+
+    free(v);
+    free(t);
+    free(n);
+    free(f);
+}
+static vec3 *initTerrainVectors(model* m, BMP *bmp, const int emvadon) {
+    vec3 *v = calloc(emvadon, 12);
+    if (!v) {
+        debug_log_critical(stdout, "vec3 *v = calloc(emvadon, 12)");
+        return NULL;
+    }
+
+    float step_x = 2.f / bmp->info.Width;
+    float step_z = 2.f / bmp->info.Height;
     float start_x = -1.f;//((step_x * (bmp.info.Width * 0.5)) - 1);
     float start_z = -1.f;//((step_z * (bmp.info.Height * 0.5)) - 1);
     float x_step_cache = start_x;
     float z_step_cache = start_z;
 
-    int vcols_count = bmp.info.Width;
+    int vcols_count = bmp->info.Width;
     for (int x = 0; x < emvadon; x++) {
 
         if (x == vcols_count) {
             x_step_cache = start_x;
             z_step_cache += step_z;
 
-            vcols_count += bmp.info.Width;
+            vcols_count += bmp->info.Width;
         }
 
         v[x].m96_f32[0] += x_step_cache;
-         //v[v_index + 1] = (float)rand() / (float)(RAND_MAX / 0.09f);
+        //v[v_index + 1] = (float)rand() / (float)(RAND_MAX / 0.09f);
         // v[v_index + 1] = 0.f;
-        v[x].m96_f32[1] = bmp.data[x] / 255.f;
+        v[x].m96_f32[1] = bmp->data[x] / 255.f;
         v[x].m96_f32[2] = z_step_cache;
 
         x_step_cache += step_x;
     }
-    releaseBMP(&bmp);
+    return v;
+}
+static vec2 *initTerrainTextors(model *m, BMP *bmp, const int emvadon) {
+    vec2* t = calloc(emvadon, 8);
+    if (!t) {
+        debug_log_critical(stdout, "vec2 *t = calloc(emvadon, 8)");
+        return NULL;
+    }
 
-    /* Textors initialization. ############################## */
-    float step_tu = 1.f / quad_vrows;
-    float step_tv = 1.f / quad_vcols;
+    float step_tu = 1.f / (bmp->info.Width - 1);
+    float step_tv = 1.f / (bmp->info.Height - 1);
     float start_tu = 0.f;
     float start_tv = 0.f;
     float tu_step_cache = start_tu;
     float tv_step_cache = start_tv;
 
-    int tx_count = bmp.info.Height;
+    int tx_count = bmp->info.Height;
     for (int x = 0; x < emvadon; x++) {
 
         if (x == tx_count) {
             tu_step_cache = start_tu;
             tv_step_cache += step_tv;
 
-            tx_count += bmp.info.Height;
+            tx_count += bmp->info.Height;
         }
         t[x].m64_f32[0] = tu_step_cache;
         t[x].m64_f32[1] = tv_step_cache;
 
         tu_step_cache += step_tu;
     }
+    return t;
+}
+static vec3 *initTerrainNormals(model *m, BMP *bmp, const int emvadon) {
+    vec3 *n = calloc(emvadon, 12);
+    if (!n) {
+        debug_log_critical(stdout, "vec3 *n = calloc(emvadon, 12)");
+        return NULL;
+    }
 
-    /* Normals initialization. ############################## */
     for (int x = 0; x < emvadon; x++) {
         n[x].m96_f32[0] = 0.f;
         n[x].m96_f32[1] = 1.f;
         n[x].m96_f32[2] = 0.f;
     }
+    return n;
+}
+static int *initTerrainFaces(model* m, BMP *bmp, const int num_of_faces) {
+    int *f = calloc(num_of_faces, 4);
+    if (!f) {
+        debug_log_critical(stdout, "int *f = calloc(num_of_faces, 4)");
+        return NULL;
+    }
 
-    /* faces initialization. ############################## */
+    const int faces_per_row = (bmp->info.Height - 1) * 2;
+ 
     int face_1_0 = 0;
-    int face_1_1 = bmp.info.Height;
-    int face_1_2 = bmp.info.Height + 1;
+    int face_1_1 = bmp->info.Height;
+    int face_1_2 = bmp->info.Height + 1;
 
     int face_counter = 0;
     for (int x = 0; x < num_of_faces; x += 18) {
@@ -152,45 +222,7 @@ void createTerrain(mesh *m, const char name[]) {
 
         face_counter += 2;
     }
-
-    /* Mesh info initialize, vbo aray initialize. */
-    m->vbo_indexes = (num_of_faces / 9) * 24;
-    m->faces_indexes = m->vbo_indexes / 24;
-    m->vecs_indexes = m->faces_indexes * 3;
-    m->vbo_size = m->vbo_indexes * 4;
-
-    m->vbo = malloc(m->vbo_size);
-    if (!m->vbo) {
-        debug_log_critical(stdout, "malloc()");
-        free(v);
-        free(t);
-        free(n);
-        free(f);
-        exit(-1);
-    }
-
-    int index = 0; //, vpad, tpad;
-    for (int i = 0; i < num_of_faces; i++) {
-        m->vbo[index]     = v[f[i]].m96_f32[0];
-        m->vbo[index + 1] = v[f[i]].m96_f32[1];
-        m->vbo[index + 2] = v[f[i]].m96_f32[2];
-        i++;
-        m->vbo[index + 3] = t[f[i]].m64_f32[0];
-        m->vbo[index + 4] = t[f[i]].m64_f32[1];
-        i++;
-        m->vbo[index + 5] = n[f[i]].m96_f32[0];
-        m->vbo[index + 6] = n[f[i]].m96_f32[1];
-        m->vbo[index + 7] = n[f[i]].m96_f32[2];
-        index += 8;
-    }
-
-    createMeshVAO(m);
-    free(m->vbo);
-
-    free(v);
-    free(t);
-    free(n);
-    free(f);
+    return f;
 }
 /* Assigns the Terrain quad index to the given mesh. */
 void initModelQuadInfo(model *m) {
@@ -296,7 +328,7 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
         *uol = 1; // Lower face.
     }
 }
-/* Retrieves Terrain Position data tp and Terain position normal tn, at the given mesh's coordinates. */
+/* Retrieves Terrain Position data tp and Terain position normal tn, at the given model's coordinates. */
 void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
     // const float t_scale = SCENE.model[terrain].scale * 2.f;
     // float quad_len = t_scale / SCENE.t.vec_width;

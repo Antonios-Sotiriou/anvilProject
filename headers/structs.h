@@ -52,21 +52,6 @@ typedef struct {
     float m96_f32[3];
 } vec3;
 
-/* Struct to hold infos about a terrain quad. */
-typedef struct {
-    int *mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
-        mpks_indexes;       // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
-} Quad;
-/* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
-typedef struct {
-    Quad *quad;            // Quads pointer to save info about each quad of the terrain.
-    int vec_width,          // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
-        vec_height,         // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
-        quad_indexes,      // Emvadon of the Terrain quads.
-        quad_rows,          // Number os quads in rows direction. They are always vectors Width - 1.
-        quad_cols;          // Number os quads in columns direction. They are always vectors Height - 1.
-} TerrainInfo;
-
 /* Cordinate system structure with components represented as P: position, U: up, V: right(vertical), N: front. */
 typedef struct {
     vec4 v[4];
@@ -157,6 +142,20 @@ typedef struct {
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     animation anim;
 } model;
+/* Struct to hold infos about a terrain quad. */
+typedef struct {
+    int *mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
+        mpks_indexes;      // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
+} Quad;
+/* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
+typedef struct {
+    Quad *quad;            // Quads pointer to save info about each quad of the terrain.
+    int vec_width,         // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
+        vec_height,        // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
+        quad_indexes,      // Emvadon of the Terrain quads.
+        quad_rows,         // Number os quads in rows direction. They are always vectors Width - 1.
+        quad_cols;         // Number os quads in columns direction. They are always vectors Height - 1.
+} TerrainInfo;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
     model *model;

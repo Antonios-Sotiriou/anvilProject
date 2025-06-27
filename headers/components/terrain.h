@@ -18,7 +18,7 @@ typedef struct {
     int quad_index, quad_face;
 } TerrainPointInfo;
 
-void createTerrain(mesh *m, const char name[]);
+void createTerrain(model *m);
 void initModelQuadInfo(model *m);
 void addModelToQuad(model *m);
 void removeModelFromQuad(model *m);

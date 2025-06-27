@@ -9,7 +9,7 @@ void applyPhysics(void) {
 		if (SCENE.model[i].owns_rigid == ENABLED && (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rotate)) {
 
 			initModelQuadInfo(&SCENE.model[i]);
-			printf("Physics ENABLED\n");
+
 			//float g_accelaration = 0.f;
 			//if (!SCENE.model[i].rigid.grounded) {
 			//	SCENE.model[i].rigid.falling_time += DeltaTime;

@@ -101,7 +101,7 @@ void loadModelRigid(model *m) {
 	modelTerrainCollision(m);
 	getRigidLimits(&m->rigid);
 	initModelQuadInfo(m);
-	logvec4(m->coords.v[0]);
+
 	createRigidVAO(&m->rigid);
 	free(m->rigid.vbo);
 	releaseOBJ(&obj);

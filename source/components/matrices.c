@@ -376,6 +376,8 @@ void setvec4Mulmat(vec4 *v, const mat4x4 m) {
 /* Multiplies a vec4 array with the given Matrix and returns a new array, which includes the original array information, leaving the original unmodified. */
 vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 *r = malloc(16 * len);
+    if (!r)
+        return 0;
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < 4; j++) {
             r[i].m128_f32[j] = vecs[i].m128_f32[0] * m.m[0].m128_f32[j] + vecs[i].m128_f32[1] * m.m[1].m128_f32[j] + vecs[i].m128_f32[2] * m.m[2].m128_f32[j] + vecs[i].m128_f32[3] * m.m[3].m128_f32[j];
@@ -394,8 +396,8 @@ void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     }
 }
 /* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
-face* facearrayMulmat(face f[], const int len, const mat4x4 m) {
-    face* r = malloc(sizeof(face) * len);
+face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
+    face *r = malloc(sizeof(face) * len);
     if (!r)
         return 0;
     for (int i = 0; i < len; i++) {
