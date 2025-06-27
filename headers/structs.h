@@ -98,7 +98,7 @@ typedef struct mesh {
     char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
-    int length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+    int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
@@ -129,7 +129,7 @@ typedef struct {
         rotate;                          // The rotation angle of the rigid body.
     mesh *mesh;                          // Meshes array from which the model is consisting.
     int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
-        length_cname,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         pk,                              // Primary key of the model, representing its position in the database. That is also the model index in the SCENE meshes array.
         asset_type,                      // The type of the asset.Can be terrain, model, mesh, etc.Identifies a base structure. 
         model_type,                      // The type of the model.Can be Player, camera, light source etc.Identifies types of the same Primitive.

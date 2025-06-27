@@ -19,6 +19,7 @@ extern float deltaTime;
 
 /* defined in scene.c. */
 extern scene SCENE;
+extern int TERRAIN_INDEX;
 
 /* defined in rasterization.c. */
 extern GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;

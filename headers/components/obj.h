@@ -32,7 +32,7 @@ typedef struct {
         n_indexes,        // Number of items stored in the n array aka(The length of the array). 
         t_indexes,        // Number of items stored in the t array aka(The length of the array). 
         f_indexes,        // Number of items stored in the f array aka(The length of the array).
-        length_cname;     // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        cname_length;     // Length of the cname char array. SOS !! (not included the NULL terminated char).
 } ENTRY;
 typedef struct {
     ENTRY *e;

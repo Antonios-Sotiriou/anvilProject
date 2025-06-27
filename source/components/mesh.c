@@ -13,13 +13,13 @@ void createMesh(mesh *m, ENTRY obj) {
         return;
     }
     /* Allocating space for the mesh identification, null terminating, string name. +1 for the null terminating char. */
-    m->cname = malloc(obj.length_cname + 1);
+    m->cname = malloc(obj.cname_length + 1);
     if (!m->cname) {
         debug_log_error(stdout, "m->cname = malloc(obj.c_indexes)");
         return;
     }
-    memcpy(m->cname, obj.cname, obj.length_cname + 1);
-    m->length_cname = obj.length_cname;
+    memcpy(m->cname, obj.cname, obj.cname_length + 1);
+    m->cname_length = obj.cname_length;
 
     int index = 0, vpad, tpad;
     for (int i = 0; i < obj.f_indexes; i++) {

@@ -6,6 +6,7 @@
 void applyPhysics(void) {
 
 	for (int i = 0; i < SCENE.model_indexes; i++) {
+
 		if (SCENE.model[i].owns_rigid == ENABLED && (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rotate)) {
 
 			initModelQuadInfo(&SCENE.model[i]);
@@ -33,8 +34,6 @@ void applyPhysics(void) {
 			if (SCENE.model[i].pk == camera) {
 				staticOBBCollision(&SCENE.model[i], 3);
 				//staticOBBCollision(&SCENE.model[i], 4);
-				//logmodel(SCENE.model[i]);
-				logvec4(SCENE.model[i].coords.v[0]);
 			}
 
 			/* 4th Collision Detection lvl. */

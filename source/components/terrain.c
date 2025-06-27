@@ -62,6 +62,17 @@ void createTerrain(model *m) {
     int *f = initTerrainFaces(m, &bmp, num_of_faces);
 
     /* Mesh info initialization. ############################## */
+    m->model_matrix = identityMatrix();
+    m->mesh = calloc(1, sizeof(mesh));
+    if (!m->mesh)
+        debug_log_critical(stdout, "Could not allocate memory for terrain mesh: m->mesh = calloc(1, sizeof(mesh))");
+
+    m->mesh_indexes = 1;
+    m->mesh[0].model_matrix = identityMatrix();
+    m->mesh[0].coords = m->coords;
+    m->mesh[0].q = unitQuat();
+    m->mesh[0].scale = m->scale;
+
     m->mesh[0].vbo_indexes = (num_of_faces / 9) * 24;
     m->mesh[0].faces_indexes = m->mesh[0].vbo_indexes / 24;
     m->mesh[0].vecs_indexes = m->mesh[0].faces_indexes * 3;
@@ -300,11 +311,11 @@ void removeModelFromQuad(model *m) {
 }
 /* Retrieves Terrain Quad index and terrain triangle at given coords. Terrain triangle Can either be UPPER: 0 or LOWER: 1. Returns Terrain quad index -1 if outside of terrain.*/
 void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
-    const float t_scale = vec4ExtractX(SCENE.model[terrain].scale) * 2.f;
+    const float t_scale = vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale) * 2.f;
     float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.model[terrain].coords.v[0], vec4ExtractX(SCENE.model[terrain].scale)));
+    vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.model[TERRAIN_INDEX].coords.v[0], vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale)));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
         debug_log_error(stdout, "Out of terrain boundaries");
@@ -330,11 +341,11 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
 }
 /* Retrieves Terrain Position data tp and Terain position normal tn, at the given model's coordinates. */
 void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
-    // const float t_scale = SCENE.model[terrain].scale * 2.f;
+    // const float t_scale = SCENE.model[TERRAIN_INDEX].scale * 2.f;
     // float quad_len = t_scale / SCENE.t.vec_width;
     // const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.model[terrain].coords.v[0], vec4ExtractX(SCENE.model[terrain].scale)));
+    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.model[TERRAIN_INDEX].coords.v[0], vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale)));
 
     if ( m->quad_index == -1 ) {
         debug_log_warning(stdout, "Out of terrain boundaries");
@@ -349,16 +360,16 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
 
     /* FInd in which face we are. */
     vec4 vf[3];
-    memcpy(&vf[0], &SCENE.model[terrain].mesh[0].vbo[faceIndex], 12);
-    memcpy(&vf[1], &SCENE.model[terrain].mesh[0].vbo[faceIndex + 8], 12);
-    memcpy(&vf[2], &SCENE.model[terrain].mesh[0].vbo[faceIndex + 16], 12);
+    memcpy(&vf[0], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex], 12);
+    memcpy(&vf[1], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 8], 12);
+    memcpy(&vf[2], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 16], 12);
 
     vec4SetW(&vf[0], 1.f);
     vec4SetW(&vf[1], 1.f);
     vec4SetW(&vf[2], 1.f);
 
     /* Translate the face from object space to world space for the edge function to work and get the interpolated height value. */
-    mat4x4 ttm = modelMatfromQST(SCENE.model[terrain].q, SCENE.model[terrain].scale, SCENE.model[terrain].coords.v[0]);
+    mat4x4 ttm = modelMatfromQST(SCENE.model[TERRAIN_INDEX].q, SCENE.model[TERRAIN_INDEX].scale, SCENE.model[TERRAIN_INDEX].coords.v[0]);
     setvec4arrayMulmat(vf, 3, ttm);
 
     const vec4 xs = setvec4(vec4ExtractX(vf[0]), vec4ExtractX(vf[1]), vec4ExtractX(vf[2]), 0.f);
@@ -382,11 +393,11 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
 /* Retrieves Terrain *t height at given coords and, sets given meshes *m terain quadIndex to the id of the quad at those coords. */
 const TerrainPointInfo getvec4PositionData(const vec4 v) {
     TerrainPointInfo tp = { 0 };
-    const float t_scale = vec4ExtractX(SCENE.model[terrain].scale) * 2.f;
+    const float t_scale = vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale) * 2.f;
     float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(v, vecSubf32(SCENE.model[terrain].coords.v[0], vec4ExtractX(SCENE.model[terrain].scale)));
+    vec4 t_coords = vecSubvec(v, vecSubf32(SCENE.model[TERRAIN_INDEX].coords.v[0], vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale)));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
         debug_log_warning(stdout, "Out of terrain boundaries");
@@ -416,16 +427,16 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
     const int faceIndex = ((quad_index * 2) + uol) * 24;
 
     vec4 vf[3];
-    memcpy(&vf[0], &SCENE.model[terrain].mesh[0].vbo[faceIndex], 12);
-    memcpy(&vf[1], &SCENE.model[terrain].mesh[0].vbo[faceIndex + 8], 12);
-    memcpy(&vf[2], &SCENE.model[terrain].mesh[0].vbo[faceIndex + 16], 12);
+    memcpy(&vf[0], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex], 12);
+    memcpy(&vf[1], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 8], 12);
+    memcpy(&vf[2], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 16], 12);
 
     vec4SetW(&vf[0], 1.f);
     vec4SetW(&vf[1], 1.f);
     vec4SetW(&vf[2], 1.f);
 
     /* Translate the face from object space to world space for the edge function to work and get the interpolated height value. */
-    mat4x4 ttm = modelMatfromQST(SCENE.model[terrain].q, SCENE.model[terrain].scale, SCENE.model[terrain].coords.v[0]);
+    mat4x4 ttm = modelMatfromQST(SCENE.model[TERRAIN_INDEX].q, SCENE.model[TERRAIN_INDEX].scale, SCENE.model[TERRAIN_INDEX].coords.v[0]);
     setvec4arrayMulmat(vf, 3, ttm);
 
     const vec4 xs = setvec4(vec4ExtractX(vf[0]), vec4ExtractX(vf[1]), vec4ExtractX(vf[2]), 0.f);

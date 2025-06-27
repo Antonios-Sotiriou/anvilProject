@@ -57,7 +57,7 @@ void readOBJ(OBJ *obj, const char path[]) {
                             }
                         }
                         obj->e[e_cache].cname[ch_index] = '\0';
-                        obj->e[e_cache].length_cname = ch_index;
+                        obj->e[e_cache].cname_length = ch_index;
                         /* Reset the char count variables for the next ENTRY. */
                         ch_inc = 1;
                         ch_index = 0;

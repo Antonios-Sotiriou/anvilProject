@@ -58,7 +58,7 @@ void logmesh(const mesh m) {
 	printf("scale          : ");
 	logvec4(m.scale);
 	printf("cname          : %s\n", m.cname);
-	printf("length_cname   : %d\n", m.length_cname);
+	printf("cname_length   : %d\n", m.cname_length);
 	printf("vbo            : %p\n", m.vbo);
 	printf("outer_radius   : %f\n", m.outer_radius);
 	printf("vbo_indexes    : %d\n", m.vbo_indexes);
@@ -90,12 +90,12 @@ void logmodel(const model m) {
 	printf("scale          : ");
 	logvec4(m.scale);
 	printf("cname          : %s\n", m.cname);
-	printf("length_cname   : %d\n", m.length_cname);
+	printf("cname_length   : %d\n", m.cname_length);
 	printf("outer_radius   : %f\n", m.outer_radius);
 	printf("rotate         : %f\n", m.rotate);
 	printf("mesh           : %p\n", &m.mesh);
 	printf("mesh_indexes   : %d\n", m.mesh_indexes);
-	printf("cname_length   : %d\n", m.length_cname);
+	printf("cname_length   : %d\n", m.cname_length);
 	printf("pk             : %d\n", m.pk);
 	printf("asset_type     : %d\n", m.asset_type);
 	printf("model_type     : %d\n", m.model_type);
