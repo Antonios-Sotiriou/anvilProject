@@ -20,12 +20,6 @@ void createTerrain(model *m) {
     snprintf(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", m->cname, m->cname);
 #endif
 
-    // Test
-    // FILE *fp = fopen("/home/as/Desktop/anvilProject/models/terrains/gitana.obj", "a");
-    // if (!fp)
-    //     debug_log_critical(stdout, "Could not create file for terrain\n");
-    // fclose(fp);
-
     BMP bmp;
 	readBMP(&bmp, dynamic_path);
     free(dynamic_path);
@@ -49,7 +43,7 @@ void createTerrain(model *m) {
         exit(-1);
     }
 
-    /* Populate the gloabal SCENE TerrainInfo struct with infos. */
+    /* Populate the global SCENE TerrainInfo struct with infos. */
     SCENE.t.vec_width = bmp.info.Width;
     SCENE.t.vec_height = bmp.info.Height;
     SCENE.t.quad_cols = quad_vcols;

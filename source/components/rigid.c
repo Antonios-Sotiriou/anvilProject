@@ -6,7 +6,7 @@ static char *composeModelRigidPath(model *m);
 static char *composeModelRigidPath(model *m) {
 	char *dynamic_path = { 0 };
 	if (m->model_type == MODEL_TYPE_TERRAIN) {
-		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 22; // Plus 1 here for the null termination \0.
+		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 28; // Plus 1 here for the null termination \0.
 		dynamic_path = malloc(path_length);
 		if (!dynamic_path) {
 			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
@@ -14,9 +14,9 @@ static char *composeModelRigidPath(model *m) {
 			return 0;
 		}
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        sprintf_s(dynamic_path, path_length, "%s/terrains/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
+        sprintf_s(dynamic_path, path_length, "%s/models/terrain/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #elif defined(LINUX) || defined(__linux__)
-        snprintf(dynamic_path, path_length, "%s/terrains/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
+        snprintf(dynamic_path, path_length, "%s/models/terrain/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #endif
 	} else {
 		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 20; // Plus 1 here for the null termination \0.
