@@ -1,6 +1,6 @@
 #include "headers/components/camera.h"
 
-#define FORCE      10.3f    // Force to apply on velocity to move the object.
+#define FORCE      1000.3f    // Force to apply on velocity to move the object.
 
 void movementDispatch(const int key, const int action) {
 

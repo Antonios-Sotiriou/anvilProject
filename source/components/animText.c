@@ -167,7 +167,7 @@ void releaseAnimText(animTextData *an) {
 
         if (an->object[i].number_of_children > 0) {
             for (int x = 0; x < an->object[i].number_of_children; x++)
-                free(an->object[i].children[x]);
+                free(an->object[i].children[x]);                        // We probably don't need here to free children individually.
 
             free(an->object[i].children);
         }

@@ -24,14 +24,6 @@ void createModel(model *m) {
     for (int i = 0; i < m->mesh_indexes; i++) {
         /* Creating the meshes from ENTRIES of obj file. */
         createMesh(&m->mesh[i], obj.e[i]);
-
-        /* Inherit model translations to meshes. */
-        memcpy(m->mesh[i].coords.v, m->coords.v, 64);
-        m->mesh[i].scale = setvec4(1, 1, 1, 0);
-        m->mesh[i].q = unitQuat();
-        m->mesh[i].coords.v[0] = setvec4(0, 0, 0, 1);
-        m->mesh[i].model_matrix = identityMatrix();
-        m->mesh[i].asset_type = ASSET_TYPE_MESH;
     }
 
     releaseOBJ(&obj);
@@ -42,6 +34,7 @@ void releaseModel(model *m) {
         releaseMesh(&m->mesh[i]);
     }
     free(m->mesh);
+
     if (m->owns_rigid == ENABLED)
         releaseRigid(&m->rigid);
 

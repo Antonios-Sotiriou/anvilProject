@@ -110,13 +110,6 @@ void loadModelAnimations(model* m) {
 //}
 void animateModels(void) {
 
-    mat4x4 arm = {
-        .m[0] = { 1, 0, 0, 0 },
-        .m[1] = { 0, 1, 0, 0 },
-        .m[2] = { 0, 0, 1, 0 },
-        .m[3] = { 5, 5, 5, 1 },
-    };
-
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].visible) {
             if (SCENE.model[i].owns_anim) {
@@ -134,8 +127,8 @@ void animateModels(void) {
                 quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
-                //SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
+                SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                // SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
 
                 if (SCENE.model[i].mesh_indexes > 1) {
                     for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
@@ -144,8 +137,8 @@ void animateModels(void) {
                         quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
                         vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
 
-                        //SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
-                        SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
+                        SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        // SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
                     }
                 }
             }

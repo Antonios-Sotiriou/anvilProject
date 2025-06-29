@@ -1,10 +1,11 @@
 #include "headers/components/terrain.h"
 
-static vec3 *initTerrainVectors(model *m, BMP *bmp, const int emvadon);
-static vec2 *initTerrainTextors(model *m, BMP *bmp, const int emvadon);
-static vec3 *initTerrainNormals(model *m, BMP *bmp, const int emvadon);
+static float *initTerrainVectors(model *m, BMP *bmp, const int emvadon);
+static float *initTerrainTextors(model *m, BMP *bmp, const int emvadon);
+static float *initTerrainNormals(model *m, BMP *bmp, const int emvadon);
 static int *initTerrainFaces(model *m, BMP *bmp, const int num_of_faces);
 
+/* Creates a Terrain from a height map.Sets a predictable order of all the components.Create an obj file for the model. */
 void createTerrain(model *m) {
     int path_length = (strlen(m->cname) * 2) + 22; // Plus 1 here for the null termination \0.
     char *dynamic_path = malloc(path_length);
@@ -18,6 +19,12 @@ void createTerrain(model *m) {
 #elif defined(LINUX) || defined(__linux__)
     snprintf(dynamic_path, path_length, "terrains/%s/%s128x128.bmp", m->cname, m->cname);
 #endif
+
+    // Test
+    // FILE *fp = fopen("/home/as/Desktop/anvilProject/models/terrains/gitana.obj", "a");
+    // if (!fp)
+    //     debug_log_critical(stdout, "Could not create file for terrain\n");
+    // fclose(fp);
 
     BMP bmp;
 	readBMP(&bmp, dynamic_path);
@@ -50,63 +57,37 @@ void createTerrain(model *m) {
     SCENE.t.quad_indexes = quads;
     SCENE.t.quad = calloc(SCENE.t.quad_indexes, sizeof(Quad));
 
-    /* Vectors initialization. ############################## */
-    vec3 *v = initTerrainVectors(m, &bmp, emvadon);
-    releaseBMP(&bmp);
-    /* Textors initialization. ############################## */
-    vec2 *t = initTerrainTextors(m, &bmp, emvadon);
-    /* Normals initialization. ############################## */
-    vec3 *n = initTerrainNormals(m, &bmp, emvadon);
-    /* faces initialization. ############################## */
-    const int num_of_faces = quads * 2 * 9;
-    int *f = initTerrainFaces(m, &bmp, num_of_faces);
-
-    /* Mesh info initialization. ############################## */
+    /* Model initialization. ############################## */
     m->model_matrix = identityMatrix();
+    m->mesh_indexes = 1;
     m->mesh = calloc(1, sizeof(mesh));
     if (!m->mesh)
         debug_log_critical(stdout, "Could not allocate memory for terrain mesh: m->mesh = calloc(1, sizeof(mesh))");
 
-    m->mesh_indexes = 1;
-    m->mesh[0].model_matrix = identityMatrix();
-    m->mesh[0].coords = m->coords;
-    m->mesh[0].q = unitQuat();
-    m->mesh[0].scale = m->scale;
+    /* Mesh initialization.Terrain consists of only one mesh at the moment. ############################## */
+    OBJ obj = { 0 };
+    obj.e = calloc(1, sizeof(ENTRY));
+    if (!obj.e)
+        debug_log_critical(stdout, "Could not allocate memory for OBJ ENTRY to create mesh for the terrain: obj.e = calloc(1, sizeof(ENTRY))");
 
-    m->mesh[0].vbo_indexes = (num_of_faces / 9) * 24;
-    m->mesh[0].faces_indexes = m->mesh[0].vbo_indexes / 24;
-    m->mesh[0].vecs_indexes = m->mesh[0].faces_indexes * 3;
-    m->mesh[0].vbo_size = m->mesh[0].vbo_indexes * 4;
+    obj.e[0].cname = m->cname;
+    obj.e[0].cname_length = m->cname_length;
+    /* Vectors initialization. ############################## */
+    obj.e[0].v = initTerrainVectors(m, &bmp, emvadon);
+    /* Textors initialization. ############################## */
+    obj.e[0].t = initTerrainTextors(m, &bmp, emvadon);
+    /* Normals initialization. ############################## */
+    obj.e[0].n = initTerrainNormals(m, &bmp, emvadon);
+    /* faces initialization. ############################## */
+    obj.e[0].f_indexes = quads * 2 * 9;
+    obj.e[0].f = initTerrainFaces(m, &bmp, obj.e[0].f_indexes);
 
-    /* Mesh vbo initialization. ############################## */
-    m->mesh[0].vbo = malloc(m->mesh[0].vbo_size);
-    if (!m->mesh[0].vbo)
-        debug_log_critical(stdout, "m->mesh[0].vbo = malloc(m->mesh[0].vbo_size)");
-    int index = 0; //, vpad, tpad;
-    for (int i = 0; i < num_of_faces; i++) {
-        m->mesh[0].vbo[index]     = v[f[i]].m96_f32[0];
-        m->mesh[0].vbo[index + 1] = v[f[i]].m96_f32[1];
-        m->mesh[0].vbo[index + 2] = v[f[i]].m96_f32[2];
-        i++;
-        m->mesh[0].vbo[index + 3] = t[f[i]].m64_f32[0];
-        m->mesh[0].vbo[index + 4] = t[f[i]].m64_f32[1];
-        i++;
-        m->mesh[0].vbo[index + 5] = n[f[i]].m96_f32[0];
-        m->mesh[0].vbo[index + 6] = n[f[i]].m96_f32[1];
-        m->mesh[0].vbo[index + 7] = n[f[i]].m96_f32[2];
-        index += 8;
-    }
-
-    createMeshVAO(&m->mesh[0]);
-    free(m->mesh[0].vbo);
-
-    free(v);
-    free(t);
-    free(n);
-    free(f);
+    createMesh(&m->mesh[0], obj.e[0]);
+    releaseBMP(&bmp);
+    releaseOBJ(&obj);
 }
-static vec3 *initTerrainVectors(model* m, BMP *bmp, const int emvadon) {
-    vec3 *v = calloc(emvadon, 12);
+static float *initTerrainVectors(model* m, BMP *bmp, const int emvadon) {
+    float *v = calloc(emvadon, 12);
     if (!v) {
         debug_log_critical(stdout, "vec3 *v = calloc(emvadon, 12)");
         return NULL;
@@ -120,6 +101,7 @@ static vec3 *initTerrainVectors(model* m, BMP *bmp, const int emvadon) {
     float z_step_cache = start_z;
 
     int vcols_count = bmp->info.Width;
+    int inc = 0;
     for (int x = 0; x < emvadon; x++) {
 
         if (x == vcols_count) {
@@ -129,18 +111,18 @@ static vec3 *initTerrainVectors(model* m, BMP *bmp, const int emvadon) {
             vcols_count += bmp->info.Width;
         }
 
-        v[x].m96_f32[0] += x_step_cache;
-        //v[v_index + 1] = (float)rand() / (float)(RAND_MAX / 0.09f);
-        // v[v_index + 1] = 0.f;
-        v[x].m96_f32[1] = bmp->data[x] / 255.f;
-        v[x].m96_f32[2] = z_step_cache;
+        v[inc] += x_step_cache;
+        v[inc + 1] = bmp->data[x] / 255.f;
+        v[inc + 2] = z_step_cache;
 
         x_step_cache += step_x;
+        inc += 3;
     }
+
     return v;
 }
-static vec2 *initTerrainTextors(model *m, BMP *bmp, const int emvadon) {
-    vec2* t = calloc(emvadon, 8);
+static float *initTerrainTextors(model *m, BMP *bmp, const int emvadon) {
+    float *t = calloc(emvadon, 8);
     if (!t) {
         debug_log_critical(stdout, "vec2 *t = calloc(emvadon, 8)");
         return NULL;
@@ -154,6 +136,7 @@ static vec2 *initTerrainTextors(model *m, BMP *bmp, const int emvadon) {
     float tv_step_cache = start_tv;
 
     int tx_count = bmp->info.Height;
+    int inc = 0;
     for (int x = 0; x < emvadon; x++) {
 
         if (x == tx_count) {
@@ -162,24 +145,28 @@ static vec2 *initTerrainTextors(model *m, BMP *bmp, const int emvadon) {
 
             tx_count += bmp->info.Height;
         }
-        t[x].m64_f32[0] = tu_step_cache;
-        t[x].m64_f32[1] = tv_step_cache;
+        t[inc] = tu_step_cache;
+        t[inc + 1] = tv_step_cache;
 
         tu_step_cache += step_tu;
+        inc += 2;
     }
     return t;
 }
-static vec3 *initTerrainNormals(model *m, BMP *bmp, const int emvadon) {
-    vec3 *n = calloc(emvadon, 12);
+static float *initTerrainNormals(model *m, BMP *bmp, const int emvadon) {
+    float *n = calloc(emvadon, 12);
     if (!n) {
         debug_log_critical(stdout, "vec3 *n = calloc(emvadon, 12)");
         return NULL;
     }
 
+    int inc = 0;
     for (int x = 0; x < emvadon; x++) {
-        n[x].m96_f32[0] = 0.f;
-        n[x].m96_f32[1] = 1.f;
-        n[x].m96_f32[2] = 0.f;
+        n[inc] = 0.f;
+        n[inc + 1] = 1.f;
+        n[inc + 2] = 0.f;
+
+        inc += 3;
     }
     return n;
 }
@@ -290,6 +277,9 @@ void removeModelFromQuad(model *m) {
         return;
     }
     const int num_of_indexes = SCENE.t.quad[quad_index].mpks_indexes - 1;
+    if (!num_of_indexes) {
+        return;
+    }
 
     int *new_array = calloc(num_of_indexes, 4);
     if (!new_array) {

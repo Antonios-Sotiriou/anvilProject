@@ -9,6 +9,14 @@
     #include "headers/components/bmp.h"
 #endif // !BMP_H
 
+#ifndef OBJ_H
+    #include "headers/components/obj.h"
+#endif // !OBJ_H
+
+#ifndef MESH_H
+    #include "headers/components/mesh.h"
+#endif // !MESH_H
+
 #ifndef OPENGL_H
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H

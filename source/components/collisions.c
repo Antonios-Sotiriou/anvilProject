@@ -427,32 +427,6 @@ void sortCollisions(model *m) {
             if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
                 continue;
 
-            vec4 normal = { 0.f };
-            if (tnear.m128_f32[0] >= tnear.m128_f32[1] && tnear.m128_f32[0] >= tnear.m128_f32[2]) {
-                if (m->velocity.m128_f32[0] < 0) {
-                    normal.m128_f32[0] = 1.f;
-                }
-                else if (m->velocity.m128_f32[0] > 0) {
-                    normal.m128_f32[0] = -1.f;
-                }
-            }
-            else if (tnear.m128_f32[1] >= tnear.m128_f32[0] && tnear.m128_f32[1] >= tnear.m128_f32[2]) {
-                if (m->velocity.m128_f32[1] < 0) {
-                    normal.m128_f32[1] = 1.f;
-                }
-                else if (m->velocity.m128_f32[1] > 0) {
-                    normal.m128_f32[1] = -1.f;
-                }
-            }
-            else if (tnear.m128_f32[2] >= tnear.m128_f32[0] && tnear.m128_f32[2] >= tnear.m128_f32[1]) {
-                if (m->velocity.m128_f32[2] < 0) {
-                    normal.m128_f32[2] = 1.f;
-                }
-                else if (m->velocity.m128_f32[2] > 0) {
-                    normal.m128_f32[2] = -1.f;
-                }
-            }
-
             SCENE.model[pk].rigid.collision_t = t_near;
         }
     }

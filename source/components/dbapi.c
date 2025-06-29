@@ -6,14 +6,13 @@ static int (*sscanf_os)(const char*, const char*, ...);
 
 /* Loads terrains from the Database terrain Table to the Global SCENE. */
 static int terrainCallback(void *NotUsed, int argc, char **argv, char **azColName) {
-    printf("terrainCallback: %d\n", *(int*)NotUsed);
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     sscanf_os = sscanf_s;
 #elif defined(LINUX) || defined(__linux__)
     sscanf_os = sscanf;
 #endif
 
-    int idx = *(int*)NotUsed; // Increment value depending on how much times this callback was called. Every invocation populates a mesh with data.
+    // int idx = *(int*)NotUsed; // Increment value depending on how much times this callback was called. Every invocation populates a mesh with data.
     int name_index = 0;
     for (int i = 0; i < argc; i++) {
         if (strncmp(azColName[i], "pk", 2) == 0) {
@@ -70,7 +69,7 @@ static int terrainCallback(void *NotUsed, int argc, char **argv, char **azColNam
     }
     memcpy(SCENE.model[SCENE.model_indexes].cname, argv[name_index], SCENE.model[SCENE.model_indexes].cname_length + 1);
 
-    *(int*)NotUsed += 1;
+    // *(int*)NotUsed += 1;
 
     return 0;
 }

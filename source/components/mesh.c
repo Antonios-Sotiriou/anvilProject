@@ -20,6 +20,11 @@ void createMesh(mesh *m, ENTRY obj) {
     }
     memcpy(m->cname, obj.cname, obj.cname_length + 1);
     m->cname_length = obj.cname_length;
+    m->model_matrix = identityMatrix();
+    m->coords.v[0] = setvec4(0.f, 0.f, 0.f, 1.f);
+    m->q = unitQuat();
+    m->scale = setvec4(1, 1, 1, 0);
+    m->asset_type = ASSET_TYPE_MESH;
 
     int index = 0, vpad, tpad;
     for (int i = 0; i < obj.f_indexes; i++) {
@@ -55,7 +60,7 @@ void releaseMesh(mesh *m) {
     if (m->owns_rigid == ENABLED)
         releaseRigid(&m->rigid);
 
-    //if (m->owns_anim)
+    // if (m->owns_anim == ENABLED)
         releaseAnimations(&m->anim);
 }
 
