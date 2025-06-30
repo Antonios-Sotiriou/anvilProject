@@ -27,6 +27,8 @@
 
 const int dbcountTableRows(const char path[], const char sql_cmd[]);
 void dbloadTable(const char path[], const int type, const char sql_cmd[]);
+void dbExecuteCommand(const char path[], const char sql_cmd[]);
+void dbloadTerrainInfo(const char path[], model *m);
 
 #endif // !DBAPI_H
 

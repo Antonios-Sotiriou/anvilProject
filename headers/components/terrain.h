@@ -21,10 +21,9 @@
     #include "headers/components/openGL.h"
 #endif // !OPENGL_H
 
-typedef struct {
-    vec4 pos, normal;
-    int quad_index, quad_face;
-} TerrainPointInfo;
+#ifndef DBAPI_H
+    #include "headers/components/dbapi.h"
+#endif // !DBAPI_H
 
 void createTerrain(model *m);
 void initModelQuadInfo(model *m);

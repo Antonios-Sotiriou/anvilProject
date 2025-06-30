@@ -142,9 +142,26 @@ typedef struct {
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     animation anim;
 } model;
+/* Struct which is usefull only to initialize terrains from the first time and create the obj files for them. */
+typedef struct {
+    int pk;
+    coords coords[4];
+    quat q;
+    vec4 scale;
+    int visible;
+    char *cname;                         // The name to identify a terrain. Thats a dynamically size adoptaable null terminating string.
+    int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        width,
+        height;
+} TerrainInitInfo;
+/* Struct to retrieve data of terrain. */
+typedef struct {
+    vec4 pos, normal;
+    int quad_index, quad_face;
+} TerrainPointInfo;
 /* Struct to hold infos about a terrain quad. */
 typedef struct {
-    int *mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
+    int* mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
         mpks_indexes;      // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
 } Quad;
 /* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
