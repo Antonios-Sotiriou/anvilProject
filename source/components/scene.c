@@ -15,19 +15,12 @@ void createScene(void) {
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
         createModel(&SCENE.model[i]);
-
-        if (SCENE.model[i].owns_rigid)
-            loadModelRigid(&SCENE.model[i]);
-
-        if (SCENE.model[i].owns_anim)
-            loadModelAnimations(&SCENE.model[i]);
     }
 
     /* Loads the main Terrain from the database and increases the Scene model indexes value by one. Terrain is appended on the end to be rendered last.
        At this point we could calculate also the player position to load the appropriate terrain in the future when we will enter more terrains. */
     dbloadTable(GITANA_DB, TABLE_TERRAIN, "SELECT * FROM terrain WHERE pk=1;");
-    //dbExecuteCommand(GITANA_DB, "UPDATE terrain SET width=128, height=128 WHERE pk=1;");
-    createTerrain(&SCENE.model[SCENE.model_indexes]);
+    createModel(&SCENE.model[SCENE.model_indexes]);
     // Init the global variable which is the index in SCENE models array of the terrain.
     TERRAIN_INDEX = SCENE.model_indexes;
     SCENE.model_indexes += 1;

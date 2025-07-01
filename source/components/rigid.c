@@ -1,45 +1,15 @@
 #include "headers/components/rigid.h"
 
-static char *composeModelRigidPath(model *m);
-
-/* Create the rigid file path according to the type of the model. Different types of models may have diferent file paths. Thats why we must generalize them. */
-static char *composeModelRigidPath(model *m) {
-	char *dynamic_path = { 0 };
-	if (m->model_type == MODEL_TYPE_TERRAIN) {
-		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 28; // Plus 1 here for the null termination \0.
-		dynamic_path = malloc(path_length);
-		if (!dynamic_path) {
-			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
-			debug_log_info(stdout, "%s\n", m->cname);
-			return 0;
-		}
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        sprintf_s(dynamic_path, path_length, "%s/models/terrain/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#elif defined(LINUX) || defined(__linux__)
-        snprintf(dynamic_path, path_length, "%s/models/terrain/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#endif
-	} else {
-		int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 20; // Plus 1 here for the null termination \0.
-		dynamic_path = malloc(path_length);
-		if (!dynamic_path) {
-			debug_log_error(stdout, "dynamic_path = malloc(path_length)");
-			debug_log_info(stdout, "%s\n", m->cname);
-			return 0;
-		}
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        sprintf_s(dynamic_path, path_length, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#elif defined(LINUX) || defined(__linux__)
-        snprintf(dynamic_path, path_length, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#endif
-	}
-
-	return dynamic_path;
-}
 void loadModelRigid(model *m) {
+	char path[100] = { 0 };
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+	sprintf_s(path, 100, "%s/models/%s/%s_rigid.obj\0", anvil_SOURCE_DIR, m->cname, m->cname);
+#elif defined(LINUX) || defined(__linux__)
+	snprintf(path, 100, "%s/models/%s/%s_rigid.obj\0", anvil_SOURCE_DIR, m->cname, m->cname);
+#endif
+
 	OBJ obj = { 0 };
-	char *dynamic_path = composeModelRigidPath(m);
-	readOBJ(&obj, dynamic_path);
-	free(dynamic_path);
+	readOBJ(&obj, path);
 
 	// Iterate throught all the obj file entries to find the model rigid entry.
 	for (int i = 0; i < obj.e_indexes; i++) {
@@ -98,9 +68,11 @@ void loadModelRigid(model *m) {
 	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
 	setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, qm1);
 
-	modelTerrainCollision(m);
 	getRigidLimits(&m->rigid);
-	initModelQuadInfo(m);
+	//if (m->model_type != MODEL_TYPE_TERRAIN) {
+	//	modelTerrainCollision(m);
+	//	initModelQuadInfo(m);
+	//}
 
 	createRigidVAO(&m->rigid);
 	free(m->rigid.vbo);

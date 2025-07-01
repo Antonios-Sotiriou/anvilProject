@@ -1,47 +1,13 @@
 #include "headers/components/terrain.h"
 
 static int initIndividualTerrainHeightMap(TerrainInitInfo *tif);
-static void initTerrainVectors(BMP *bmp, const int emvadon);
-static void initTerrainTextors(BMP *bmp, const int emvadon);
-static void initTerrainNormals(BMP *bmp, const int emvadon);
-static void initTerrainFaces(BMP *bmp, const int num_of_faces);
+static void initTerrainVectors(BMP *bmp, const int emvadon, const char new_file_path[]);
+static void initTerrainTextors(BMP *bmp, const int emvadon, const char new_file_path[]);
+static void initTerrainNormals(BMP *bmp, const int emvadon, const char new_file_path[]);
+static void initTerrainFaces(BMP *bmp, const int num_of_faces, const char new_file_path[]);
+static void updateTerrainQuadsInfoDB(BMP* bmp, const char cname[]);
 
-/* Creates a Terrain from a height map.Sets a predictable order of all the components.Create an obj file for the model. */
-void createTerrain(model *m) {
-    int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 14; // Plus 1 here for the null termination \0.
-    char *dynamic_path = malloc(path_length);
-    if (!dynamic_path) {
-        debug_log_error(stdout, "char *dynamic_path = malloc(path_length)");
-        debug_log_info(stdout, "%s\n", m->cname);
-        return;
-    }
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#elif defined(LINUX) || defined(__linux__)
-    snprintf(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#endif
-
-    OBJ obj = { 0 };
-    readOBJ(&obj, dynamic_path);
-    free(dynamic_path);
-
-    /* Model initialization. ############################## */
-    m->model_matrix = identityMatrix();
-    m->mesh_indexes = 1;
-    m->mesh = calloc(1, sizeof(mesh));
-    if (!m->mesh)
-        debug_log_critical(stdout, "Could not allocate memory for terrain mesh: m->mesh = calloc(1, sizeof(mesh))");
-
-    /* Mesh initialization.Terrain consists of only one mesh at the moment. ############################## */
-    if (!obj.e) {
-        debug_log_error(stdout, "Obj Entry is not initialized for terrain mesh creation");
-        releaseOBJ(&obj);
-        return;
-    }
-    createMesh(&m->mesh[0], obj.e[0]);
-
-    releaseOBJ(&obj);
-}
+/* Reads terrains database to aquire informations about height maps stored.Creates obj files from those height maps and updates database with usefull informations, which are used for other calculations like terrain collision detection. */
 int initTerrainsHeightMaps(void) {
     int terrain_entries = dbcountTableRows(GITANA_DB, "SELECT COUNT(*) FROM terrain;");
     TerrainInitInfo *tif = calloc(terrain_entries, sizeof(TerrainInitInfo));
@@ -62,22 +28,15 @@ int initTerrainsHeightMaps(void) {
     return 0;
 }
 static int initIndividualTerrainHeightMap(TerrainInitInfo *tif) {
-    int path_length = (strlen(tif->cname) * 2) + 19 + 9; // Plus 1 here for the null termination plus 10 here to pass also width and height to the path.
-    char *dynamic_path = malloc(path_length);
-    if (!dynamic_path) {
-        debug_log_error(stdout, "char *dynamic_path = malloc(path_length)");
-        debug_log_info(stdout, "%s\n", tif->cname);
-        return - 1;
-    }
+    char path[100] = { 0 };
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(dynamic_path, path_length, "height_maps/%s/%s%dx%d.bmp", tif->cname, tif->cname, tif->width, tif->height);
+    sprintf_s(path, 100, "height_maps/%s/%s%dx%d.bmp\0", tif->cname, tif->cname, tif->width, tif->height);
 #elif defined(LINUX) || defined(__linux__)
-    snprintf(dynamic_path, path_length, "height_maps/%s/%s%dx%d.bmp", tif->cname, tif->cname, tif->width, tif->height);
+    snprintf(dynamic_path, 100, "height_maps/%s/%s%dx%d.bmp\0", tif->cname, tif->cname, tif->width, tif->height);
 #endif
 
     BMP bmp;
-    readBMP(&bmp, dynamic_path);
-    free(dynamic_path);
+    readBMP(&bmp, path);
 
     const int emvadon = (bmp.info.Width > 0) && (bmp.info.Height > 0) ? bmp.info.Width * bmp.info.Height :
         (bmp.info.Width == 0) ? bmp.info.Height :
@@ -91,36 +50,44 @@ static int initIndividualTerrainHeightMap(TerrainInitInfo *tif) {
     // Create the obj file of the bmp terrain height map and write the database height map entry name.
     char filepath[100] = { 0 };
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(filepath, 100, "%s/models/%s/%s%dx%d.obj", anvil_SOURCE_DIR, tif->cname, tif->cname, tif->width, tif->height);
+    sprintf_s(filepath, 100, "%s/models/%s/%s.obj\0", anvil_SOURCE_DIR, tif->cname, tif->cname);
 #elif defined(LINUX) || defined(__linux__)
-    snprintf(filepath, 100, "%s/models/%s/%s%dx%d.obj", anvil_SOURCE_DIR, tif->cname, tif->cname, tif->width, tif->height);
+    snprintf(filepath, 100, "%s/models/%s/%s.obj\0", anvil_SOURCE_DIR, tif->cname, tif->cname);
 #endif
-    printf("Created path: %s\n", filepath);
 
-    FILE *fp = fopen("c:/users/anton/desktop/anvilProject/models/gitana/gitana.obj", "w");
+    FILE *fp = fopen(filepath, "w");
     if (fp == NULL) {
         debug_log_error(stdout, "Could not open file to initialize terrain cname from height map.");
         return - 1;
     }
-    fwrite("# Blender 3.3.0\n# www.blender.org\no gitana", 42, 1, fp);
+    /* Write the header informations of newly created bmp file.Infos are name of the objects, materials that we may use etc. */
+    char header[100] = { 0 };
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+    sprintf_s(header, 100, "# Blender 3.3.0\n# www.blender.org\no %s\n\0", tif->cname);
+#elif defined(LINUX) || defined(__linux__)
+    snprintf(header, 100, "# Blender 3.3.0\n# www.blender.org\no %s\n\0", tif->cname);
+#endif
+    fwrite(header, strlen(header), 1, fp);
     fclose(fp);
 
     /* Vectors initialization. ############################## */
-    initTerrainVectors(&bmp, emvadon);
+    initTerrainVectors(&bmp, emvadon, filepath);
     /* Normals initialization. ############################## */
-    initTerrainNormals(&bmp, emvadon);
+    initTerrainNormals(&bmp, emvadon, filepath);
     /* Textors initialization. ############################## */
-    initTerrainTextors(&bmp, emvadon);
+    initTerrainTextors(&bmp, emvadon, filepath);
     /* Faces initialization. ############################## */
     int num_of_faces = ((bmp.info.Width - 1) * (bmp.info.Height - 1)) * 2 * 9;
-    initTerrainFaces(&bmp, emvadon);
+    initTerrainFaces(&bmp, num_of_faces, filepath);
+    /* Update the Values in the database which help us with terrain collisions. */
+    updateTerrainQuadsInfoDB(&bmp, tif->cname);
 
 
     releaseBMP(&bmp);
     return 0;
 }
-static void initTerrainVectors(BMP *bmp, const int emvadon) {
-    FILE *fp = fopen("c:/users/anton/desktop/anvilProject/models/gitana/gitana.obj", "a");
+static void initTerrainVectors(BMP *bmp, const int emvadon, const char new_file_path[]) {
+    FILE* fp = fopen(new_file_path, "a");
     if (fp == NULL) {
         debug_log_error(stdout, "Could not open file to initialize terrain vectors from height map.");
         return;
@@ -143,7 +110,7 @@ static void initTerrainVectors(BMP *bmp, const int emvadon) {
             vcols_count += bmp->info.Width;
         }
 
-        sprintf_s(data, sizeof(data), "\nv %f %f %f", x_step_cache, bmp->data[x] / 255.f, z_step_cache);
+        sprintf_s(data, 50, "v %f %f %f\n\0", x_step_cache, bmp->data[x] / 255.f, z_step_cache);
         fwrite(&data, strlen(data), 1, fp);
 
         x_step_cache += step_x;
@@ -151,8 +118,8 @@ static void initTerrainVectors(BMP *bmp, const int emvadon) {
 
     fclose(fp);
 }
-static void initTerrainNormals(BMP *bmp, const int emvadon) {
-    FILE *fp = fopen("c:/users/anton/desktop/anvilProject/models/gitana/gitana.obj", "a");
+static void initTerrainNormals(BMP* bmp, const int emvadon, const char new_file_path[]) {
+    FILE* fp = fopen(new_file_path, "a");
     if (fp == NULL) {
         debug_log_error(stdout, "Could not open file to initialize terrain normals from height map.");
         return;
@@ -160,14 +127,14 @@ static void initTerrainNormals(BMP *bmp, const int emvadon) {
 
     for (int x = 0; x < emvadon; x++) {
         char data[50] = { 0 };
-        sprintf_s(data, 50, "\nvn %f %f %f", 0.f, 1.f, 0.f);
+        sprintf_s(data, 50, "vn %f %f %f\n\0", 0.f, 1.f, 0.f);
         fwrite(&data, strlen(data), 1, fp);
     }
-    
+
     fclose(fp);
 }
-static void initTerrainTextors(BMP* bmp, const int emvadon) {
-    FILE* fp = fopen("c:/users/anton/desktop/anvilProject/models/gitana/gitana.obj", "a");
+static void initTerrainTextors(BMP* bmp, const int emvadon, const char new_file_path[]) {
+    FILE* fp = fopen(new_file_path, "a");
     if (fp == NULL) {
         debug_log_error(stdout, "Could not open file to initialize terrain textors from height map.");
         return;
@@ -190,7 +157,7 @@ static void initTerrainTextors(BMP* bmp, const int emvadon) {
             tx_count += bmp->info.Height;
         }
 
-        sprintf_s(data, 25, "\nvt %f %f", tu_step_cache, tv_step_cache);
+        sprintf_s(data, 25, "vt %f %f\n\0", tu_step_cache, tv_step_cache);
         fwrite(&data, strlen(data), 1, fp);
 
         tu_step_cache += step_tu;
@@ -198,19 +165,20 @@ static void initTerrainTextors(BMP* bmp, const int emvadon) {
 
     fclose(fp);
 }
-static void initTerrainFaces(BMP *bmp, const int num_of_faces) {
-    FILE* fp = fopen("c:/users/anton/desktop/anvilProject/models/gitana/gitana.obj", "a");
+static void initTerrainFaces(BMP* bmp, const int num_of_faces, const char new_file_path[]) {
+    FILE* fp = fopen(new_file_path, "a");
     if (fp == NULL) {
         debug_log_error(stdout, "Could not open file to initialize terrain faces from height map.");
         return;
     }
-    fwrite("\ns 0", 4, 1, fp);
+    fwrite("s 0\n\0", 4, 1, fp);
 
     const int faces_per_row = (bmp->info.Height - 1) * 2;
  
-    int face_1_0 = 0;
-    int face_1_1 = bmp->info.Height;
-    int face_1_2 = bmp->info.Height + 1;
+    /* 1 here because indexes in obj file starting from 1. */
+    int face_1_0 = 1;
+    int face_1_1 = bmp->info.Width + 1;
+    int face_1_2 = bmp->info.Width + 2;
 
     int face_counter = 0;
     for (int x = 0; x < num_of_faces; x += 18) {
@@ -225,16 +193,33 @@ static void initTerrainFaces(BMP *bmp, const int num_of_faces) {
         }
 
         /* Face 1st Up. */
-        sprintf_s(data_1, 50, "\nf %d/%d/%d %d/%d/%d %d/%d/%d", face_1_0, face_1_0, 0, face_1_1, face_1_1, 0, face_1_2, face_1_2, 0);
+        sprintf_s(data_1, 50, "f %d/%d/%d %d/%d/%d %d/%d/%d\n\0", face_1_0, face_1_0, 0, face_1_1, face_1_1, 0, face_1_2, face_1_2, 0);
         fwrite(&data_1, strlen(data_1), 1, fp);
 
         /* Face 2nd Down. */
-        sprintf_s(data_2, 50, "\nf %d/%d/%d %d/%d/%d %d/%d/%d", face_1_0, face_1_0, 0, face_1_2, face_1_2, 0, face_1_0 + 1, face_1_0 + 1, 0);
+        sprintf_s(data_2, 50, "f %d/%d/%d %d/%d/%d %d/%d/%d\n\0", face_1_0, face_1_0, 0, face_1_2, face_1_2, 0, face_1_0 + 1, face_1_0 + 1, 0);
         fwrite(&data_2, strlen(data_2), 1, fp);
+
+        face_1_0++;
+        face_1_1++;
+        face_1_2++;
 
         face_counter += 2;
     }
     fclose(fp);
+}
+static void updateTerrainQuadsInfoDB(BMP* bmp, const char cname[]) {
+    int quad_cols = bmp->info.Width - 1;   // -1 here because the quads are 1 less that the vectors of the terrain in each dimension.
+    int quad_rows = bmp->info.Height - 1;  // -1 here because the quads are 1 less that the vectors of the terrain in each dimension.
+    int quads_indexes = quad_cols * quad_rows;
+    char command[100] = { 0 };
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+    sprintf_s(command, 100, "UPDATE terrain SET quad_cols = %d, quad_rows = %d, quads_indexes = %d WHERE cname = '%s';\0", quad_cols, quad_rows, quads_indexes, cname);
+#elif defined(LINUX) || defined(__linux__)
+    snprintf(command, 100, "UPDATE terrain SET quad_cols = %d, quad_rows = %d, quads_indexes = %d WHERE cname = '%s';\0", quad_cols, quad_rows, quads_indexes, cname);
+#endif
+
+    dbExecuteCommand(GITANA_DB, command);
 }
 /* Assigns the Terrain quad index to the given mesh. */
 void initModelQuadInfo(model *m) {
@@ -360,21 +345,13 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
 
     /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
         So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
-    const int faceIndex = ((m->quad_index * 2) + m->quad_face) * 24;
-
+    const int faceIndex = ((m->quad_index * 2) + m->quad_face);
     /* FInd in which face we are. */
-    vec4 vf[3];
-    memcpy(&vf[0], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex], 12);
-    memcpy(&vf[1], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 8], 12);
-    memcpy(&vf[2], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 16], 12);
-
-    vec4SetW(&vf[0], 1.f);
-    vec4SetW(&vf[1], 1.f);
-    vec4SetW(&vf[2], 1.f);
-
-    /* Translate the face from object space to world space for the edge function to work and get the interpolated height value. */
-    mat4x4 ttm = modelMatfromQST(SCENE.model[TERRAIN_INDEX].q, SCENE.model[TERRAIN_INDEX].scale, SCENE.model[TERRAIN_INDEX].coords.v[0]);
-    setvec4arrayMulmat(vf, 3, ttm);
+    vec4 vf[3] = {
+        SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[0],
+        SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[1],
+        SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[2]
+    };
 
     const vec4 xs = setvec4(vec4ExtractX(vf[0]), vec4ExtractX(vf[1]), vec4ExtractX(vf[2]), 0.f);
     const vec4 zs = setvec4(vec4ExtractZ(vf[0]), vec4ExtractZ(vf[1]), vec4ExtractZ(vf[2]), 0.f);

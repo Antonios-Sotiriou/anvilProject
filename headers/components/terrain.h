@@ -5,6 +5,11 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
+/* Global variables. */
+#ifndef GLOBAL_H
+    #include "headers/global.h"
+#endif // !GLOBAL_H
+
 #ifndef BMP_H
     #include "headers/components/bmp.h"
 #endif // !BMP_H
@@ -25,7 +30,6 @@
     #include "headers/components/dbapi.h"
 #endif // !DBAPI_H
 
-void createTerrain(model *m);
 void initModelQuadInfo(model *m);
 void addModelToQuad(model *m);
 void removeModelFromQuad(model *m);

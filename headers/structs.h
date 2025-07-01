@@ -144,15 +144,10 @@ typedef struct {
 } model;
 /* Struct which is usefull only to initialize terrains from the first time and create the obj files for them. */
 typedef struct {
-    int pk;
-    coords coords[4];
-    quat q;
-    vec4 scale;
-    int visible;
     char *cname;                         // The name to identify a terrain. Thats a dynamically size adoptaable null terminating string.
     int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
-        width,
-        height;
+        width,                           // The width of the height map in pixels aka (vectors);
+        height;                          // The height of the height map in pixels aka (vectors);
 } TerrainInitInfo;
 /* Struct to retrieve data of terrain. */
 typedef struct {

@@ -153,13 +153,13 @@ static void calculateFPS(void) {
 }
 int main(int argc, char *argv[]) {
 
-    //if (argc > 1) {
-    //    printf("argc: %d\n", argc);
-    //    if (strncmp(argv[1], "init", 4) == 0) {
-    //        debug_log_info(stdout, "Starting Initialization of terrains ...\n");
+    if (argc > 1) {
+        printf("argc: %d\n", argc);
+        if (strncmp(argv[1], "init", 4) == 0) {
+            debug_log_info(stdout, "Starting Initialization of terrains ...\n");
             initTerrainsHeightMaps();
-    //    }
-    //}
+        }
+    }
 
     debug_log_info(stdout, "anvil Version Major       : %d\n", anvil_VERSION_MAJOR);
     debug_log_info(stdout, "anvil Version Minor       : %d\n", anvil_VERSION_MINOR);

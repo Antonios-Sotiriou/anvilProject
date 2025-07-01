@@ -26,6 +26,12 @@ void createModel(model *m) {
         createMesh(&m->mesh[i], obj.e[i]);
     }
 
+    if (m->owns_rigid)
+        loadModelRigid(m);
+
+    if (m->owns_anim)
+        loadModelAnimations(m);
+
     releaseOBJ(&obj);
 }
 void releaseModel(model *m) {
