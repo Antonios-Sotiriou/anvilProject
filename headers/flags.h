@@ -45,9 +45,9 @@
 /* DEBUG SECTOR ################################################################################### */
 #define DEBUG_LVL_1         1    // DEBUG LVL INFO    : general informations which do not affect program execution.
 #define DEBUG_LVL_2         1    // DEBUG LVL MESSAGE : information about specific parts of code and variables.
-#define DEBUG_LVL_3         1    // DEBUG LVL WARNING : program possible will produce wrong values but continues execution.
-#define DEBUG_LVL_4         1    // DEBUG LVL ERROR   : program will crash possibly or it will produce wrong values.
-#define DEBUG_LVL_5         1    // DEBUG LVL CRITICAL: program stops execution and exits with an error code.
+#define DEBUG_LVL_3         0    // DEBUG LVL WARNING : program possible will produce wrong values but continues execution.
+#define DEBUG_LVL_4         0    // DEBUG LVL ERROR   : program will crash possibly or it will produce wrong values.
+#define DEBUG_LVL_5         0    // DEBUG LVL CRITICAL: program stops execution and exits with an error code.
 
 // DEBUGGING MACROS.
 #define debug_log_info(out, ...)\

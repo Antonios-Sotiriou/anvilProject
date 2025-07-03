@@ -223,17 +223,18 @@ static void updateTerrainQuadsInfoDB(BMP* bmp, const char cname[]) {
 }
 /* Assigns the Terrain quad index to the given mesh. */
 void initModelQuadInfo(model *m) {
-    int quad_index, tri;
-    getTerrainPointInfo(m->coords.v[0], &quad_index, &tri);
+    int quad_index, quad_face;
+    getTerrainPointInfo(m->coords.v[0], &quad_index, &quad_face);
     /* Set meshes m quadIndex to index. */
     if (m->quad_index != quad_index && m->quad_init) {
         removeModelFromQuad(m);
     } else if (m->quad_index == quad_index && m->quad_init) {
-        /* Mesh is already a memmber of this quad. */
+        /* Mesh is already a member of this quad. */
+        m->quad_face = quad_face;
         return;
     }
     m->quad_index = quad_index;
-    m->quad_face = tri;
+    m->quad_face = quad_face;
     m->quad_init = 1;
     addModelToQuad(m);
 }
@@ -304,10 +305,10 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
     float quad_len = t_scale / SCENE.t.vec_width;
     const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(coords, vecSubf32(SCENE.model[TERRAIN_INDEX].coords.v[0], vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale)));
+    vec4 t_coords = vecSubvec(coords, vecSubvec(SCENE.model[TERRAIN_INDEX].coords.v[0], SCENE.model[TERRAIN_INDEX].scale));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
-        debug_log_error(stdout, "Out of terrain boundaries");
+        debug_log_warning(stdout, "Out of terrain boundaries");
         *qi = -1;
         return;
     }
@@ -330,11 +331,8 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
 }
 /* Retrieves Terrain Position data tp and Terain position normal tn, at the given model's coordinates. */
 void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
-    // const float t_scale = SCENE.model[TERRAIN_INDEX].scale * 2.f;
-    // float quad_len = t_scale / SCENE.t.vec_width;
-    // const int t_limit = t_scale - quad_len;
 
-    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubf32(SCENE.model[TERRAIN_INDEX].coords.v[0], vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale)));
+    vec4 t_coords = vecSubvec(m->coords.v[0], vecSubvec(SCENE.model[TERRAIN_INDEX].coords.v[0], SCENE.model[TERRAIN_INDEX].scale));
 
     if ( m->quad_index == -1 ) {
         debug_log_warning(stdout, "Out of terrain boundaries");
@@ -343,10 +341,9 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
         return;
     }
 
-    /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
-        So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
-    const int faceIndex = ((m->quad_index * 2) + m->quad_face);
     /* FInd in which face we are. */
+    const int faceIndex = (m->quad_index * 2) + m->quad_face;
+
     vec4 vf[3] = {
         SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[0],
         SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[1],
@@ -362,8 +359,8 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
     const float area = (vec4ExtractX(xmx) * vec4ExtractY(zmz)) - (vec4ExtractX(zmz) * vec4ExtractY(xmx));
     vec4 za = vecDivf32(
                   vecSubvec(
-                      vecMulvec(vecSubf32(xs, vec4ExtractX(t_coords)), zmz),
-                      vecMulvec(vecSubf32(zs, vec4ExtractZ(t_coords)), xmx)),
+                      vecMulvec(vecSubf32(zs, vec4ExtractZ(t_coords)), xmx),
+                      vecMulvec(vecSubf32(xs, vec4ExtractX(t_coords)), zmz)),
                   area);
 
     *tp = vecAddvec(
@@ -390,11 +387,6 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
     vec4 pos = floorvec4(vecMulf32(vecDivf32(t_coords, t_scale), SCENE.t.vec_width));
     const int quad_index = (vec4ExtractZ(pos) * SCENE.t.quad_rows) + vec4ExtractX(pos);
 
-    /* Every quad has two faces incrementally. Every face constists of 24 indexes for vectors, normals, textors.
-        So to get the right index we multiply faces with 24, because indexes are stored raw until now. */
-    // const int Upperface = (quad_index * 2) * 24;
-    // const int Lowerface = ((quad_index * 2) + 1) * 24;
-
     /* Find in which Quad we are. */
     float x = vec4ExtractX(t_coords) / quad_len;
     float z = vec4ExtractZ(t_coords) / quad_len;
@@ -405,20 +397,13 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
     int uol = 1;
     if ((x - z) <= 0)
         uol = 0;
-    const int faceIndex = ((quad_index * 2) + uol) * 24;
+    const int faceIndex = (quad_index * 2) + uol;
 
-    vec4 vf[3];
-    memcpy(&vf[0], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex], 12);
-    memcpy(&vf[1], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 8], 12);
-    memcpy(&vf[2], &SCENE.model[TERRAIN_INDEX].mesh[0].vbo[faceIndex + 16], 12);
-
-    vec4SetW(&vf[0], 1.f);
-    vec4SetW(&vf[1], 1.f);
-    vec4SetW(&vf[2], 1.f);
-
-    /* Translate the face from object space to world space for the edge function to work and get the interpolated height value. */
-    mat4x4 ttm = modelMatfromQST(SCENE.model[TERRAIN_INDEX].q, SCENE.model[TERRAIN_INDEX].scale, SCENE.model[TERRAIN_INDEX].coords.v[0]);
-    setvec4arrayMulmat(vf, 3, ttm);
+    vec4 vf[3] = {
+        SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[0],
+        SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[1],
+        SCENE.model[TERRAIN_INDEX].rigid.f[faceIndex].v[2]
+    };
 
     const vec4 xs = setvec4(vec4ExtractX(vf[0]), vec4ExtractX(vf[1]), vec4ExtractX(vf[2]), 0.f);
     const vec4 zs = setvec4(vec4ExtractZ(vf[0]), vec4ExtractZ(vf[1]), vec4ExtractZ(vf[2]), 0.f);
@@ -429,8 +414,8 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
     const float area = (vec4ExtractX(xmx) * vec4ExtractY(zmz)) - (vec4ExtractX(zmz) * vec4ExtractY(xmx));
     vec4 za = vecDivf32(
         vecSubvec(
-            vecMulvec(vecSubf32(xs, vec4ExtractX(t_coords)), zmz),
-            vecMulvec(vecSubf32(zs, vec4ExtractZ(t_coords)), xmx)),
+            vecMulvec(vecSubf32(zs, vec4ExtractZ(t_coords)), xmx),
+            vecMulvec(vecSubf32(xs, vec4ExtractX(t_coords)), zmz)),
         area);
 
     tp.pos = vecAddvec(

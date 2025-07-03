@@ -31,10 +31,9 @@ void applyPhysics(void) {
 			//}
 
 			/* 3rd Collision Detection lvl. */
-			if (SCENE.model[i].pk == camera) {
-				staticOBBCollision(&SCENE.model[i], 3);
-				//staticOBBCollision(&SCENE.model[i], 4);
-			}
+			//if (SCENE.model[i].pk == camera) {
+			//	staticOBBCollision(&SCENE.model[i], 3);
+			//}
 
 			/* 4th Collision Detection lvl. */
 			/* At this point apply rotationColision. */
@@ -52,8 +51,8 @@ void applyPhysics(void) {
 		mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.model[i].velocity), vec4ExtractY(SCENE.model[i].velocity), vec4ExtractZ(SCENE.model[i].velocity));
 		setvec4arrayMulmat(SCENE.model[i].coords.v, 4, tm);
 
-		//if (!SCENE.model[i].rigid.grounded || SCENE.model[i].type != MODEL_TYPE_CAMERA)
-		//	modelTerrainCollision(&SCENE.model[i]);
+		if (SCENE.model[i].model_type != MODEL_TYPE_TERRAIN)
+			modelTerrainCollision(&SCENE.model[i]);
 	}
 }
 

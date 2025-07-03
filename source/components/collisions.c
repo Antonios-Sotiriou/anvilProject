@@ -16,17 +16,16 @@ const float planeDistance(vec4 plane, vec4 v) {
 }
 
 void modelTerrainCollision(model *m) {
-    mat4x4 tm;
     vec4 pos, normal;
     getModelPositionData(m, &pos, &normal);
 
-    float height_diff = vec4ExtractY(vecSubvec(vecSubvec(pos, m->coords.v[0]), m->scale));   // Posible bugg with height here after changed scale to vec4.
+    float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], m->scale)));   // Posible bugg with height here after changed scale to vec4.
     if (height_diff >= 0) {
         m->rigid.grounded = 1;
         m->rigid.falling_time = 0;
     }
     if (m->rigid.grounded) {
-        tm = translationMatrix(0, height_diff, 0);
+        mat4x4 tm = translationMatrix(0, height_diff, 0);
 
         setvec4arrayMulmat(m->coords.v, 4, tm);
         setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, tm);
