@@ -19,6 +19,15 @@ void modelTerrainCollision(model *m) {
     vec4 pos, normal;
     getModelPositionData(m, &pos, &normal);
 
+    //if (m->model_type == MODEL_TYPE_PLAYER) {
+    //    getRigidLimits(&m->rigid);
+    //    logvec4(m->rigid.min);
+    //    logvec4(m->rigid.max);
+    //    logvec4(m->coords.v[0]);
+    //    printf("\n");
+
+    //}
+
     float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], m->scale)));   // Posible bugg with height here after changed scale to vec4.
     if (height_diff >= 0) {
         m->rigid.grounded = 1;

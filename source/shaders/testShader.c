@@ -78,6 +78,26 @@ void testShader(void) {
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
 
     for (int i = 0; i < SCENE.model_indexes; i++) {
+
+
+        if (SCENE.model[i].model_type == MODEL_TYPE_PLAYER) {
+            //getRigidLimits(&SCENE.model[i].rigid);
+            vec4 min = vec4Mulmat(SCENE.model[i].rigid.min, PROJECTION_M);
+            vec4 max = vec4Mulmat(SCENE.model[i].rigid.max, PROJECTION_M);
+
+            float w = vec4ExtractW(min);
+            if (w > 0)
+                min = vecDivf32(min, w);
+
+            w = vec4ExtractW(max);
+            if (w > 0)
+                max = vecDivf32(max, w);
+
+            logvec4(min);
+            logvec4(max);
+            printf("\n");
+        }
+
         if (SCENE.model[i].visible) {
 
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&SCENE.model[i].model_matrix);

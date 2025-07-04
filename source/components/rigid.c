@@ -69,6 +69,7 @@ void loadModelRigid(model *m) {
 	setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, qm1);
 
 	getRigidLimits(&m->rigid);
+
 	//if (m->model_type != MODEL_TYPE_TERRAIN) {
 	//	modelTerrainCollision(m);
 	//	initModelQuadInfo(m);
@@ -93,8 +94,8 @@ void getRigidLimits(rigid *r) {
 #else // ITERATIVE_CODE #########################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */
 void getRigidLimits(rigid *r) {
-	r->min = setvec4(INT_MAX, INT_MAX, INT_MAX, INT_MAX);
-    r->max = setvec4(-INT_MAX, -INT_MAX, -INT_MAX, -INT_MAX);
+	r->min = setvec4(INT_MAX, INT_MAX, INT_MAX, 1.f);
+    r->max = setvec4(-INT_MAX, -INT_MAX, -INT_MAX, 1.f);
     for (int x = 0; x < r->faces_indexes; x++) {
 		for (int y = 0; y < 3; y++) {
 			if (r->min.m128_f32[0] > r->f[x].v[y].m128_f32[0])

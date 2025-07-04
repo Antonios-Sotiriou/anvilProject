@@ -74,7 +74,6 @@ def aquire_animation_data(context, filepath, settings):
             general_data["animation_data"][i]["scale"].append(scl.y)
             general_data["animation_data"][i]["scale"].append(scl.z)
             general_data["animation_data"][i]["scale"].append(1.0)
-
             
             for x in range(0, 4):
                 if x == 3:
