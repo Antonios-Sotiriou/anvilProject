@@ -34,6 +34,11 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             if (action == GLFW_PRESS)
                 DISPLAY_RIGID = DISPLAY_RIGID == 0 ? 1 : 0;
             break;
+        case GLFW_KEY_SPACE:
+            if (action == GLFW_PRESS)
+                SCENE.model[player].velocity = setvec4(0, 10000, 0, 0);
+            SCENE.model[player].rigid.grounded = 0;
+            break;
     }
 }
 static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
@@ -56,10 +61,10 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
     lastMouseX = x;
     lastMouseY = y;
 
-    mat4x4 tm = matfromQuat(SCENE.model[camera].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
+    mat4x4 tm = matFromQuat(SCENE.model[camera].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
 
-    setvec4arrayMulmat(SCENE.model[camera].coords.v, 4, tm);
-    setfacearrayMulmat(SCENE.model[camera].rigid.f, SCENE.model[camera].rigid.faces_indexes, tm);
+    setvec4ArrayMulmat(SCENE.model[camera].coords.v, 4, tm);
+    setfacesArrayMulMat(SCENE.model[camera].rigid.f, SCENE.model[camera].rigid.faces_indexes, tm);
 
     SCENE.model[camera].q = multiplyQuats(SCENE.model[camera].q, SCENE.model[camera].rigid.q);
 

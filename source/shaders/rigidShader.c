@@ -74,7 +74,7 @@ void rigidShader(void) {
     for (int i = 0; i < SCENE.model_indexes; i++) {
         if (SCENE.model[i].owns_rigid) {
 
-            modelMatrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+            modelMatrix = modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
             glBindVertexArray(SCENE.model[i].rigid.VAO);
@@ -84,7 +84,7 @@ void rigidShader(void) {
 
                 if (SCENE.model[i].mesh[x].owns_rigid) {
 
-                    modelMatrix = modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
+                    modelMatrix = modelMatFromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
                     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
                     glBindVertexArray(SCENE.model[i].mesh[x].rigid.VAO);

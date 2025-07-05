@@ -19,26 +19,21 @@ void modelTerrainCollision(model *m) {
     vec4 pos, normal;
     getModelPositionData(m, &pos, &normal);
 
-    //if (m->model_type == MODEL_TYPE_PLAYER) {
-    //    getRigidLimits(&m->rigid);
-    //    logvec4(m->rigid.min);
-    //    logvec4(m->rigid.max);
-    //    logvec4(m->coords.v[0]);
-    //    printf("\n");
-
-    //}
-
-    float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], m->scale)));   // Posible bugg with height here after changed scale to vec4.
+    float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));   // Posible bugg with height here after changed scale to vec4.
     if (height_diff >= 0) {
         m->rigid.grounded = 1;
         m->rigid.falling_time = 0;
     }
-    if (m->rigid.grounded) {
+
+    if (m->model_type == MODEL_TYPE_PLAYER)
+        logvec4(vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min)));
+
+    //if (m->rigid.grounded) {
         mat4x4 tm = translationMatrix(0, height_diff, 0);
 
-        setvec4arrayMulmat(m->coords.v, 4, tm);
-        setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, tm);
-    }
+        setvec4ArrayMulmat(m->coords.v, 4, tm);
+        setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
+    //}
 }
 //const void terrainHeightDifference(Mesh* terrain, Mesh* obj) {
 //    vec4f next_pos = obj->cd.v[P] + obj->velocity + (obj->mvdir * obj->scale);
@@ -175,8 +170,8 @@ const int sweptAABBCollision(model *m, const int pks[]) {
 
                 mat4x4 trans = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
 
-                setvec4arrayMulmat(m->coords.v, 4, trans);
-                setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, trans);
+                setvec4ArrayMulmat(m->coords.v, 4, trans);
+                setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, trans);
 
                 //obj->momentum *= cache->fr_coef;
                 //float dot = dot_product(normal, obj->mvdir);
@@ -368,8 +363,8 @@ const int sweptAABBCollision(model *m, const int pks[]) {
 
                 mat4x4 trans = translationMatrix(m->velocity.m128_f32[0], m->velocity.m128_f32[1], m->velocity.m128_f32[2]);
 
-                setvec4arrayMulmat(m->coords.v, 4, trans);
-                setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, trans);
+                setvec4ArrayMulmat(m->coords.v, 4, trans);
+                setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, trans);
 
                 //obj->momentum *= cache->fr_coef;
                 //float dot = dot_product(normal, obj->mvdir);

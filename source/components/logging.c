@@ -60,6 +60,7 @@ void logmesh(const mesh m) {
 	printf("cname          : %s\n", m.cname);
 	printf("vbo            : %p\n", m.vbo);
 	printf("outer_radius   : %f\n", m.outer_radius);
+	printf("rotate         : %f\n", m.rotate);
 	printf("vbo_indexes    : %d\n", m.vbo_indexes);
 	printf("faces_indexes  : %d\n", m.faces_indexes);
 	printf("vecs_indexes   : %d\n", m.vecs_indexes);

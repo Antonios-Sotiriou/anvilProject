@@ -65,8 +65,8 @@ void loadModelRigid(model *m) {
 	}
 
 	/* Initialize the world starting position of the rigid body. */
-	mat4x4 qm1 = modelMatfromQST(m->rigid.q, m->scale, m->coords.v[0]);
-	setfacearrayMulmat(m->rigid.f, m->rigid.faces_indexes, qm1);
+	mat4x4 qm1 = modelMatFromQST(m->rigid.q, m->scale, m->coords.v[0]);
+	setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, qm1);
 
 	getRigidLimits(&m->rigid);
 

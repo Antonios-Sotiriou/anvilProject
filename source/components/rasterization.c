@@ -2,14 +2,14 @@
 
 /* Rasterizing Meshes with appropriate shaders. */
 const void rasterize(void) {
-    LOOKAT_M = lookatMatrix(
+    LOOKAT_M = lookAtMatrix(
         SCENE.model[EYEPOINT].coords.v[0],
         SCENE.model[EYEPOINT].coords.v[1],
         SCENE.model[EYEPOINT].coords.v[2],
         SCENE.model[EYEPOINT].coords.v[3]
     );
     VIEW_M = inverseMatrix(LOOKAT_M);
-    PROJECTION_M = matMulmat(VIEW_M, PERSPECTIVE_M);
+    PROJECTION_M = matMulMat(VIEW_M, PERSPECTIVE_M);
 
     //mainShader();
     testShader();

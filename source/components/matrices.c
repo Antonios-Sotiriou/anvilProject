@@ -94,7 +94,7 @@ mat4x4 reperspectiveMatrix(const float fov, const float aspectratio) {
     }};
 }
 /* The Camera Matrix or as used to called the View Matrix.Returns a new 4x4 Matrix. */
-mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
+mat4x4 lookAtMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
     return (mat4x4) {{
         U,
         V,
@@ -103,7 +103,7 @@ mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
     }};
 }
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
-mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up) {
+mat4x4 pointAtMatrix(const vec4 P, const vec4 T, const vec4 Up) {
     const vec4 N = vecNormalize(_mm_sub_ps(P, T));
     const vec4 U = vecNormalize(crossProduct(Up, N));
     const vec4 V = crossProduct(N, U);
@@ -132,7 +132,7 @@ void setvec4Mulmat(vec4 *v, const mat4x4 m) {
     *v = _mm_add_ps(_mm_add_ps(x, y), _mm_add_ps(z, w));
 }
 /* Multiplies a vec4 array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
-vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+vec4 *vec4ArrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 *r = malloc(16 * len);
     if (!r)
         return 0;
@@ -147,7 +147,7 @@ vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     return r;
 }
 /* Multiplies a vec4 array with the given Matrix updating the array. */
-void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+void setvec4ArrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 x, y, z, w;
     for (int i = 0; i < len; i++) {
         x = _mm_mul_ps(_mm_shuffle_ps(vecs[i], vecs[i], _MM_SHUFFLE(0, 0, 0, 0)), m.m[0]);
@@ -158,7 +158,7 @@ void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     }
 }
 /* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
-face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
+face *facesArrayMulMat(face f[], const int len, const mat4x4 m) {
     face *r = malloc(sizeof(face) * len);
     if (!r)
         return 0;
@@ -175,7 +175,7 @@ face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
     return r;
 }
 /* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
-void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
+void setfacesArrayMulMat(face f[], const int len, const mat4x4 m) {
     vec4 x, y, z, w;
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < 3; j++) {
@@ -188,7 +188,7 @@ void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
     }
 }
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */
-mat4x4 matMulmat(const mat4x4 m1, const mat4x4 m2) {
+mat4x4 matMulMat(const mat4x4 m1, const mat4x4 m2) {
     mat4x4 r;
     vec4 x, y, z, w;
     for (int i = 0; i < 4; i++) {
@@ -337,7 +337,7 @@ mat4x4 reperspectiveMatrix(const float fov, const float ar) {
     return m;
 }
 /* The Camera Matrix or as used to called the View Matrix.Returns a new 4x4 Matrix. */
-mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
+mat4x4 lookAtMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
     mat4x4 m;
     m.m[0].m128_f32[0] = U.m128_f32[0];    m.m[0].m128_f32[1] = U.m128_f32[1];    m.m[0].m128_f32[2] = U.m128_f32[2];    m.m[0].m128_f32[3] = 0.0;
     m.m[1].m128_f32[0] = V.m128_f32[0];    m.m[1].m128_f32[1] = V.m128_f32[1];    m.m[1].m128_f32[2] = V.m128_f32[2];    m.m[1].m128_f32[3] = 0.0;
@@ -346,7 +346,7 @@ mat4x4 lookatMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
     return m;
 }
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
-mat4x4 pointatMatrix(const vec4 P, const vec4 T, const vec4 Up) {
+mat4x4 pointAtMatrix(const vec4 P, const vec4 T, const vec4 Up) {
     mat4x4 m;
     vec4 N = vecNormalize(vecSubvec(P, T));
     vec4 U = vecNormalize(crossProduct(Up, N));
@@ -374,7 +374,7 @@ void setvec4Mulmat(vec4 *v, const mat4x4 m) {
     }
 }
 /* Multiplies a vec4 array with the given Matrix and returns a new array, which includes the original array information, leaving the original unmodified. */
-vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+vec4 *vec4ArrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 *r = malloc(16 * len);
     if (!r)
         return 0;
@@ -386,7 +386,7 @@ vec4 *vec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     return r;
 }
 /* Multiplies a vec4 array with the given Matrix updating the array. */
-void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
+void setvec4ArrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     vec4 r;
     for (int i = 0; i < len; i++) {
         r = vecs[i];
@@ -396,7 +396,7 @@ void setvec4arrayMulmat(vec4 vecs[], const int len, const mat4x4 m) {
     }
 }
 /* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
-face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
+face *facesArrayMulMat(face f[], const int len, const mat4x4 m) {
     face *r = malloc(sizeof(face) * len);
     if (!r)
         return 0;
@@ -411,7 +411,7 @@ face *facearrayMulmat(face f[], const int len, const mat4x4 m) {
     return r;
 }
 /* Multiplies a face array with the given Matrix and returns a new array, leaving the original unmodified. New array must be freed when not needed anymore. */
-void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
+void setfacesArrayMulMat(face f[], const int len, const mat4x4 m) {
     face r;
     for (int i = 0; i < len; i++) {
         r = f[i];
@@ -424,7 +424,7 @@ void setfacearrayMulmat(face f[], const int len, const mat4x4 m) {
     }
 }
 /* Multiplies two given Matrices m1, m2.Returns a new 4x4 Matrix. */
-mat4x4 matMulmat(const mat4x4 m1, const mat4x4 m2) {
+mat4x4 matMulMat(const mat4x4 m1, const mat4x4 m2) {
     mat4x4 r;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++) {

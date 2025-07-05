@@ -9,7 +9,7 @@ const static quat mqor1 = { -0.f, 0.f, -0.f, 0.f };
 const static quat mqor2 = { -0.f, 0.f, 0.f, -0.f };
 const static quat mqor3 = { -0.f, -0.f, 0.f, 0.f };
 
-/* Useful for matfromQuat */
+/* Useful for matFromQuat */
 const static vec4 twos = { 2.f, 2.f, 2.f, 0.f };
 
 const static vec4 ones1 = { 1.f, 0.f, 0.f, 0.f };
@@ -86,7 +86,7 @@ quat addQuats(const quat q1, const quat q2) {
     return _mm_add_ps(q1, q2);
 }
 /* Creates a quaternion from the given euler angles. */
-quat eulertoQuat(const float roll, const float yaw, const float pitch) {
+quat eulerToQuat(const float roll, const float yaw, const float pitch) {
     const float half_roll = roll * 0.5f;
     const float half_yaw = yaw * 0.5f;
     const float half_pitch = pitch * 0.5f;
@@ -120,7 +120,7 @@ quat multiplyQuats(const quat q1, const quat q2) {
     return _mm_add_ps(_mm_add_ps(_mm_add_ps(w, _mm_xor_ps(mqor1, x)), _mm_xor_ps(mqor2, y)), _mm_xor_ps(mqor3, z));
 }
 /* Creates a matrix from a given quaternion with translation x, y, z. */
-mat4x4 matfromQuat(const quat q, const vec4 t) {
+mat4x4 matFromQuat(const quat q, const vec4 t) {
     mat4x4 m;
     vec4 r1 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 1, 1, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 2, 0)));
     vec4 r2 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 0, 0, 1)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 2, 3, 1)));
@@ -142,7 +142,7 @@ mat4x4 matfromQuat(const quat q, const vec4 t) {
     return m;
 }
 /* Creates a model matrix from a given quaternion (q), s scale value (s) and a translation vector (t). */
-mat4x4 modelMatfromQST(const quat q, const vec4 s, const vec4 t) {
+mat4x4 modelMatFromQST(const quat q, const vec4 s, const vec4 t) {
     mat4x4 m;
 
     vec4 r1 = _mm_mul_ps(_mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 1, 1, 0)), _mm_shuffle_ps(q, q, _MM_SHUFFLE(0, 3, 2, 0)));
@@ -303,7 +303,7 @@ quat addQuats(const quat q1, const quat q2) {
     };
 }
 /* Creates a quaternion from the given euler angles. */
-quat eulertoQuat(const float roll, const float yaw, const float pitch) {
+quat eulerToQuat(const float roll, const float yaw, const float pitch) {
     const float half_roll = roll * 0.5f;
     const float half_yaw = yaw * 0.5f;
     const float half_pitch = pitch * 0.5f;
@@ -336,7 +336,7 @@ quat multiplyQuats(const quat q1, const quat q2) {
     };
 }
 /* Creates a matrix from a given quaternion with translation vector t. */
-mat4x4 matfromQuat(const quat q, const vec4 t) {
+mat4x4 matFromQuat(const quat q, const vec4 t) {
     mat4x4 m;
     m.m[0].m128_f32[0] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[1] * q.m128_f32[1])) - 1.0f);
     m.m[0].m128_f32[1] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) - (q.m128_f32[0] * q.m128_f32[3])));
@@ -361,7 +361,7 @@ mat4x4 matfromQuat(const quat q, const vec4 t) {
     return m;
 }
 /* Creates a model matrix from a given quaternion (q), s scale value (s) and a translation vector (t). */
-mat4x4 modelMatfromQST(const quat q, const vec4 s, const vec4 t) {
+mat4x4 modelMatFromQST(const quat q, const vec4 s, const vec4 t) {
     mat4x4 m;
     m.m[0].m128_f32[0] = (2.0f * ((q.m128_f32[0] * q.m128_f32[0]) + (q.m128_f32[1] * q.m128_f32[1])) - 1.0f) * s.m128_f32[0];
     m.m[0].m128_f32[1] = (2.0f * ((q.m128_f32[1] * q.m128_f32[2]) - (q.m128_f32[0] * q.m128_f32[3]))) * s.m128_f32[0];

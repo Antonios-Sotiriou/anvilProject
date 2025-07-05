@@ -80,22 +80,24 @@ void testShader(void) {
     for (int i = 0; i < SCENE.model_indexes; i++) {
 
 
-        if (SCENE.model[i].model_type == MODEL_TYPE_PLAYER) {
+        if (SCENE.model[i].model_type == MODEL_TYPE_LIGHT) {
             //getRigidLimits(&SCENE.model[i].rigid);
             vec4 min = vec4Mulmat(SCENE.model[i].rigid.min, PROJECTION_M);
             vec4 max = vec4Mulmat(SCENE.model[i].rigid.max, PROJECTION_M);
+            //logvec4(min);
+            //logvec4(max);
+            min = vecDivf32(min, vec4ExtractW(min));
+            max = vecDivf32(max, vec4ExtractW(max));
 
-            float w = vec4ExtractW(min);
-            if (w > 0)
-                min = vecDivf32(min, w);
+            if (((vec4ExtractX(min) > 1.f) || (vec4ExtractX(max) < -1.f)) ||
+                ((vec4ExtractY(min) > 1.f) || (vec4ExtractY(max) < -1.f)) ||
+                ((vec4ExtractZ(min) > 1.f) || (vec4ExtractZ(max) < -1.f))) {
+                continue;
+            }
 
-            w = vec4ExtractW(max);
-            if (w > 0)
-                max = vecDivf32(max, w);
-
-            logvec4(min);
-            logvec4(max);
-            printf("\n");
+            //logvec4(min);
+            //logvec4(max);
+            //printf("\n");
         }
 
         if (SCENE.model[i].visible) {

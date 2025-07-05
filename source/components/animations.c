@@ -92,8 +92,8 @@ void loadModelAnimations(model* m) {
 //            lc = m->children[i]->anim.lc[f_index];
 //            rq = m->children[i]->anim.rq[f_index];
 //            sc = m->children[i]->anim.sc[f_index];
-//            *mat = matMulmat(m->children[i]->anim.bm[f_index], *mat);
-//            //*mat = matMulmat(modelMatfromQST(rq, sc, lc), *mat);
+//            *mat = matMulMat(m->children[i]->anim.bm[f_index], *mat);
+//            //*mat = matMulMat(modelMatFromQST(rq, sc, lc), *mat);
 //            applyRecursiveTranformation(m->children[i], mat);
 //        }
 //    }
@@ -103,8 +103,8 @@ void loadModelAnimations(model* m) {
 //        vec4 lc = m->parent->anim.lc[f_index];
 //        quat rq = m->parent->anim.rq[f_index];
 //        vec4 sc = m->parent->anim.sc[f_index];
-//        *mat = matMulmat(m->parent->anim.bm[f_index], *mat);
-//        //*mat = matMulmat(modelMatfromQST(rq, sc, lc), *mat);
+//        *mat = matMulMat(m->parent->anim.bm[f_index], *mat);
+//        //*mat = matMulMat(modelMatFromQST(rq, sc, lc), *mat);
 //        applyReverseTranformation(m->parent, mat);
 //    }
 //}
@@ -127,7 +127,7 @@ void animateModels(void) {
                 quat rq = SCENE.model[i].anim.rq[f_index];
                 vec4 sc = SCENE.model[i].anim.sc[f_index];
 
-                SCENE.model[i].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                SCENE.model[i].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
                 // SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
 
                 if (SCENE.model[i].mesh_indexes > 1) {
@@ -137,7 +137,7 @@ void animateModels(void) {
                         quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
                         vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
 
-                        SCENE.model[i].mesh[x].anim.anim_matrix = modelMatfromQST(rq, sc, lc);
+                        SCENE.model[i].mesh[x].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
                         // SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
                     }
                 }
@@ -149,13 +149,13 @@ void animateModels(void) {
         if (SCENE.model[i].visible) {
             if (SCENE.model[i].owns_anim) {
 
-                SCENE.model[i].model_matrix = matMulmat(SCENE.model[i].anim.anim_matrix, modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]));
+                SCENE.model[i].model_matrix = matMulMat(SCENE.model[i].anim.anim_matrix, modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]));
                 for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
 
-                    SCENE.model[i].mesh[x].model_matrix = matMulmat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatfromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]));
+                    SCENE.model[i].mesh[x].model_matrix = matMulMat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatFromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]));
                 }
             } else {
-                SCENE.model[i].model_matrix = modelMatfromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+                SCENE.model[i].model_matrix = modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
             }
         }
     }
