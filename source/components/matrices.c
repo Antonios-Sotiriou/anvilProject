@@ -104,8 +104,8 @@ mat4x4 lookAtMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
 }
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
 mat4x4 pointAtMatrix(const vec4 P, const vec4 T, const vec4 Up) {
-    const vec4 N = vecNormalize(_mm_sub_ps(P, T));
-    const vec4 U = vecNormalize(crossProduct(Up, N));
+    const vec4 N = vec4Normalize(_mm_sub_ps(P, T));
+    const vec4 U = vec4Normalize(crossProduct(Up, N));
     const vec4 V = crossProduct(N, U);
 
     return (mat4x4) {{
@@ -348,8 +348,8 @@ mat4x4 lookAtMatrix(const vec4 P, const vec4 U, const vec4 V, const vec4 N) {
 /* The Point at Matrix.Takes a position P, a target point vector T, and an up vector Up and returns a matrix to point at location T. */
 mat4x4 pointAtMatrix(const vec4 P, const vec4 T, const vec4 Up) {
     mat4x4 m;
-    vec4 N = vecNormalize(vecSubvec(P, T));
-    vec4 U = vecNormalize(crossProduct(Up, N));
+    vec4 N = vec4Normalize(vecSubvec(P, T));
+    vec4 U = vec4Normalize(crossProduct(Up, N));
     vec4 V = crossProduct(N, U);
 
     m.m[0].m128_f32[0] = U.m128_f32[0];    m.m[0].m128_f32[1] = U.m128_f32[1];    m.m[0].m128_f32[2] = U.m128_f32[2];    m.m[0].m128_f32[3] = 0.0;

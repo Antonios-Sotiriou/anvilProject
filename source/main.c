@@ -36,8 +36,8 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS)
-                SCENE.model[player].velocity = setvec4(0, 10000, 0, 0);
-            SCENE.model[player].rigid.grounded = 0;
+                SCENE.model[light].velocity = vecAddvec(SCENE.model[light].velocity, setvec4(0, 1000, 0, 0));
+            SCENE.model[light].rigid.grounded = 0;
             break;
     }
 }
@@ -68,7 +68,7 @@ static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
 
     SCENE.model[camera].q = multiplyQuats(SCENE.model[camera].q, SCENE.model[camera].rigid.q);
 
-    //vec4 rad = vecNormalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].coords.v[0]));
+    //vec4 rad = vec4Normalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].coords.v[0]));
     //SCENE.model[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {

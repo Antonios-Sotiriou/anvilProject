@@ -12,21 +12,49 @@ float planeIntersect(vec4 plane, vec4 point, vec4 line_start, vec4 line_end) {
 /* Return signed shortest distance from point to plane, plane normal must be normalised. */
 const float planeDistance(vec4 plane, vec4 v) {
     vec4 r = vecMulvec(plane, v);
-    return ((vec4ExtractX(r) + vec4ExtractY(r) + vec4ExtractZ(r)) - dotProduct(plane, vecNormalize(plane)));
+    return ((vec4ExtractX(r) + vec4ExtractY(r) + vec4ExtractZ(r)) - dotProduct(plane, vec4Normalize(plane)));
 }
 
 void modelTerrainCollision(model *m) {
     vec4 pos, normal;
     getModelPositionData(m, &pos, &normal);
 
+    getRigidLimits(&m->rigid);
+
+    if (m->model_type == MODEL_TYPE_LIGHT) {
+
+        vec4 min = setvec4(vec4ExtractX(m->coords.v[0]), vec4ExtractY(m->rigid.min), vec4ExtractZ(m->coords.v[0]), 1.f);
+        vec4 t_near = vecDivvec(vecSubvec(pos, min), m->velocity);
+        logvec4(t_near);
+        if (vec4ExtractY(t_near) <= 1 && vec4ExtractY(t_near) >= 0 ) {
+            m->velocity = vecMulf32(m->velocity, vec4ExtractY(t_near));
+
+            m->rigid.grounded = 1;
+            m->rigid.falling_time = 0;
+
+            //mat4x4 tm = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
+            //setvec4ArrayMulmat(m->coords.v, 4, tm);
+            //setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
+            float col_dot = dotProduct(m->velocity, vec4Normalize(normal));
+            m->velocity = vecSubvec(m->velocity, vecMulf32(vec4Normalize(normal), col_dot));
+
+        } else if (vec4ExtractY(t_near) < 0) {
+            //printf("Terrain Penetration\n");
+            //float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));
+
+            //mat4x4 tm = translationMatrix(0, height_diff, 0);
+            //setvec4ArrayMulmat(m->coords.v, 4, tm);
+            //setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
+        }
+
+        return;
+    }
+
     float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));   // Posible bugg with height here after changed scale to vec4.
     if (height_diff >= 0) {
         m->rigid.grounded = 1;
         m->rigid.falling_time = 0;
     }
-
-    if (m->model_type == MODEL_TYPE_PLAYER)
-        logvec4(vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min)));
 
     //if (m->rigid.grounded) {
         mat4x4 tm = translationMatrix(0, height_diff, 0);
@@ -57,7 +85,7 @@ const int staticOuterRadiusCollision(model *m) {
         if (pk != m->pk) {
 
             vec4 dis = vecSubvec(m->coords.v[0], SCENE.model[pk].coords.v[0]);
-            if (vecLength(dis) <= (SCENE.model[pk].outer_radius + m->outer_radius))
+            if (vec4Length(dis) <= (SCENE.model[pk].outer_radius + m->outer_radius))
                 // logvec4(dis);
                 printf("checking for collision: %d --> %d\n", m->pk, pk);
         }

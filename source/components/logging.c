@@ -40,7 +40,7 @@ void logrigid(const rigid r) {
 
 	printf("    vbo           : %p\n", r.vbo);
 	printf("    falling_time  : %f\n", r.falling_time);
-
+	printf("    collision_t   : %f\n", r.collision_t);
 	printf("    vbo_indexes   : %d\n", r.vbo_indexes);
 	printf("    faces_indexes : %d\n", r.faces_indexes);
 	printf("    vecs_indexes  : %d\n", r.vecs_indexes);
@@ -60,7 +60,6 @@ void logmesh(const mesh m) {
 	printf("cname          : %s\n", m.cname);
 	printf("vbo            : %p\n", m.vbo);
 	printf("outer_radius   : %f\n", m.outer_radius);
-	printf("rotate         : %f\n", m.rotate);
 	printf("vbo_indexes    : %d\n", m.vbo_indexes);
 	printf("faces_indexes  : %d\n", m.faces_indexes);
 	printf("vecs_indexes   : %d\n", m.vecs_indexes);
@@ -80,6 +79,8 @@ void logmesh(const mesh m) {
 	printf("owns_anim      : %d\n", m.owns_anim);
 	if (m.owns_anim)
 		loganim(m.anim);
+
+	printf("rotate         : %d\n", m.rotate);
 }
 void logmodel(const model m) {
 	logcoords(m.coords);
@@ -91,7 +92,6 @@ void logmodel(const model m) {
 	logvec4(m.scale);
 	printf("cname          : %s\n", m.cname);
 	printf("outer_radius   : %f\n", m.outer_radius);
-	printf("rotate         : %f\n", m.rotate);
 	printf("mesh           : %p\n", &m.mesh);
 	printf("mesh_indexes   : %d\n", m.mesh_indexes);
 	printf("cname_length   : %d\n", m.cname_length);
@@ -108,6 +108,8 @@ void logmodel(const model m) {
 	printf("owns_anim      : %d\n", m.owns_anim);
 	if (m.owns_anim)
 		loganim(m.anim);
+
+	printf("rotate         : %d\n", m.rotate);
 }
 void logscene(const scene s) {
 	printf("mesh_indexes         : %d\n", s.model_indexes);

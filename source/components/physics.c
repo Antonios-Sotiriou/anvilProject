@@ -13,6 +13,16 @@ void applyPhysics(void) {
 
 				initModelQuadInfo(&SCENE.model[i]);
 
+				// Compute air resistance (drag).
+				// Fd = 0.5f * p * v^2 * Cd * A;
+				// p = Density of the air.At sea level with 15 Celcius is approximatly 1.225 kg/m^3.
+				// v = the velocity of the object.
+				// Cd = Drag coeficient.(aerodynamics friendly shapes have less)
+				// A = the area of the object facing the direction opposite to wind resistance.
+
+				// Cd = (2 * fluid_resistance) / (fluid_mass_density velocity^2 * object_area)
+				// A cube has a Cd of 1.05f
+
 				float g_accelaration = 0.f;
 				if (!SCENE.model[i].rigid.grounded) {
 					SCENE.model[i].rigid.falling_time += deltaTime;
@@ -50,14 +60,13 @@ void applyPhysics(void) {
 				SCENE.model[i].q = multiplyQuats(SCENE.model[i].q, SCENE.model[i].rigid.q);
 			}
 
+			if (SCENE.model[i].model_type != MODEL_TYPE_TERRAIN) {
+				modelTerrainCollision(&SCENE.model[i]);
+			}
+
 			mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.model[i].velocity), vec4ExtractY(SCENE.model[i].velocity), vec4ExtractZ(SCENE.model[i].velocity));
 			setvec4ArrayMulmat(SCENE.model[i].coords.v, 4, tm);
 			setfacesArrayMulMat(SCENE.model[i].rigid.f, SCENE.model[i].rigid.faces_indexes, tm);
-
-			if (SCENE.model[i].model_type != MODEL_TYPE_TERRAIN) {
-				modelTerrainCollision(&SCENE.model[i]);
-				getRigidLimits(&SCENE.model[i].rigid);    // Probably should be moves to another more appropriate place.
-			}
 		}
 	}
 }

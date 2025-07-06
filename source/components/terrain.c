@@ -244,6 +244,7 @@ void addModelToQuad(model *m) {
 
     if ((quad_index < 0 || !m->pk)) {
         /* Mesh is out of terrain if its quadIndex is less than Zero or it is the terrain if its ID is 0. */
+        debug_log_info(stdout, "Model %s is out of terrain boundaries\n", m->cname);
         debug_log_warning(stdout, "Out of terrain boundaries");
         return;
     }
@@ -273,6 +274,7 @@ void removeModelFromQuad(model *m) {
 
     if (quad_index < 0) {
         /* Mesh is out of terrain if its quadIndex is less than Zero. */
+        debug_log_info(stdout, "Model %s is out of terrain boundaries\n", m->cname);
         debug_log_warning(stdout, "Out of terrain boundaries");
         return;
     }
@@ -308,6 +310,7 @@ void getTerrainPointInfo(vec4 coords, int *qi, int *uol) {
     vec4 t_coords = vecSubvec(coords, vecSubvec(SCENE.model[TERRAIN_INDEX].coords.v[0], SCENE.model[TERRAIN_INDEX].scale));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
+        debug_log_info(stdout, "Point { %f, %f, %f, %f } is out of terrain boundaries\n", vec4ExtractX(coords), vec4ExtractY(coords), vec4ExtractZ(coords), vec4ExtractW(coords));
         debug_log_warning(stdout, "Out of terrain boundaries");
         *qi = -1;
         return;
@@ -335,6 +338,7 @@ void getModelPositionData(model *m, vec4 *tp, vec4 *tn) {
     vec4 t_coords = vecSubvec(m->coords.v[0], vecSubvec(SCENE.model[TERRAIN_INDEX].coords.v[0], SCENE.model[TERRAIN_INDEX].scale));
 
     if ( m->quad_index == -1 ) {
+        debug_log_info(stdout, "Model %s is out of terrain boundaries\n", m->cname);
         debug_log_warning(stdout, "Out of terrain boundaries");
         *tp = setvec4Zero();
         *tn = setvec4Zero();
@@ -378,6 +382,7 @@ const TerrainPointInfo getvec4PositionData(const vec4 v) {
     vec4 t_coords = vecSubvec(v, vecSubf32(SCENE.model[TERRAIN_INDEX].coords.v[0], vec4ExtractX(SCENE.model[TERRAIN_INDEX].scale)));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
+        debug_log_info(stdout, "Point { %f, %f, %f, %f } is out of terrain boundaries\n", vec4ExtractX(v), vec4ExtractY(v), vec4ExtractZ(v), vec4ExtractW(v));
         debug_log_warning(stdout, "Out of terrain boundaries");
         tp.quad_index = -1;
         return tp;

@@ -63,12 +63,12 @@ vec4 crossProduct(const vec4 v1, const vec4 v2) {
     );
 }
 /* Computes the length of a vector with the use of Pythagorean Theorem. */
-float vecLength(const vec4 v) {
+float vec4Length(const vec4 v) {
     return _mm_cvtss_f32(_mm_sqrt_ps(_mm_set_ps1(dotProduct(v, v))));
 }
 /* Normalizes a Vector so he ranges from 0 to 1.Returns a new Vector. */
-vec4 vecNormalize(const vec4 v) {
-    float len = vecLength(v);
+vec4 vec4Normalize(const vec4 v) {
+    float len = vec4Length(v);
     return _mm_div_ps(v, _mm_load_ps1(&len));
 }
 /* Multiplies a Vector by the given num.Returns a new Vector. */
@@ -175,12 +175,12 @@ vec4 crossProduct(const vec4 v1, const vec4 v2) {
     return cp;
 }
 /* Computes the length of a vector with the use of Pythagorean Theorem. */
-float vecLength(const vec4 v) {
+float vec4Length(const vec4 v) {
     return sqrtf(dotProduct(v, v));
 }
 /* Normalizes a Vector so he ranges from 0 to 1.Returns a new Vector. */
-vec4 vecNormalize(const vec4 v) {
-    float len = vecLength(v);
+vec4 vec4Normalize(const vec4 v) {
+    float len = vec4Length(v);
     return (vec4) { v.m128_f32[0] / len, v.m128_f32[1] / len, v.m128_f32[2] / len, v.m128_f32[3] / len };
 }
 /* Multiplies a Vector by the given num.Returns a new Vector. */

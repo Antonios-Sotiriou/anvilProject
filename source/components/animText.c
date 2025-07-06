@@ -121,7 +121,7 @@ void readAnimText(animTextData *an, char path[]) {
                     if (fscanf(fp, "%f %f %f %f", &data[0], &data[1], &data[2], &data[3]) == 4) {
                         //data[2] *= -1;
                         //vec4 axis = { data[1], data[2], data[3], 0.f };
-                        //axis = vecNormalize(axis);
+                        //axis = vec4Normalize(axis);
                         //an->object[an_idx].rotation_quaternion[rq_idx] = setQuat(data[0], vec4ExtractX(axis), vec4ExtractY(axis), vec4ExtractZ(axis));
 
                         memcpy(&an->object[an_idx].rotation_quaternion[rq_idx], &data, 16);

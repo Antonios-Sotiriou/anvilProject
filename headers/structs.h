@@ -79,12 +79,13 @@ typedef struct {
     quat q;                              // Rotation quaternion W, X, Y, Z.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         falling_time,                    // Calculates the time, since the object starts falling, until it hits the ground or another object.
-        collision_t;                     // The time of collision to help us sort them.Used in sortCollisions function, to find out which collision take place earlier.
+        collision_t,                     // The time of collision to help us sort them.Used in sortCollisions function, to find out which collision take place earlier.
+        lowest_Y;                        // The distance between the object pivot point and its Lowest Y value.That helps us for terrain collisions until we implement swept Triangle Rigid Terrain collisions.
     int vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
-        grounded;                        // Switch which tracks if object in grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
+        grounded;                        // Switch which tracks if object is grounded on the terrain or not. Can be 1 for grounded or 0 for floating objects.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     face *f;                             // The faces from them our rigid body consists.
@@ -97,8 +98,7 @@ typedef struct mesh {
     mat4x4 model_matrix;
     char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
-        outer_radius,                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
-        rotate;                          // The rotation angle of the rigid body.
+        outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
     int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
         vbo_indexes,                     // Number of vbo indexes as individual floats.
         faces_indexes,                   // Number of faces in vbo. ( vbo_indexes / 24 ).
@@ -108,15 +108,16 @@ typedef struct mesh {
         asset_type,                      // The type of the asset.Can be terrain, model, mesh, etc.Identifies a base structure. 
         mesh_type,                       // The type of the mesh.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
-        owns_anim;                        // Wether or not the mesh has an animation.
+        owns_rigid,                      // Wether or not the model has a rigid body attached to it.
+        owns_anim,                        // Wether or not the mesh has an animation.
+        rotate,                          // The rotation angle of the rigid body.
+        number_of_children;              // The number of the children that the mesh owns
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     struct mesh **children;               // The children mesh array of the mesh
     struct mesh *parent;                 // The parent at which the mesh belongs.
     animation anim;
-    int number_of_children,              // The number of the children that the mesh owns
-        owns_rigid;                      // Wether or not the model has a rigid body attached to it.
 } mesh;
 /* Model structure to represent a collection of shapes. Probably we dont need a Children relation in this struct, because all the meshes it has are its children. */
 typedef struct {
@@ -126,8 +127,7 @@ typedef struct {
         scale;                           // Vector to store the scale of the model.
     mat4x4 model_matrix;
     char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
-    float outer_radius,                  // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
-        rotate;                          // The rotation angle of the rigid body.
+    float outer_radius;                  // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
     mesh *mesh;                          // Meshes array from which the model is consisting.
     int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
         cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
@@ -135,8 +135,9 @@ typedef struct {
         asset_type,                      // The type of the asset.Can be terrain, model, mesh, etc.Identifies a base structure. 
         model_type,                      // The type of the model.Can be Player, camera, light source etc.Identifies types of the same Primitive.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
-        owns_anim,                       // Wether or not the model has an animation.
         owns_rigid,                      // Wether or not the model has a rigid body attached to it.
+        owns_anim,                       // Wether or not the model has an animation.
+        rotate,                          // The rotation angle of the rigid body.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.

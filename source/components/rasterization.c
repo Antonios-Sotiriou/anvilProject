@@ -2,6 +2,7 @@
 
 /* Rasterizing Meshes with appropriate shaders. */
 const void rasterize(void) {
+
     LOOKAT_M = lookAtMatrix(
         SCENE.model[EYEPOINT].coords.v[0],
         SCENE.model[EYEPOINT].coords.v[1],
