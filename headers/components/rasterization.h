@@ -19,6 +19,7 @@
 #endif // !RIGIDSHADER_H
 
 const void rasterize();
+const int rigidFrustumCulling(rigid *r);
 
 #endif // !RASTERIZATION_H
 

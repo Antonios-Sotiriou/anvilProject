@@ -30,6 +30,10 @@
     #include "headers/components/rigid.h"
 #endif // !RIGID_H
 
+#ifndef RASTERIZATION_H
+    #include "headers/components/rasterization.h"
+#endif // !RASTERIZATION_H
+
 /* Defined in openGL.c */
 extern void glErrorReport(void);
 

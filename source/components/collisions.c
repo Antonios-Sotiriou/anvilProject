@@ -25,7 +25,7 @@ void modelTerrainCollision(model *m) {
 
         vec4 min = setvec4(vec4ExtractX(m->coords.v[0]), vec4ExtractY(m->rigid.min), vec4ExtractZ(m->coords.v[0]), 1.f);
         vec4 t_near = vecDivvec(vecSubvec(pos, min), m->velocity);
-        logvec4(t_near);
+
         if (vec4ExtractY(t_near) <= 1 && vec4ExtractY(t_near) >= 0 ) {
             m->velocity = vecMulf32(m->velocity, vec4ExtractY(t_near));
 

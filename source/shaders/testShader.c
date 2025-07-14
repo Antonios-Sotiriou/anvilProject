@@ -81,19 +81,8 @@ void testShader(void) {
 
 
         // View Frustum Culling implementation.
-        if (SCENE.model[i].model_type == MODEL_TYPE_PLAYER) {
-            vec4 min = vec4Mulmat(SCENE.model[i].rigid.min, PROJECTION_M);
-            vec4 max = vec4Mulmat(SCENE.model[i].rigid.max, PROJECTION_M);
-
-            min = vecDivf32(min, vec4ExtractW(min));
-            max = vecDivf32(max, vec4ExtractW(max));
-
-            if (((vec4ExtractX(min) > 1.f) || (vec4ExtractX(max) < -1.f)) ||
-                ((vec4ExtractY(min) > 1.f) || (vec4ExtractY(max) < -1.f)) ||
-                ((vec4ExtractZ(min) > 1.f) || (vec4ExtractZ(max) < 0))) {
-                continue;
-            }
-        }
+        if (rigidFrustumCulling(&SCENE.model[i].rigid))
+            continue;
 
         if (SCENE.model[i].visible) {
 
