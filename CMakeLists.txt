@@ -45,6 +45,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory("libraries/glfw-3.4/")
 
 # Initialize glew external library and copy dll to the same folder as the .exe file!
+set(OpenGL_GL_PREFERENCE GLVND)
 add_subdirectory("libraries/glew-2.1.0/build/cmake")
 if (WIN32)
     file(COPY "libraries/glew-2.1.0/bin/release/x64/glew32.dll" DESTINATION "${CMAKE_BINARY_DIR}")

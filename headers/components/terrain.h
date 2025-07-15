@@ -30,6 +30,7 @@
     #include "headers/components/dbapi.h"
 #endif // !DBAPI_H
 
+int initTerrainsHeightMaps(void);
 void initModelQuadInfo(model *m);
 void addModelToQuad(model *m);
 void removeModelFromQuad(model *m);

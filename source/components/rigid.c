@@ -3,9 +3,9 @@
 void loadModelRigid(model *m) {
 	char path[100] = { 0 };
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-	sprintf_s(path, 100, "%s/models/%s/%s_rigid.obj\0", anvil_SOURCE_DIR, m->cname, m->cname);
+	sprintf_s(path, 100, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #elif defined(LINUX) || defined(__linux__)
-	snprintf(path, 100, "%s/models/%s/%s_rigid.obj\0", anvil_SOURCE_DIR, m->cname, m->cname);
+	snprintf(path, 100, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 #endif
 
 	OBJ obj = { 0 };
