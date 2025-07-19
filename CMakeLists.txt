@@ -38,6 +38,9 @@ elseif (WIN32)
 endif()
 
 # LIBRARIES  ####################################################################################
+# Fix the Legacy OpenGL warning on Linux when building.
+set(OpenGL_GL_PREFERENCE GLVND)
+
 # Initialize GLFW external library!
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
