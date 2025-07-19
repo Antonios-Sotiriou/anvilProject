@@ -8,7 +8,7 @@
 static void connectionHandler(int sockfd) {
     char buff[MAX] = { 0 };
 
-    anvil_snprinf(buff, 18, "Server stop");
+    anvil_snprintf(buff, 18, "Server stop");
     send(sockfd, buff, 18, 0);
 
     char responce[MAX] = { 0 };
@@ -59,7 +59,7 @@ DWORD WINAPI startTCPClient(void* args) {
 static void connectionHandler(int sockfd) {
     char buff[MAX] = { 0 };
 
-    anvil_snprinf(buff, 18, "Server stop");
+    anvil_snprintf(buff, 18, "Server stop");
     write(sockfd, buff, 18);
 
     char responce[MAX] = { 0 };

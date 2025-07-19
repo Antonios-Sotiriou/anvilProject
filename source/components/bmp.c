@@ -10,7 +10,7 @@ void readBMP(BMP *f, const char path[]) {
         return;
     }
 
-    anvil_snprinf(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
+    anvil_snprintf(dynamic_path, path_length, "%s/%s", anvil_SOURCE_DIR, path);
 
     FILE* fp;
     fp = fopen(dynamic_path, "rb");

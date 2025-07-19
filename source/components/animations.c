@@ -13,7 +13,7 @@ void loadModelAnimations(model* m) {
         return;
     }
 
-    anvil_snprinf(dynamic_path, path_length, "%s/models/%s/animations/%s_animations.txt", anvil_SOURCE_DIR, m->cname, m->cname);
+    anvil_snprintf(dynamic_path, path_length, "%s/models/%s/animations/%s_animations.txt", anvil_SOURCE_DIR, m->cname, m->cname);
 
     animTextData ad = { 0 };
     readAnimText(&ad, dynamic_path);

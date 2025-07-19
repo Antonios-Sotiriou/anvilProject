@@ -9,7 +9,7 @@ void createModel(model *m) {
         return;
     }
 
-    anvil_snprinf(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
+    anvil_snprintf(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 
     OBJ obj = { 0 };
     readOBJ(&obj, dynamic_path);

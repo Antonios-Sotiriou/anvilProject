@@ -2,7 +2,7 @@
 #define PROJECT_NAME                 "anvil"
 #define anvil_VERSION_MAJOR          1
 #define anvil_VERSION_MINOR          0
-#define anvil_SOURCE_DIR             "C:/Users/anton/Desktop/anvilProject"
+#define anvil_SOURCE_DIR             "/home/as/anvilProject"
 #define NETWORK_INTERFACE            0
 #define Python_RUNTIME_LIBRARY_DIRS  ""
 #define Python_INCLUDE_DIRS          ""
