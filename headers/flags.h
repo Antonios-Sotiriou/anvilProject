@@ -41,6 +41,26 @@
     #define MODEL_TYPE_PLAYER              3
     #define MODEL_TYPE_GENERAL             4
 
+#ifndef anvil_snprinf
+    #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        #define anvil_snprinf(...)\
+            sprintf_s(__VA_ARGS__);
+    #elif defined(LINUX) || defined(__linux__)
+        #define anvil_snprinf(...)\
+            snprintf(__VA_ARGS__);
+    #endif
+#endif
+
+#ifndef anvil_scanf
+    #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+        #define anvil_scanf(...)\
+            sscanf_s(__VA_ARGS__);
+    #elif defined(LINUX) || defined(__linux__)
+        #define anvil_scanf(...)\
+            sscanf(__VA_ARGS__);
+    #endif
+#endif
+
 #endif // !anvil_MAJOR_VERSION
 
 /* DEBUG SECTOR ################################################################################### */

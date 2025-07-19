@@ -12,11 +12,8 @@ void loadModelAnimations(model* m) {
         debug_log_info(stdout, "%s\n", m->cname);
         return;
     }
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(dynamic_path, path_length, "%s/models/%s/animations/%s_animations.txt", anvil_SOURCE_DIR, m->cname, m->cname);
-#elif defined(LINUX) || defined(__linux__)
-    snprintf(dynamic_path, path_length, "%s/models/%s/animations/%s_animations.txt", anvil_SOURCE_DIR, m->cname, m->cname);
-#endif
+
+    anvil_snprinf(dynamic_path, path_length, "%s/models/%s/animations/%s_animations.txt", anvil_SOURCE_DIR, m->cname, m->cname);
 
     animTextData ad = { 0 };
     readAnimText(&ad, dynamic_path);

@@ -3,5 +3,5 @@
 out/
 *.asm
 temp
-
+test.sql
 

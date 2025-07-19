@@ -31,38 +31,52 @@ endif()
 # Creates an executable.
 if (LINUX)
     set(CMAKE_C_FLAGS "-Wall -Werror -Wno-missing-braces -msse4.1 -g -DGLEW_NO_GLU" CACHE STRING "" FORCE)
-    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "libraries/sqlite/sqlite3.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c")
+    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c")
 elseif (WIN32)
     set(CMAKE_C_FLAGS "" CACHE STRING "" FORCE)
-    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "libraries/sqlite/shell.c" "libraries/sqlite/sqlite3.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c" "source/components/relations.c")
+    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/matrices.c" "source/components/vec_math.c" "source/components/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "source/components/dbapi.c" "source/components/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c" "source/components/relations.c")
 endif()
 
 # LIBRARIES  ####################################################################################
-# Initialize glfw external library!
+# Initialize GLFW external library!
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+#set(GLFW_BUILD_WIN32 OFF CACHE BOOL "" FORCE)
 add_subdirectory("libraries/glfw-3.4/")
+target_link_libraries(anvil PUBLIC glfw)
 
-# Initialize glew external library and copy dll to the same folder as the .exe file!
+# Initialize GLEW external library and copy dll to the same folder as the .exe file!
+set(GLEW_CUSTOM_OUTPUT_DIRS 1)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory("libraries/glew-2.1.0/build/cmake")
+target_link_libraries(anvil PUBLIC glew)
 if (WIN32)
-    file(COPY "libraries/glew-2.1.0/bin/release/x64/glew32.dll" DESTINATION "${CMAKE_BINARY_DIR}")
+    if (NOT EXISTS "${CMAKE_BINARY_DIR}/glew32.dll")
+        file(COPY "libraries/glew-2.1.0/bin/release/x64/glew32.dll" DESTINATION "${CMAKE_BINARY_DIR}")
+    endif()
 endif()
+
+# Initialize SQLITE3 library.
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/sqlite-amalgamation/build")
+    execute_process(COMMAND cmake -B "${PROJECT_SOURCE_DIR}/sqlite-amalgamation/build"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/sqlite-amalgamation/"
+        COMMAND_ECHO STDOUT
+    )
+endif()
+add_subdirectory("libraries/sqlite-amalgamation")
+target_link_libraries(anvil PUBLIC SQLite3)
+
 # LIBRARIES  ####################################################################################
 
 # LINK TO COMPILE  ##############################################################################
-target_link_libraries(anvil PUBLIC glfw)
-target_link_libraries(anvil PUBLIC glew)
-
 if (WIN32)
-    target_link_libraries(anvil PUBLIC "opengl32.lib")
-
     if(NETWORK_INTERFACE)
         target_link_libraries(anvil PUBLIC "Ws2_32.lib")
     endif()
-elseif (LINUX)
-    #list(REMOVE_ITEM anvil "${PROJECT_SOURCE_DIR}/libraries/sqlite/shell.c")
 endif()
 # LINK TO COMPILE  ##############################################################################
 

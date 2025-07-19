@@ -22,7 +22,7 @@
 #endif // !MESH_H
 
 #ifndef SQLITE3_H
-    #include "libraries/sqlite/sqlite3.h"
+    #include "libraries/sqlite-amalgamation/sqlite3.h"
 #endif // !SQLITE3_H
 
 const int dbcountTableRows(const char path[], const char sql_cmd[]);

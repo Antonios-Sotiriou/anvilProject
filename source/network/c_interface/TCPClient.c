@@ -8,7 +8,7 @@
 static void connectionHandler(int sockfd) {
     char buff[MAX] = { 0 };
 
-    snprintf(buff, 18, "Server stop");
+    anvil_snprinf(buff, 18, "Server stop");
     send(sockfd, buff, 18, 0);
 
     char responce[MAX] = { 0 };
@@ -16,7 +16,7 @@ static void connectionHandler(int sockfd) {
     printf("Client Received responce: {\n%s\n", responce);
     printf("}\n");
 }
-DWORD WINAPI startTCPClient(void *args) {
+DWORD WINAPI startTCPClient(void* args) {
     unsigned int sockfd;
     struct sockaddr_in servaddr;
 
@@ -45,7 +45,8 @@ DWORD WINAPI startTCPClient(void *args) {
     // connect the client socket to server socket
     if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) == 0) {
         connectionHandler(sockfd);
-    } else {
+    }
+    else {
         perror("Error");
     }
 
@@ -58,7 +59,7 @@ DWORD WINAPI startTCPClient(void *args) {
 static void connectionHandler(int sockfd) {
     char buff[MAX] = { 0 };
 
-    snprintf(buff, 18, "Server stop");
+    anvil_snprinf(buff, 18, "Server stop");
     write(sockfd, buff, 18);
 
     char responce[MAX] = { 0 };

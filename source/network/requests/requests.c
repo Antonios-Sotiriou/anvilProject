@@ -31,7 +31,7 @@ int sendRequest(const char ip_address[], const uint16_t port, const char req[]) 
     servaddr.sin_port = htons(port);//(uint16_t)atoi(port);
 
     if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) == 0) {
-        // snprintf(req, sizeof(req), "Server quit");
+        // anvil_snprinf(req, sizeof(req), "Server quit");
         send(sockfd, req, 18, 0);
 
         char responce[80];
@@ -67,7 +67,7 @@ int sendRequest(const char ip_address[], const uint16_t port, const char req[]) 
     servaddr.sin_port = htons(port);//(uint16_t)atoi(port);
 
     if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) == 0) {
-        // snprintf(req, sizeof(req), "Server quit");
+        // anvil_snprinf(req, sizeof(req), "Server quit");
         write(sockfd, req, 18);
 
         char responce[80];

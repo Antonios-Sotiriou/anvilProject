@@ -29,14 +29,14 @@ static int connectionHandler(unsigned int connfd) {
 
     if (strncmp(buff, "Server stop", 12) == 0) {
         char responce[24] = { 0 };
-        snprintf(responce, 24, "Shuting down Server...");
+        anvil_snprinf(responce, 24, "Shuting down Server...");
         send(connfd, responce, 24, 0);
         closesocket(connfd);
         return 1;
     }
 
     char responce[121] = { 0 };
-    snprintf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
+    anvil_snprinf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
     send(connfd, responce, 121, 0);
     closesocket(connfd);
 
@@ -123,13 +123,13 @@ static int connectionHandler(int connfd) {
 
     if (strncmp(buff, "Server stop", 12) == 0) {
         char responce[24] = { 0 };
-        snprintf(responce, 24, "Shuting down Server...");
+        anvil_snprinf(responce, 24, "Shuting down Server...");
         write(connfd, responce, 24);
         return 1;
     }
 
     char responce[121] = { 0 };
-    snprintf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
+    anvil_snprinf(responce, 121, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nAccept: */*;\r\nContent:Length: 1024\r\n\r\n<html><body>Hello World!</body></html>\r\n");
     write(connfd, responce, 121);
 
     return 0;

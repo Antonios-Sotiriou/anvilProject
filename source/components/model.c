@@ -8,11 +8,8 @@ void createModel(model *m) {
         debug_log_info(stdout, "%s\n", m->cname);
         return;
     }
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    sprintf_s(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#elif defined(LINUX) || defined(__linux__)
-    snprintf(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
-#endif
+
+    anvil_snprinf(dynamic_path, path_length, "%s/models/%s/%s.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 
     OBJ obj = { 0 };
     readOBJ(&obj, dynamic_path);
