@@ -1,6 +1,11 @@
 #ifndef RASTERIZATION_H
 #define RASTERIZATION_H 1
 
+/* Global variables. */
+#ifndef GLOBAL_H
+    #include "headers/global.h"
+#endif // !GLOBAL_H
+
 /* Shaders. */
 #ifndef MAINSHADER_H
     #include "headers/shaders/mainShader.h"
