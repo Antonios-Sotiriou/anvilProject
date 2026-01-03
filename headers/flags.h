@@ -41,12 +41,12 @@
     #define MODEL_TYPE_PLAYER              3
     #define MODEL_TYPE_GENERAL             4
 
-#ifndef anvil_snprinf
+#ifndef anvil_snprintf
     #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        #define anvil_snprinf(...)\
+        #define anvil_snprintf(...)\
             sprintf_s(__VA_ARGS__);
     #elif defined(LINUX) || defined(__linux__)
-        #define anvil_snprinf(...)\
+        #define anvil_snprintf(...)\
             snprintf(__VA_ARGS__);
     #endif
 #endif

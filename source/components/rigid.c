@@ -3,7 +3,7 @@
 void loadModelRigid(model *m) {
 	char path[100] = { 0 };
 
-	anvil_snprinf(path, 100, "%s/models/%s/%s_rigid.obj\0", anvil_SOURCE_DIR, m->cname, m->cname);
+	anvil_snprintf(path, 100, "%s/models/%s/%s_rigid.obj", anvil_SOURCE_DIR, m->cname, m->cname);
 
 	OBJ obj = { 0 };
 	readOBJ(&obj, path);
