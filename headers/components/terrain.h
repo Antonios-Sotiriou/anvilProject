@@ -11,11 +11,11 @@
 #endif // !GLOBAL_H
 
 #ifndef BMP_H
-    #include "headers/components/bmp.h"
+    #include "headers/components/internal_libraries/bmp.h"
 #endif // !BMP_H
 
 #ifndef OBJ_H
-    #include "headers/components/obj.h"
+    #include "headers/components/internal_libraries/obj.h"
 #endif // !OBJ_H
 
 #ifndef MESH_H

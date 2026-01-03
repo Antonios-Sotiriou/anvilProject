@@ -18,7 +18,7 @@
 #endif // !RIGID_H
 
 #ifndef OBJ_H
-    #include "headers/components/obj.h"
+    #include "headers/components/internal_libraries/obj.h"
 #endif // !OBJ_H
 
 #ifndef ANIMATIONS_H
@@ -26,7 +26,7 @@
 #endif // !ANIMATIONS_H
 
 #ifndef MATRICES_H
-    #include "headers/components/matrices.h"
+    #include "headers/components/internal_libraries/matrices.h"
 #endif // !MATRICES_H
 
 void createModel(model *m);

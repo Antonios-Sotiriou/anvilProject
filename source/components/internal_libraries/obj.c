@@ -1,4 +1,4 @@
-#include "headers/components/obj.h"
+#include "headers/components/internal_libraries/obj.h"
 
 /* Reads RAW obj file data from the given path and stores them in OBJ obj pointer.
 It's the programmer's responsibillity to rearange the data according to hes needs.

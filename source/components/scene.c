@@ -3,6 +3,13 @@
 scene SCENE = { 0 };
 int TERRAIN_INDEX = 0;
 
+void initScene(scene* s, int winWidth, int winHeight) {
+    s->WIDTH = winWidth;
+    s->HEIGHT = winHeight;
+    s->lastMouseX = winWidth * 0.5f;
+    s->lastMouseY = winHeight * 0.5f;
+    s->eyePoint = camera;
+}
 /* Allocates memory for the components of the GLOBAL SCENE. */
 void createScene(void) {
     int model_entries = dbcountTableRows(GITANA_DB, "SELECT COUNT(*) FROM model;");

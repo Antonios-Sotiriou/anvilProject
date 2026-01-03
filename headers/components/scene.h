@@ -25,6 +25,7 @@
     #include "headers/components/animations.h"
 #endif // !ANIMATIONS_H
 
+void initScene(scene* s, int winWidth, int winHeight);
 void createScene(void);
 void releaseScene(void);
 

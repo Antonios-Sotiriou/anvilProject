@@ -1,17 +1,12 @@
 #include "headers/main.h"
 
 /* Window app Global variables. */
-int WIDTH = 1000, HEIGHT = 1000, EYEPOINT = camera, DISPLAY_RIGID = 0, lastMouseX, lastMouseY;
+int WIDTH = 1000, HEIGHT = 1000, DISPLAY_RIGID = 0;
 /* The global matrices which are not change so, or are change after specific input, or window events. */
 mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
 
-/* Display usefull measurements. */
-float			        TimeCounter = 0, LastFrameTimeCounter = 0, deltaTime = 0, prevTime = 0.0, FPS = 0;
-struct timeval		    tv, tv0;
-int			            Frame = 0;
-
 static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
-
+    scene *s = glfwGetWindowUserPointer(win);
     switch (key) {
         case GLFW_KEY_W:
         case GLFW_KEY_A:
@@ -28,7 +23,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
         case GLFW_KEY_L:
             if (action == GLFW_PRESS)
-                EYEPOINT = EYEPOINT == camera ? light : camera;
+                s->eyePoint = s->eyePoint == camera ? light : camera;
             break;
         case GLFW_KEY_B:
             if (action == GLFW_PRESS)
@@ -36,49 +31,51 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS)
-                SCENE.model[light].velocity = vecAddvec(SCENE.model[light].velocity, setvec4(0, 1000, 0, 0));
-            SCENE.model[light].rigid.grounded = 0;
+                s->model[light].velocity = vecAddvec(s->model[light].velocity, setvec4(0, 1000, 0, 0));
+            s->model[light].rigid.grounded = 0;
             break;
     }
 }
-static void cursor_pos_callback(GLFWwindow* win, double x, double y) {
-    //printf("window: %p,    x: %d,    y: %d\n", &win, (int)x, (int)y);
+static void cursor_pos_callback(GLFWwindow *win, double x, double y) {
+    scene *s = glfwGetWindowUserPointer(win);
     float radius = 1.f;
-    int xoffset = lastMouseX - x;
-    int yoffset = lastMouseY - y;
+    int xoffset = s->lastMouseX - x;
+    int yoffset = s->lastMouseY - y;
 
     if (abs(xoffset) > abs(yoffset)) {
         if (xoffset < 0)
             radius = -1.f;
-        SCENE.model[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
+        s->model[camera].rigid.q = rotationQuat(radius, 0.f, 1.f, 0.f);
     } else {
         if (yoffset < 0)
             radius = -1.f;
 
-        SCENE.model[camera].rigid.q = rotationQuat(radius, vec4ExtractX(SCENE.model[camera].coords.v[1]), vec4ExtractY(SCENE.model[camera].coords.v[1]), vec4ExtractZ(SCENE.model[camera].coords.v[1]));
+        s->model[camera].rigid.q = rotationQuat(radius, vec4ExtractX(s->model[camera].coords.v[1]), vec4ExtractY(s->model[camera].coords.v[1]), vec4ExtractZ(s->model[camera].coords.v[1]));
     }
 
-    lastMouseX = x;
-    lastMouseY = y;
+    s->mouseX = s->lastMouseX = x;
+    s->mouseY = s->lastMouseY = y;
 
-    mat4x4 tm = matFromQuat(SCENE.model[camera].rigid.q, SCENE.model[0].mesh[3].coords.v[0]);
+    mat4x4 tm = matFromQuat(s->model[camera].rigid.q, s->model[0].mesh[3].coords.v[0]);
 
-    setvec4ArrayMulmat(SCENE.model[camera].coords.v, 4, tm);
-    setfacesArrayMulMat(SCENE.model[camera].rigid.f, SCENE.model[camera].rigid.faces_indexes, tm);
+    setvec4ArrayMulmat(s->model[camera].coords.v, 4, tm);
+    setfacesArrayMulMat(s->model[camera].rigid.f, s->model[camera].rigid.faces_indexes, tm);
 
-    SCENE.model[camera].q = multiplyQuats(SCENE.model[camera].q, SCENE.model[camera].rigid.q);
+    s->model[camera].q = multiplyQuats(s->model[camera].q, s->model[camera].rigid.q);
 
     //vec4 rad = vec4Normalize(vecSubvec(SCENE.mesh[3].coords.v[0], SCENE.model[camera].coords.v[0]));
     //SCENE.model[camera].rigid.velocity = vecAddvec(SCENE.mesh[3].coords.v[1], rad);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
-
+    scene *s = glfwGetWindowUserPointer(win);
     if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
         double x, y;
         glfwGetCursorPos(win, &x, &y);
-        printf("x: %d    y: %d\n", (int)x, (int)y);
+        s->mouseX = (int)x;
+        s->mouseY = (int)y;
+        printf("x: %d    y: %d\n", s->mouseX, s->mouseY);
 
-        SCENE.model[0].visible = SCENE.model[0].visible == 1 ? 0 : 1;
+        s->model[0].visible = s->model[0].visible == 1 ? 0 : 1;
 
 #if (NETWORK_INTERFACE)
         sendRequest("127.0.0.1", 8080, "GET /test_request");
@@ -87,13 +84,13 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
         //GLint data[2];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
         //glReadBuffer(GL_COLOR_ATTACHMENT1);
-        //glReadPixels(x, HEIGHT - y, 1, 1, GL_RG_INTEGER, GL_INT, &data);
+        //glReadPixels(s->mouseX, HEIGHT - s->mouseY, 1, 1, GL_RG_INTEGER, GL_INT, &data);
         //printf("colour: %d %d\n", data[0], data[1]);
 
         //GLubyte data[4];
         //glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
         //glReadBuffer(GL_COLOR_ATTACHMENT0);
-        //glReadPixels(x, HEIGHT - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+        //glReadPixels(s->mouseX, HEIGHT - s->mouseY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
         //printf("colour: %d %d %d %d\n", data[0], data[1], data[2], data[3]);
     } else if (button == GLFW_MOUSE_BUTTON_2) {
         if (action == GLFW_PRESS) {
@@ -104,59 +101,15 @@ static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
             /* Unregister a Cursor position callback function. */
             glfwSetCursorPosCallback(win, NULL);
             glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            lastMouseX = WIDTH * 0.5f;
-            lastMouseY = HEIGHT * 0.5f;
+            s->lastMouseX = s->WIDTH * 0.5f;
+            s->lastMouseY = s->HEIGHT * 0.5f;
         }
     }
 }
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64) // ################
-const static uint64_t epoch = ((uint64_t)116444736000000000ULL);
-void usleep(const int usec) {
-    HANDLE timer = 0;
-    LARGE_INTEGER ft;
-
-    ft.QuadPart = -(10 * usec); // Convert to 100 nanoseconds interval. Negative value indicates relative time.
-
-    timer = CreateWaitableTimerA(NULL, TRUE, NULL);
-    if (!timer)
-        return;
-    SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
-    WaitForSingleObject(timer, INFINITE);
-    CloseHandle(timer);
-}
-/* Initializes the given timeval struct, to the time of the day, at the moment, at which this function was called. */
-void gettimeofday(struct timeval *tp, struct timezone *tzp) {
-    FILETIME file_time;
-    SYSTEMTIME system_time;
-    ULARGE_INTEGER ularge;
-
-    GetSystemTime(&system_time);
-    SystemTimeToFileTime(&system_time, &file_time);
-    ularge.LowPart = file_time.dwLowDateTime;
-    ularge.HighPart = file_time.dwHighDateTime;
-
-    tp->tv_sec = (uint64_t)((ularge.QuadPart - epoch) / 10000000L);
-    tp->tv_usec = (uint64_t)(system_time.wMilliseconds * 1000);
-}
-#endif // !WIN32 ###########################################################
-/* Initializes the global timeval struct, to the time of the day, at the moment, at which this function was called. */
-static void initTimeCounter(void) {
-    gettimeofday(&tv0, NULL);
-}
-/* Counts how much time has passed since the first time that we casted gettimeofday(). */
-static void updateTimeCounter(void) {
-    LastFrameTimeCounter = TimeCounter;
-    gettimeofday(&tv, NULL);
-    TimeCounter = (float)(tv.tv_sec - tv0.tv_sec) + 0.000001 * ((float)(tv.tv_usec - tv0.tv_usec));
-    deltaTime = TimeCounter - LastFrameTimeCounter;
-}
-static void calculateFPS(void) {
-    Frame++;
-    if ((Frame % 30) == 0)
-        FPS = 1.f / deltaTime;
-    prevTime = TimeCounter;
-}
 int main(int argc, char *argv[]) {
+
+    scene mainScene = { 0 };
+    initScene(&mainScene, WIDTH, HEIGHT);
 
     if (argc > 1) {
         printf("argc: %d\n", argc);
@@ -184,18 +137,18 @@ int main(int argc, char *argv[]) {
     debug_log_info(stdout, "GLFW Version revision     : %d\n", vers[2]);
 
     /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "anvil", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(mainScene.WIDTH, mainScene.HEIGHT, "anvil", NULL, NULL);
     if ( !window ) {
         debug_log_critical(stdout, "glfwCreateWindow()");
         glfwTerminate();
         return -1;
     }
-    /* Initialize last mause x and y positions to start at the center of the screen. */
-    lastMouseX = WIDTH * 0.5f;
-    lastMouseY = HEIGHT * 0.5f;
 
     /* Get window's dimensions. */
-    glfwGetWindowSize(window, &WIDTH, &HEIGHT);
+    //glfwGetWindowSize(window, &mainScene.WIDTH, &mainScene.HEIGHT);
+
+    /* Pass a pointer to the window for retrieving in the key_callback. */
+    glfwSetWindowUserPointer(window, &SCENE);
 
     /* Register a keyboarb callback function. */
     glfwSetKeyCallback(window, key_callback);
@@ -212,13 +165,16 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    /* Initialize timing and frame rate metrics. */
+    metrics mtr = { 0 };
+
     /* Create and initialize the GLOBAL SCENE. */
     createScene();
 
     /* Create the Perspective Matrix which is in most cases constant. Changes only with window resize events. */
-    PERSPECTIVE_M = perspectiveMatrix(45.f, WIDTH / (float)HEIGHT, 10.f, INT32_MAX);
+    PERSPECTIVE_M = perspectiveMatrix(45.f, mainScene.WIDTH / (float)mainScene.HEIGHT, 10.f, INT32_MAX);
 
-    initTimeCounter();
+    initTimeCounter(&mtr);
     // float time_diff;
 
     /* Enable NETWORK_INTERFACE */
@@ -231,16 +187,17 @@ int main(int argc, char *argv[]) {
     enablePythonAPI();
 #endif
 
+    //float time_diff = 0;
     /* Loop until the user closes the window */
     while ( !glfwWindowShouldClose(window) ) {
         /* Timing functions. */
-        updateTimeCounter();
-        calculateFPS();
-        //printf("DeltaTime    : %f\n", deltaTime);
-        //printf("FPS          : %4.1f\n", FPS);
+        updateTimeCounter(&mtr);
+        calculateFPS(&mtr);
+        //printf("DeltaTime    : %f\n", mtr.deltaTime);
+        //printf("FPS          : %4.1f\n", mtr.FPS);
 
         /* Apply physics */
-        applyPhysics();
+        applyPhysics(&mtr);
 
         /* Animate models */
         animateModels();

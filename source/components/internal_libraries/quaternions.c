@@ -1,4 +1,4 @@
-#include "headers/components/quaternions.h"
+#include "headers/components/internal_libraries/quaternions.h"
 
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Usefull Global variables fro used in this file, to increase some calculations performance. */

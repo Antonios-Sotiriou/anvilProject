@@ -5,13 +5,10 @@
 /* Operating system checking. ######################################################### */
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     #define  CLIENT_OS  "Windows Operating System!"
-    #include <Windows.h>
-    #include <time.h>
 #elif defined(__APPLE__) || defined(__MACH__)
     #define  CLIENT_OS  "MacOs Operating System!"
 #elif defined(LINUX) || defined(__linux__)
     #define  CLIENT_OS  "Linux Operating System!"
-    #include <sys/time.h>
 #else
     #define  CLIENT_OS  "Unkown Operating System!"
 #endif
@@ -28,6 +25,7 @@
 #include "headers/flags.h"
 #include "headers/components/openGL.h"
 #include "headers/components/scene.h"
+#include "headers/components/general.h"
 #include "headers/components/rasterization.h"
 #include "headers/components/camera.h"
 #include "headers/components/physics.h"

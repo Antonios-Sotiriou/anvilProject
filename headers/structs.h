@@ -1,6 +1,22 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H 1
 
+/* Operating system checking. ######################################################### */
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+    #ifndef _WINDOWS_
+        #include <Windows.h>
+    #endif // !_WINDOWS_
+    #ifndef _INC_TIME
+        #include <time.h>
+    #endif // !_INC_TIME
+#elif defined(__APPLE__) || defined(__MACH__)
+#elif defined(LINUX) || defined(__linux__)
+    #ifndef _SYS_TIME_H_
+            #include <sys/time.h>
+    #endif // !_SYS_TIME_H_
+#else
+#endif
+
 #if !defined(_INCLUDED_SMM) || !defined(_SMMINTRIN_H_INCLUDED)
     #include <smmintrin.h>
 #endif // !_INCLUDED_SMM _SMMINTRIN_H_INCLUDED
@@ -170,11 +186,17 @@ typedef struct {
         quad_rows,         // Number os quads in rows direction. They are always vectors Width - 1.
         quad_cols;         // Number os quads in columns direction. They are always vectors Height - 1.
 } TerrainInfo;
+/* Encapsulates usefull time measurements. */
+typedef struct metrics {
+    float TimeCounter, LastFrameTimeCounter, deltaTime, prevTime, FPS;
+    int Frame;
+    struct timeval tv, tv0;
+} metrics;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
     model *model;
-    int model_indexes;
     TerrainInfo t;
+    int model_indexes, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint;
 } scene;
 
 #endif // !STRUCTS_H

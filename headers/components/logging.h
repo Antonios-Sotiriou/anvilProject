@@ -15,7 +15,7 @@
 #endif // !STRUCTS_H
 
 #ifndef VEC_MATH_H
-    #include "headers/components/vec_math.h"
+    #include "headers/components/internal_libraries/vec_math.h"
 #endif // !VEC_MATH_H
 
 #ifndef ANIMATIONS_H

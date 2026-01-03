@@ -3,7 +3,7 @@
  const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
 
 /* Responsible to apply all the forces that act on the rigid body and orginise the appropriate Collision detection functions steps. */
-void applyPhysics(void) {
+void applyPhysics(metrics *mtr) {
 
 	for (int i = 0; i < SCENE.model_indexes; i++) {
 
@@ -25,7 +25,7 @@ void applyPhysics(void) {
 
 				float g_accelaration = 0.f;
 				if (!SCENE.model[i].rigid.grounded) {
-					SCENE.model[i].rigid.falling_time += deltaTime;
+					SCENE.model[i].rigid.falling_time += mtr->deltaTime;
 					g_accelaration = 9.81f * (SCENE.model[i].rigid.falling_time * SCENE.model[i].rigid.falling_time);
 				}
 				SCENE.model[i].velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), SCENE.model[i].velocity);

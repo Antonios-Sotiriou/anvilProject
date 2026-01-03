@@ -33,8 +33,8 @@ static int terrainCallback(void *NotUsed, int argc, char **argv, char **azColNam
             anvil_scanf(argv[i], "{%f %f %f %f}", &s[0], &s[1], &s[2], &s[3]);
             SCENE.model[SCENE.model_indexes].scale = setvec4(s[0], s[1], s[2], s[3]);
         } else if (strncmp(azColName[i], "outer_radius", 12) == 0) {
-            float rad2 = vec4ExtractX(SCENE.model[SCENE.model_indexes].scale) * vec4ExtractX(SCENE.model[SCENE.model_indexes].scale); // Posible bugg here after we changed scale to vec4
-            SCENE.model[SCENE.model_indexes].outer_radius = sqrtf(rad2 + rad2);
+            float outer_rad = vec4ExtractX(SCENE.model[SCENE.model_indexes].scale) * vec4ExtractX(SCENE.model[SCENE.model_indexes].scale); // Posible bugg here after we changed scale to vec4
+            SCENE.model[SCENE.model_indexes].outer_radius = sqrtf(outer_rad + outer_rad);
         } else if (strncmp(azColName[i], "owns_rigid", 10) == 0) {
             SCENE.model[SCENE.model_indexes].owns_rigid = atoi(argv[i]);
         } else if (strncmp(azColName[i], "visible", 7) == 0) {
@@ -103,8 +103,8 @@ static int modelCallback(void* NotUsed, int argc, char** argv, char** azColName)
             anvil_scanf(argv[i], "{%f %f %f %f}", &s[0], &s[1], &s[2], &s[3]);
             SCENE.model[idx].scale = setvec4(s[0], s[1], s[2], s[3]);
         } else if (strncmp(azColName[i], "outer_radius", 12) == 0) {
-            float rad2 = vec4ExtractX(SCENE.model[idx].scale) * vec4ExtractX(SCENE.model[idx].scale); // Posible bugg here after we changed scale to vec4
-            SCENE.model[idx].outer_radius = sqrtf(rad2 + rad2);
+            float outer_rad = vec4ExtractX(SCENE.model[idx].scale) * vec4ExtractX(SCENE.model[idx].scale); // Posible bugg here after we changed scale to vec4
+            SCENE.model[idx].outer_radius = sqrtf(outer_rad + outer_rad);
         } else if (strncmp(azColName[i], "owns_rigid", 10) == 0) {
             SCENE.model[idx].owns_rigid = atoi(argv[i]);
         } else if (strncmp(azColName[i], "visible", 7) == 0) {
@@ -158,8 +158,8 @@ static int meshCallback(void *NotUsed, int argc, char **argv, char **azColName) 
     //    } else if (strncmp(azColName[i], "scale", 5) == 0) {
     //        SCENE.mesh[idx].scale = strtof(argv[i], NULL);
     //    } else if (strncmp(azColName[i], "outer_radius", 12) == 0) {
-    //        float rad2 = SCENE.mesh[idx].scale * SCENE.mesh[idx].scale;
-    //        SCENE.mesh[idx].outer_radius = sqrtf(rad2 + rad2);
+    //        float outer_rad = SCENE.mesh[idx].scale * SCENE.mesh[idx].scale;
+    //        SCENE.mesh[idx].outer_radius = sqrtf(outer_rad + outer_rad);
     //    } else if (strncmp(azColName[i], "state", 5) == 0) {
     //        SCENE.mesh[idx].rigid.state = atoi(argv[i]);
     //    } else if (strncmp(azColName[i], "velocity", 8) == 0) {

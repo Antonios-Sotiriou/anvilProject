@@ -14,15 +14,15 @@
 #endif // !STRUCTS_H
 
 #ifndef OBJ_H
-    #include "headers/components/obj.h"
+    #include "headers/components/internal_libraries/obj.h"
 #endif // !OBJ_H
 
 #ifndef QUATERNIONS_H
-    #include "headers/components/quaternions.h"
+    #include "headers/components/internal_libraries/quaternions.h"
 #endif // !QUATERNIONS_H
 
 #ifndef MATRICES_H
-    #include "headers/components/matrices.h"
+    #include "headers/components/internal_libraries/matrices.h"
 #endif // !MATRICES_H
 
 #ifndef TERRAIN_H

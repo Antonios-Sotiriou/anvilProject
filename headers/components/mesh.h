@@ -10,7 +10,7 @@
 #endif // !STRUCTS_H
 
 #ifndef OBJ_H
-    #include "headers/components/obj.h"
+    #include "headers/components/internal_libraries/obj.h"
 #endif // !OBJ_H
 
 #ifndef OPENGL_H

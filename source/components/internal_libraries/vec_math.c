@@ -1,4 +1,4 @@
-#include "headers/components/vec_math.h"
+#include "headers/components/internal_libraries/vec_math.h"
 
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Initializes a vec4 with the given values. */

@@ -13,22 +13,22 @@
 
 // Local created headers
 #ifndef VEC_MATH_H
-    #include "headers/components/vec_math.h"
+    #include "headers/components/internal_libraries/vec_math.h"
 #endif // !VEC_MATH_H
 
 #ifndef QUATERNIONS_H
-    #include "headers/components/quaternions.h"
+    #include "headers/components/internal_libraries/quaternions.h"
 #endif // !QUATERNIONS_H
 
 #ifndef MATRICES_H
-    #include "headers/components/matrices.h"
+    #include "headers/components/internal_libraries/matrices.h"
 #endif // !MATRICES_H
 
 #ifndef COLLISIONS_H
     #include "headers/components/collisions.h"
 #endif // !COLLISIONS_H
 
-void applyPhysics(void);
+void applyPhysics(metrics *mtr);
 
 #endif // !PHYSICS_H
 
