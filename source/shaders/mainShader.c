@@ -158,8 +158,8 @@ void mainShader(scene *s) {
     glUseProgram(mainShaderProgram);
 
     //glViewport(0, 0, s->WIDTH, s->HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
-    glDrawBuffers(2, drawBuffers);
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
+    glDrawBuffers(2, s->buffers.drawBuffers);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);

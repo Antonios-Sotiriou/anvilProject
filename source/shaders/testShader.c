@@ -78,8 +78,7 @@ void testShader(scene *s) {
 
     //glPolygonMode(GL_FRONT, GL_LINE);
 
-    //glViewport(0, 0, s->WIDTH, s->HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */

@@ -29,7 +29,7 @@ void createMeshVAO(mesh *m);
 void releaseMeshVAO(mesh *m);
 void createRigidVAO(rigid *r);
 void releaseRigidVAO(rigid *r);
-void releaseOpenGLComponents(void);
+void releaseSceneFrameBuffers(scene *s);
 
 // For Debugging purposes.That way we make errors more user friendly.
 #define glCheckError() glCheckError_(__FILE__, __LINE__);

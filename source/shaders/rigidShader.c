@@ -64,7 +64,7 @@ void rigidShader(scene *s) {
     glPolygonMode(GL_FRONT, GL_LINE);
 
     //glViewport(0, 0, s->WIDTH, s->HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
     //glDisable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 

@@ -17,7 +17,7 @@ const void rasterize(scene *s) {
     if (s->DISPLAY_RIGID)
         rigidShader(s);
 
-    drawOnSceneCanvas(&s->canvas, s->activeTexture);
+    drawOnSceneCanvas(&s->canvas, s->textures.activeTexture);
 }
 const int rigidFrustumCulling(rigid *r, mat4x4 *PROJECTION_M) {
     rigid temp = { 0 };

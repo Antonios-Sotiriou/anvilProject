@@ -199,20 +199,22 @@ typedef struct canvas {
 /* Struct to encapsulate main scene or general Frame Buffers. */
 typedef struct buffers {
     GLuint msaaFrameBuffer, mainFrameBuffer, shadowFrameBuffer;
+    GLenum drawBuffers[2];
 } buffers;
 /* Encapsulates main scene global textures. */
-typedef struct texture {
+typedef struct textures {
     int activeTexture, totalTextures;
-    GLuint msaaColorTexture, msaaDepthStencilTexture, mainColorTexture, mainDepthStencilTexture, mainInfoTexture;
-} texture;
+    GLuint msaaColorTexture, msaaDepthStencilTexture, mainColorTexture, mainDepthStencilTexture, mainInfoTexture, shadowDepthTexture;
+} textures;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
     model *model;
     TerrainInfo t;
     metrics mtr;
     mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
-    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID, activeTexture, totalTextures;
-    GLuint msaaFrameBuffer, msaaColorTexture, msaaDepthStencilTexture, mainFrameBuffer, mainColorTexture, mainDepthStencilTexture, mainInfoTexture;
+    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID;
+    buffers buffers;
+    textures textures;
     canvas canvas;
 } scene;
 

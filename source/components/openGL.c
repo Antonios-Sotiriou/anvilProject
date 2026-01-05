@@ -2,9 +2,6 @@
 
 /* OpenGL Global veriables. */
 GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
-GLuint mainFBO, shadowMapFBO;
-static GLuint shadowDepthMap, mainColorMap, mainDepthMap, mainInfoMap;
-const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
@@ -42,37 +39,34 @@ void initOpenGLComponents(void) {
 /* Initializes user defined framebuffers and framebuffers textures. */
 void createSceneFrameBuffers(scene *s) {
     /* Create a user specific framebuffer to use it for rendering instead of the default framebuffer.*/
-    glGenFramebuffers(1, &mainFBO);
+    glGenFramebuffers(1, &s->buffers.mainFrameBuffer);
 
-    glGenTextures(1, &mainColorMap);
-    printf("mainColorMap: %d\n", mainColorMap);
+    glGenTextures(1, &s->textures.mainColorTexture);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mainColorMap);
+    glBindTexture(GL_TEXTURE_2D, s->textures.mainColorTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, s->WIDTH, s->HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     /* Create a 2D Texture to use it as the depth buffer for the user created framebuffer. */
-    glGenTextures(1, &mainDepthMap);
-    printf("mainDepthMap: %d\n", mainDepthMap);
+    glGenTextures(1, &s->textures.mainDepthStencilTexture);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, mainDepthMap);
+    glBindTexture(GL_TEXTURE_2D, s->textures.mainDepthStencilTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, s->WIDTH, s->HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     /* Create a INFO texture.*/
-    glGenTextures(1, &mainInfoMap);
-    printf("mainInfoMap: %d\n", mainInfoMap);
+    glGenTextures(1, &s->textures.mainInfoTexture);
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, mainInfoMap);
+    glBindTexture(GL_TEXTURE_2D, s->textures.mainInfoTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32I, s->WIDTH, s->HEIGHT, 0, GL_RG_INTEGER, GL_INT, NULL);
 
     /* Attach the generated 2D Texture to our Shadow Map framebuffer's depth buffer */
-    glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainColorMap, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mainDepthMap, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mainInfoMap, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s->textures.mainColorTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, s->textures.mainDepthStencilTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, s->textures.mainInfoTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         debug_log_error(stdout, "glCheckFramebufferStatus()");
     }
@@ -83,26 +77,27 @@ void createSceneFrameBuffers(scene *s) {
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
     /* Create a user specific framebuffer to use it as our ShadowMap Buffer.*/
-    glGenFramebuffers(1, &shadowMapFBO);
+    glGenFramebuffers(1, &s->buffers.shadowFrameBuffer);
 
     /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
-    glGenTextures(1, &shadowDepthMap);
-    printf("shadowDepthMap: %d\n", shadowDepthMap);
+    glGenTextures(1, &s->textures.shadowDepthTexture);
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, shadowDepthMap);
+    glBindTexture(GL_TEXTURE_2D, s->textures.shadowDepthTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     /* Attach the generated 2D Texture to our Shadow Map framebuffer's depth buffer */
-    glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowDepthMap, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.shadowFrameBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, s->textures.shadowDepthTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         debug_log_error(stdout, "glCheckFramebufferStatus()");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    s->totalTextures = 2;
+    s->buffers.drawBuffers[0] = GL_COLOR_ATTACHMENT0;
+    s->buffers.drawBuffers[1] = GL_COLOR_ATTACHMENT1;
+    s->textures.totalTextures = 2;
 }
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
 void createMeshVAO(mesh *m) {
@@ -148,14 +143,14 @@ void releaseRigidVAO(rigid *r) {
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
 }
-void releaseOpenGLComponents(void) {
-    glDeleteFramebuffers(1, &mainFBO);
-    glDeleteTextures(1, &mainColorMap);
-    glDeleteTextures(1, &mainDepthMap);
-    glDeleteTextures(1, &mainInfoMap);
+void releaseSceneFrameBuffers(scene *s) {
+    glDeleteFramebuffers(1, &s->buffers.mainFrameBuffer);
+    glDeleteTextures(1, &s->textures.msaaColorTexture);
+    glDeleteTextures(1, &s->textures.mainDepthStencilTexture);
+    glDeleteTextures(1, &s->textures.mainInfoTexture);
 
-    glDeleteFramebuffers(1, &shadowMapFBO);
-    glDeleteTextures(1, &shadowDepthMap);
+    glDeleteFramebuffers(1, &s->buffers.shadowFrameBuffer);
+    glDeleteTextures(1, &s->textures.shadowDepthTexture);
 }
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     printf("%s type = %d, severity = %d, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);

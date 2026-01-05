@@ -1,5 +1,6 @@
 #include "headers/main.h"
 
+static void window_size_callback(GLFWwindow* win, int width, int height);
 static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods);
 static void cursor_pos_callback(GLFWwindow* win, double x, double y);
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods);
@@ -46,6 +47,9 @@ int main(int argc, char* argv[]) {
 
     /* Pass a pointer to the window for retrieving in the key_callback. */
     glfwSetWindowUserPointer(window, &mainScene);
+
+    /* Register a window resize event callback. */
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     /* Register a keyboarb callback function. */
     glfwSetKeyCallback(window, key_callback);
@@ -120,8 +124,8 @@ int main(int argc, char* argv[]) {
     glfwTerminate();
 
     /* Releases GLOBAL SCENE resources. */
+    releaseSceneFrameBuffers(&mainScene);
     releaseScene(&mainScene);
-    releaseOpenGLComponents();
 
     return 0;
 }
@@ -156,12 +160,18 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
         case GLFW_KEY_T:
             if (action == GLFW_PRESS) {
-                s->activeTexture++;
-                if (s->activeTexture == s->totalTextures) {
-                    s->activeTexture = 0;
+                s->textures.activeTexture++;
+                if (s->textures.activeTexture == s->textures.totalTextures) {
+                    s->textures.activeTexture = 0;
                 }
             }
     }
+}
+static void window_size_callback(GLFWwindow *win, int width, int height) {
+    scene *s = glfwGetWindowUserPointer(win);
+    s->WIDTH = width;
+    s->HEIGHT = height;
+    glViewport(0, 0, s->WIDTH, s->HEIGHT);
 }
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods) {
     scene* s = glfwGetWindowUserPointer(win);
