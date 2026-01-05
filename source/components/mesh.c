@@ -51,11 +51,8 @@ void createMesh(mesh *m, ENTRY obj) {
 void releaseMesh(mesh *m) {
     free(m->cname);
     free(m->children);
-    glDeleteVertexArrays(1, &m->VAO);
-    glDeleteBuffers(1, &m->VBO);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
+
+    releaseMeshVAO(m);
 
     if (m->owns_rigid == ENABLED)
         releaseRigid(&m->rigid);

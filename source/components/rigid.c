@@ -118,11 +118,7 @@ void getRigidLimits(rigid *r) {
 #endif // VECTORIZED_CODE #######################################################################################
 void releaseRigid(rigid *r) {
 	free(r->f);
-	glDeleteVertexArrays(1, &r->VAO);
-	glDeleteBuffers(1, &r->VBO);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+    releaseRigidVAO(r);
 }
 
 

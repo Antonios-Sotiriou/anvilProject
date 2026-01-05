@@ -1,24 +1,25 @@
 #include "headers/components/rasterization.h"
 
 /* Rasterizing Meshes with appropriate shaders. */
-const void rasterize(void) {
+const void rasterize(scene *s) {
 
-    LOOKAT_M = lookAtMatrix(
-        SCENE.model[SCENE.eyePoint].coords.v[0],
-        SCENE.model[SCENE.eyePoint].coords.v[1],
-        SCENE.model[SCENE.eyePoint].coords.v[2],
-        SCENE.model[SCENE.eyePoint].coords.v[3]
+    s->LOOKAT_M = lookAtMatrix(
+        s->model[s->eyePoint].coords.v[0],
+        s->model[s->eyePoint].coords.v[1],
+        s->model[s->eyePoint].coords.v[2],
+        s->model[s->eyePoint].coords.v[3]
     );
-    VIEW_M = inverseMatrix(LOOKAT_M);
-    PROJECTION_M = matMulMat(VIEW_M, PERSPECTIVE_M);
+    s->VIEW_M = inverseMatrix(s->LOOKAT_M);
+    s->PROJECTION_M = matMulMat(s->VIEW_M, s->PERSPECTIVE_M);
 
-    //mainShader();
-    testShader();
-    if (DISPLAY_RIGID)
-        rigidShader();
-    displayTexture(0);
+    //mainShader(s);
+    testShader(s);
+    if (s->DISPLAY_RIGID)
+        rigidShader(s);
+
+    drawOnSceneCanvas(&s->canvas, s->activeTexture);
 }
-const int rigidFrustumCulling(rigid *r) {
+const int rigidFrustumCulling(rigid *r, mat4x4 *PROJECTION_M) {
     rigid temp = { 0 };
     int f_bytes = r->faces_indexes * sizeof(face);
     temp.f = malloc(f_bytes);
@@ -30,7 +31,7 @@ const int rigidFrustumCulling(rigid *r) {
     temp.faces_indexes = r->faces_indexes;
     memcpy(temp.f, r->f, f_bytes);
 
-    setfacesArrayMulMat(temp.f, temp.faces_indexes, PROJECTION_M);
+    setfacesArrayMulMat(temp.f, temp.faces_indexes, *PROJECTION_M);
     float w = 0;
     for (int i = 0; i < temp.faces_indexes; i++) {
         for (int y = 0; y < 3; y++) {

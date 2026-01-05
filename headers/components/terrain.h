@@ -31,14 +31,14 @@
 #endif // !DBAPI_H
 
 int initTerrainsHeightMaps(void);
-void initModelQuadInfo(model *m);
-void addModelToQuad(model *m);
-void removeModelFromQuad(model *m);
-void getTerrainPointInfo(vec4 coords, int *qi, int *uol);
-void getModelPositionData(model *m, vec4 *tp, vec4 *tn);
-const TerrainPointInfo getvec4PositionData(const vec4 v);
-void logTerrainInfo(void);
-void logTerrainQuad(const int quad_index);
+void initModelQuadInfo(scene *s, model *m);
+void addModelToQuad(scene *s, model *m);
+void removeModelFromQuad(scene *s, model *m);
+void getTerrainPointInfo(scene *s, vec4 coords, int *qi, int *uol);
+void getModelPositionData(scene *s, model *m, vec4 *tp, vec4 *tn);
+const TerrainPointInfo getvec4PositionData(scene *s, const vec4 v);
+void logTerrainQuad(scene *s, const int quad_index);
+void logTerrainInfo(scene* s);
 
 #endif // !TERRAIN_H
 

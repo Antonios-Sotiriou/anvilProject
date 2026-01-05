@@ -24,7 +24,7 @@
     #include "libraries/glfw-3.4/include/GLFW/glfw3.h"
 #endif
 
-void movementDispatch(const int key, const int action);
+void movementDispatch(model *m, const int key, const int action);
 
 #endif // !CAMERA_H
 

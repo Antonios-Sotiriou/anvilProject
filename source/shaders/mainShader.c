@@ -1,6 +1,6 @@
 #include "headers/shaders/mainShader.h"
 
-const static char* vertexShaderSource = "#version 450 core\n"
+const static char *vertexShaderSource = "#version 450 core\n"
 "layout (location = 0) in vec3 vsPos;\n"
 "layout (location = 1) in vec2 vsTexels;\n"
 "layout (location = 2) in vec3 vsNormal;\n"
@@ -30,7 +30,7 @@ const static char* vertexShaderSource = "#version 450 core\n"
 "    gl_Position = vs_out.fsPos;\n"
 "    vs_out.id = mesh_id;\n"
 "}\n\0";
-const static char* fragmentShaderSource = "#version 450 core\n"
+const static char *fragmentShaderSource = "#version 450 core\n"
 "in VS_OUT {\n"
 "    vec4 fsPos;\n"
 "    vec3 fragPosWS;\n"
@@ -153,27 +153,27 @@ const int initMainShader(void) {
 
     return shaderProgram;
 }
-void mainShader(void) {
+void mainShader(scene *s) {
 
     glUseProgram(mainShaderProgram);
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+    //glViewport(0, 0, s->WIDTH, s->HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
     glDrawBuffers(2, drawBuffers);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
+    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);
 
     mat4x4 modelMatrix;
-    for (int i = 0; i < SCENE.model_indexes; i++) {
-        if (SCENE.model[i].visible) {
-            modelMatrix = modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+    for (int i = 0; i < s->model_indexes; i++) {
+        if (s->model[i].visible) {
+            modelMatrix = modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]);
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
-            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
-                glUniform1i(3, SCENE.model[i].mesh[x].pk);
-                glBindVertexArray(SCENE.model[i].mesh[x].VAO);
-                glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
+            for (int x = 0; x < s->model[i].mesh_indexes; x++) {
+                glUniform1i(3, s->model[i].mesh[x].pk);
+                glBindVertexArray(s->model[i].mesh[x].VAO);
+                glDrawArrays(GL_TRIANGLES, 0, s->model[i].mesh[x].vecs_indexes);
             }
         }
     }

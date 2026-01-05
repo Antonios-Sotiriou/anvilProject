@@ -23,11 +23,16 @@
     #include "headers/shaders/rigidShader.h"
 #endif // !RIGIDSHADER_H
 
-const int initOpenGLComponents(void);
+void initOpenGLComponents(void);
+void createSceneFrameBuffers(scene *s);
 void createMeshVAO(mesh *m);
+void releaseMeshVAO(mesh *m);
 void createRigidVAO(rigid *r);
+void releaseRigidVAO(rigid *r);
 void releaseOpenGLComponents(void);
-void glErrorReport(void);
+
+// For Debugging purposes.That way we make errors more user friendly.
+#define glCheckError() glCheckError_(__FILE__, __LINE__);
 
 #endif // !OPENGL_H
 

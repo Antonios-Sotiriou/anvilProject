@@ -160,7 +160,7 @@ typedef struct {
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     animation anim;
 } model;
-/* Struct which is usefull only to initialize terrains from the first time and create the obj files for them. */
+/* Struct which is usefull only to initialize terrains for the first time and create the obj files for them. */
 typedef struct {
     char *cname;                         // The name to identify a terrain. Thats a dynamically size adoptaable null terminating string.
     int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
@@ -172,12 +172,12 @@ typedef struct {
     vec4 pos, normal;
     int quad_index, quad_face;
 } TerrainPointInfo;
-/* Struct to hold infos about a terrain quad. */
+/* Holds infos about a terrain quad. */
 typedef struct {
-    int* mpks,             // Integer array to save the Primary keys of the meshes, which are memmbers of this quad.
-        mpks_indexes;      // m_pks: Primary keys aka(Scene index) of the meshes, m_indexes: number of m_pks in the m_pks array.
+    int* mpks,             // Integer array to save the Primary keys of the models, which are memmbers of this quad.
+        mpks_indexes;      // m_pks: Primary keys aka(Scene index) of the models, m_indexes: number of m_pks in the m_pks array.
 } Quad;
-/* Struct to hold usefull Terrain information to be available throught the program after we release the height map. */
+/* Holds usefull Terrain information to be available throught the program after we release the height map. */
 typedef struct {
     Quad *quad;            // Quads pointer to save info about each quad of the terrain.
     int vec_width,         // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
@@ -192,11 +192,28 @@ typedef struct metrics {
     int Frame;
     struct timeval tv, tv0;
 } metrics;
+/* Encapsulates variables which are usefull, to draw the scene, or any texture we want on a quad. */
+typedef struct canvas {
+    GLuint VAO, VBO;
+} canvas;
+/* Struct to encapsulate main scene or general Frame Buffers. */
+typedef struct buffers {
+    GLuint msaaFrameBuffer, mainFrameBuffer, shadowFrameBuffer;
+} buffers;
+/* Encapsulates main scene global textures. */
+typedef struct texture {
+    int activeTexture, totalTextures;
+    GLuint msaaColorTexture, msaaDepthStencilTexture, mainColorTexture, mainDepthStencilTexture, mainInfoTexture;
+} texture;
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
     model *model;
     TerrainInfo t;
-    int model_indexes, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint;
+    metrics mtr;
+    mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M;
+    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID, activeTexture, totalTextures;
+    GLuint msaaFrameBuffer, msaaColorTexture, msaaDepthStencilTexture, mainFrameBuffer, mainColorTexture, mainDepthStencilTexture, mainInfoTexture;
+    canvas canvas;
 } scene;
 
 #endif // !STRUCTS_H

@@ -14,11 +14,7 @@
     #include "headers/global.h"
 #endif // !GLOBAL_H
 
-/* Defined in openGL.c */
-extern void glErrorReport(void);
-
 const int initDisplayShader(void);
-void displayTexture(const int textureIndex);
 
 #endif // !DISPLAYSHADER_H
 

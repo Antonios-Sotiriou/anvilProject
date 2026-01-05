@@ -6,6 +6,11 @@
     #include "headers/global.h"
 #endif // !GLOBAL_H
 
+/* Global variables. */
+#ifndef SCENE_H
+    #include "headers/components/scene.h"
+#endif // !SCENE_H
+
 /* Shaders. */
 #ifndef MAINSHADER_H
     #include "headers/shaders/mainShader.h"
@@ -23,8 +28,8 @@
     #include "headers/shaders/rigidShader.h"
 #endif // !RIGIDSHADER_H
 
-const void rasterize();
-const int rigidFrustumCulling(rigid *r);
+const void rasterize(scene *s);
+const int rigidFrustumCulling(rigid *r, mat4x4 *PROJECTION_M);
 
 #endif // !RASTERIZATION_H
 

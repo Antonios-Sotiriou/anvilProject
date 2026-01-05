@@ -5,9 +5,9 @@
     #include <stdio.h>
 #endif // !STDIO_H _STDIO_H
 
-#ifndef GLOBAL_H
-    #include "headers/global.h"
-#endif // !GLOBAL_H
+//#ifndef GLOBAL_H
+//    #include "headers/global.h"
+//#endif // !GLOBAL_H
 
 #ifndef STRUCTS_H
     #include "headers/structs.h"
@@ -25,10 +25,16 @@
     #include "libraries/sqlite-amalgamation/sqlite3.h"
 #endif // !SQLITE3_H
 
-const int dbcountTableRows(const char path[], const char sql_cmd[]);
-void dbloadTable(const char path[], const int type, const char sql_cmd[]);
-void dbExecuteCommand(const char path[], const char sql_cmd[]);
-void dbloadTerrainInfo(const char path[], TerrainInitInfo *tif);
+/* Struct to pass usefull data to the database callback functions. */
+typedef struct DBparams {
+    scene *s;
+    int index;
+} DBparams;
+
+const int dbcountTableRows(const char dbpath[], const char sql_cmd[]);
+void dbloadTable(const char dbpath[], scene *s, const int table_type, const char sql_cmd[]);
+void dbExecuteCommand(const char dbpath[], const char sql_cmd[]);
+void dbloadTerrainInfo(const char dbpath[], TerrainInitInfo *tif);
 
 #endif // !DBAPI_H
 

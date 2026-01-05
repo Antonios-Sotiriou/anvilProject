@@ -36,7 +36,7 @@
 #endif // !MATRICES_H
 
 void loadModelAnimations(model *m);
-void animateModels(void);
+void animateModels(scene *s);
 void releaseAnimations(animation *m);
 
 #endif // !ANIMATIONS_H

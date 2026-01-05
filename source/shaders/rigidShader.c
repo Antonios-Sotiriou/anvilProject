@@ -57,38 +57,38 @@ const int initRigidShader(void) {
 
     return shaderProgram;
 }
-void rigidShader(void) {
+void rigidShader(scene *s) {
 
     glUseProgram(rigidShaderProgram);
 
     glPolygonMode(GL_FRONT, GL_LINE);
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+    //glViewport(0, 0, s->WIDTH, s->HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
     //glDisable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
+    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);
 
     mat4x4 modelMatrix;
-    for (int i = 0; i < SCENE.model_indexes; i++) {
-        if (SCENE.model[i].owns_rigid) {
+    for (int i = 0; i < s->model_indexes; i++) {
+        if (s->model[i].owns_rigid) {
 
-            modelMatrix = modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+            modelMatrix = modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]);
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
-            glBindVertexArray(SCENE.model[i].rigid.VAO);
-            glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].rigid.vecs_indexes);
+            glBindVertexArray(s->model[i].rigid.VAO);
+            glDrawArrays(GL_TRIANGLES, 0, s->model[i].rigid.vecs_indexes);
 
-            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+            for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
-                if (SCENE.model[i].mesh[x].owns_rigid) {
+                if (s->model[i].mesh[x].owns_rigid) {
 
-                    modelMatrix = modelMatFromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]);
+                    modelMatrix = modelMatFromQST(s->model[i].mesh[x].q, s->model[i].mesh[x].scale, s->model[i].mesh[x].coords.v[0]);
                     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
-                    glBindVertexArray(SCENE.model[i].mesh[x].rigid.VAO);
-                    glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].rigid.vecs_indexes);
+                    glBindVertexArray(s->model[i].mesh[x].rigid.VAO);
+                    glDrawArrays(GL_TRIANGLES, 0, s->model[i].mesh[x].rigid.vecs_indexes);
                 }
             }
         }

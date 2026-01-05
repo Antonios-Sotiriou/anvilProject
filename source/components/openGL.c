@@ -6,11 +6,10 @@ GLuint mainFBO, shadowMapFBO;
 static GLuint shadowDepthMap, mainColorMap, mainDepthMap, mainInfoMap;
 const GLenum drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
-const static void createFrameBuffers(void);
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 /* Initializing all rasterizing importand Global components. */
-const int initOpenGLComponents(void) {
+void initOpenGLComponents(void) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
@@ -21,7 +20,7 @@ const int initOpenGLComponents(void) {
     if ( GLEW_OK != err ) {
         debug_log_critical(stdout, "glewInit()");
         debug_log_info(stdout, "%s\n", glewGetErrorString(3));
-        return -1;
+        return;
     }
 
     debug_log_info(stdout, "GLEW Version              : %s\n", glewGetString(GLEW_VERSION));
@@ -34,19 +33,14 @@ const int initOpenGLComponents(void) {
         glDebugMessageCallback(glErrorReportCallback, 0);
     }
 
-    /* Create user defined framebuffers and framebuffers textures. */
-    createFrameBuffers();
-
     /* Initialize the shaders. */
     mainShaderProgram = initMainShader();
     displayShaderProgram = initDisplayShader();
     testShaderProgram = initTestShader();
     rigidShaderProgram = initRigidShader();
-
-    return 0;
 }
 /* Initializes user defined framebuffers and framebuffers textures. */
-const static void createFrameBuffers(void) {
+void createSceneFrameBuffers(scene *s) {
     /* Create a user specific framebuffer to use it for rendering instead of the default framebuffer.*/
     glGenFramebuffers(1, &mainFBO);
 
@@ -54,7 +48,7 @@ const static void createFrameBuffers(void) {
     printf("mainColorMap: %d\n", mainColorMap);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mainColorMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, s->WIDTH, s->HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -63,7 +57,7 @@ const static void createFrameBuffers(void) {
     printf("mainDepthMap: %d\n", mainDepthMap);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, mainDepthMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WIDTH, HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, s->WIDTH, s->HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -72,7 +66,7 @@ const static void createFrameBuffers(void) {
     printf("mainInfoMap: %d\n", mainInfoMap);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, mainInfoMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32I, WIDTH, HEIGHT, 0, GL_RG_INTEGER, GL_INT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32I, s->WIDTH, s->HEIGHT, 0, GL_RG_INTEGER, GL_INT, NULL);
 
     /* Attach the generated 2D Texture to our Shadow Map framebuffer's depth buffer */
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
@@ -103,12 +97,12 @@ const static void createFrameBuffers(void) {
     /* Attach the generated 2D Texture to our Shadow Map framebuffer's depth buffer */
     glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowDepthMap, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         debug_log_error(stdout, "glCheckFramebufferStatus()");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    s->totalTextures = 2;
 }
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
 void createMeshVAO(mesh *m) {
@@ -125,6 +119,13 @@ void createMeshVAO(mesh *m) {
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 }
+void releaseMeshVAO(mesh *m) {
+    glDeleteBuffers(1, &m->VBO);
+    glDeleteVertexArrays(1, &m->VAO);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+}
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the rigid if we want. */
 void createRigidVAO(rigid *r) {
     glGenVertexArrays(1, &r->VAO);
@@ -140,6 +141,13 @@ void createRigidVAO(rigid *r) {
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 }
+void releaseRigidVAO(rigid *r) {
+    glDeleteBuffers(1, &r->VBO);
+    glDeleteVertexArrays(1, &r->VAO);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+}
 void releaseOpenGLComponents(void) {
     glDeleteFramebuffers(1, &mainFBO);
     glDeleteTextures(1, &mainColorMap);
@@ -152,11 +160,22 @@ void releaseOpenGLComponents(void) {
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     printf("%s type = %d, severity = %d, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
 }
-void glErrorReport(void) {
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        debug_log_error(stdout, "glGetError()");
+GLenum glCheckError_(const char *file, int line) {
+    const char *errorString;
+    GLenum errorCode = { 0 };
+    while ((errorCode = glGetError()) != GL_NO_ERROR) {
+        switch (errorCode) {
+            case GL_INVALID_ENUM:                  errorString = "INVALID_ENUM__________________"; break;
+            case GL_INVALID_VALUE:                 errorString = "INVALID_VALUE_________________"; break;
+            case GL_INVALID_OPERATION:             errorString = "INVALID_OPERATION_____________"; break;
+            case GL_STACK_OVERFLOW:                errorString = "STACK_OVERFLOW________________"; break;
+            case GL_STACK_UNDERFLOW:               errorString = "STACK_UNDERFLOW_______________"; break;
+            case GL_OUT_OF_MEMORY:                 errorString = "OUT_OF_MEMORY_________________"; break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION: errorString = "INVALID_FRAMEBUFFER_OPERATION_"; break;
+        }
+        fprintf(stderr, "Error OpenGL: %s: File %s: Line %d\n", errorString, file, line);
     }
+    return errorCode;
 }
 
 

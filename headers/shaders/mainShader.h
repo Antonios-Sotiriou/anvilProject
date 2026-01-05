@@ -30,7 +30,7 @@
 extern void glErrorReport(void);
 
 const int initMainShader(void);
-void mainShader(void);
+void mainShader(scene *s);
 
 #endif // !MAINSHADER_H
 

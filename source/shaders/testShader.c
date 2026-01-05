@@ -19,10 +19,18 @@ const static char *vertexShaderSource = "#version 450 core\n"
 const static char *fragmentShaderSource = "#version 450 core\n"
 //"layout (location = 0) in flat int id;\n"
 
+ //"float near = 0.1f;\n"
+ //"float far = 100.f;\n"
+ //"float linearizeDepth(float depth) {\n"
+ //"    float z = (depth * 2.f) - 1.f;\n"
+ //"    return (2.f * near * far) / (far + near - z * (far - near));\n"
+ //"};\n"
+
 "layout (location = 0) out vec4 FragColor;\n"
 
 "void main() {\n"
 "    FragColor = vec4(1.f, 0.f, 0.5f, 1.f);\n"
+ //"    gl_FragDepth = linearizeDepth(gl_FragCoord.z) / far;\n"
 "}\n\0";
 
 const int initTestShader(void) {
@@ -64,36 +72,34 @@ const int initTestShader(void) {
 
     return shaderProgram;
 }
-void testShader(void) {
+void testShader(scene *s) {
 
     glUseProgram(testShaderProgram);
 
-    glPolygonMode(GL_FRONT, GL_LINE);
+    //glPolygonMode(GL_FRONT, GL_LINE);
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+    //glViewport(0, 0, s->WIDTH, s->HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, mainFBO);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */
-    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&PROJECTION_M);
+    glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);
 
-    for (int i = 0; i < SCENE.model_indexes; i++) {
-
-
+    for (int i = 0; i < s->model_indexes; i++) {
         // View Frustum Culling implementation.
-        if (rigidFrustumCulling(&SCENE.model[i].rigid))
+        if (rigidFrustumCulling(&s->model[i].rigid, &s->PROJECTION_M))
             continue;
 
-        if (SCENE.model[i].visible) {
+        if (s->model[i].visible) {
 
-            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&SCENE.model[i].model_matrix);
+            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&s->model[i].model_matrix);
 
-            for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+            for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
-                glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&SCENE.model[i].mesh[x].model_matrix);
+                glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&s->model[i].mesh[x].model_matrix);
                 //glUniform1i(2, i + 1);
-                glBindVertexArray(SCENE.model[i].mesh[x].VAO);
-                glDrawArrays(GL_TRIANGLES, 0, SCENE.model[i].mesh[x].vecs_indexes);
+                glBindVertexArray(s->model[i].mesh[x].VAO);
+                glDrawArrays(GL_TRIANGLES, 0, s->model[i].mesh[x].vecs_indexes);
             }
         }
     }
@@ -102,7 +108,7 @@ void testShader(void) {
     debug_log_OpenGL();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glPolygonMode(GL_FRONT, GL_FILL);
+    //glPolygonMode(GL_FRONT, GL_FILL);
 }
 
 

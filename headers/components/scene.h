@@ -26,8 +26,11 @@
 #endif // !ANIMATIONS_H
 
 void initScene(scene* s, int winWidth, int winHeight);
-void createScene(void);
-void releaseScene(void);
+void createScene(scene *s);
+void releaseScene(scene *s);
+void createSceneCanvas(canvas *c);
+void releaseSceneCanvas(canvas *c);
+void drawOnSceneCanvas(canvas *c, const int textureIndex);
 
 #endif // !SCENE_H
 

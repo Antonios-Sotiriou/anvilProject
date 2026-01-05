@@ -105,54 +105,54 @@ void loadModelAnimations(model* m) {
 //        applyReverseTranformation(m->parent, mat);
 //    }
 //}
-void animateModels(void) {
+void animateModels(scene *s) {
 
-    for (int i = 0; i < SCENE.model_indexes; i++) {
-        if (SCENE.model[i].visible) {
-            if (SCENE.model[i].owns_anim) {
+    for (int i = 0; i < s->model_indexes; i++) {
+        if (s->model[i].visible) {
+            if (s->model[i].owns_anim) {
 
                 if ((COUNT % 100) == 0) {
                     f_index += 1;
 
-                    if (f_index > SCENE.model[i].anim.frames)
+                    if (f_index > s->model[i].anim.frames)
                         f_index = 0;
                     rot += 10.0f;
                 }
                 COUNT++;
 
-                vec4 lc = SCENE.model[i].anim.lc[f_index];
-                quat rq = SCENE.model[i].anim.rq[f_index];
-                vec4 sc = SCENE.model[i].anim.sc[f_index];
+                vec4 lc = s->model[i].anim.lc[f_index];
+                quat rq = s->model[i].anim.rq[f_index];
+                vec4 sc = s->model[i].anim.sc[f_index];
 
-                SCENE.model[i].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
-                // SCENE.model[i].anim.anim_matrix = SCENE.model[i].anim.bm[f_index];
+                s->model[i].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
+                // s->model[i].anim.anim_matrix = s->model[i].anim.bm[f_index];
 
-                if (SCENE.model[i].mesh_indexes > 1) {
-                    for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+                if (s->model[i].mesh_indexes > 1) {
+                    for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
-                        vec4 lc = SCENE.model[i].mesh[x].anim.lc[f_index];
-                        quat rq = SCENE.model[i].mesh[x].anim.rq[f_index];
-                        vec4 sc = SCENE.model[i].mesh[x].anim.sc[f_index];
+                        vec4 lc = s->model[i].mesh[x].anim.lc[f_index];
+                        quat rq = s->model[i].mesh[x].anim.rq[f_index];
+                        vec4 sc = s->model[i].mesh[x].anim.sc[f_index];
 
-                        SCENE.model[i].mesh[x].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
-                        // SCENE.model[i].mesh[x].anim.anim_matrix = SCENE.model[i].mesh[x].anim.bm[f_index];
+                        s->model[i].mesh[x].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
+                        // s->model[i].mesh[x].anim.anim_matrix = s->model[i].mesh[x].anim.bm[f_index];
                     }
                 }
             }
         }
     }
 
-    for (int i = 0; i < SCENE.model_indexes; i++) {
-        if (SCENE.model[i].visible) {
-            if (SCENE.model[i].owns_anim) {
+    for (int i = 0; i < s->model_indexes; i++) {
+        if (s->model[i].visible) {
+            if (s->model[i].owns_anim) {
 
-                SCENE.model[i].model_matrix = matMulMat(SCENE.model[i].anim.anim_matrix, modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]));
-                for (int x = 0; x < SCENE.model[i].mesh_indexes; x++) {
+                s->model[i].model_matrix = matMulMat(s->model[i].anim.anim_matrix, modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]));
+                for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
-                    SCENE.model[i].mesh[x].model_matrix = matMulMat(SCENE.model[i].mesh[x].anim.anim_matrix, modelMatFromQST(SCENE.model[i].mesh[x].q, SCENE.model[i].mesh[x].scale, SCENE.model[i].mesh[x].coords.v[0]));
+                    s->model[i].mesh[x].model_matrix = matMulMat(s->model[i].mesh[x].anim.anim_matrix, modelMatFromQST(s->model[i].mesh[x].q, s->model[i].mesh[x].scale, s->model[i].mesh[x].coords.v[0]));
                 }
             } else {
-                SCENE.model[i].model_matrix = modelMatFromQST(SCENE.model[i].q, SCENE.model[i].scale, SCENE.model[i].coords.v[0]);
+                s->model[i].model_matrix = modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]);
             }
         }
     }

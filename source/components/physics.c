@@ -3,15 +3,15 @@
  const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
 
 /* Responsible to apply all the forces that act on the rigid body and orginise the appropriate Collision detection functions steps. */
-void applyPhysics(metrics *mtr) {
+void applyPhysics(scene *s) {
 
-	for (int i = 0; i < SCENE.model_indexes; i++) {
+	for (int i = 0; i < s->model_indexes; i++) {
 
-		if (SCENE.model[i].owns_rigid == ENABLED) {
+		if (s->model[i].owns_rigid == ENABLED) {
 
-			if ((SCENE.model[i].model_type != MODEL_TYPE_TERRAIN && !SCENE.model[i].rigid.grounded) || (checkAllZeros(SCENE.model[i].velocity) || SCENE.model[i].rotate)) {
+			if ((s->model[i].model_type != MODEL_TYPE_TERRAIN && !s->model[i].rigid.grounded) || (checkAllZeros(s->model[i].velocity) || s->model[i].rotate)) {
 
-				initModelQuadInfo(&SCENE.model[i]);
+				initModelQuadInfo(s, &s->model[i]);
 
 				// Compute air resistance (drag).
 				// Fd = 0.5f * p * v^2 * Cd * A;
@@ -24,49 +24,49 @@ void applyPhysics(metrics *mtr) {
 				// A cube has a Cd of 1.05f
 
 				float g_accelaration = 0.f;
-				if (!SCENE.model[i].rigid.grounded) {
-					SCENE.model[i].rigid.falling_time += mtr->deltaTime;
-					g_accelaration = 9.81f * (SCENE.model[i].rigid.falling_time * SCENE.model[i].rigid.falling_time);
+				if (!s->model[i].rigid.grounded) {
+					s->model[i].rigid.falling_time += s->mtr.deltaTime;
+					g_accelaration = 9.81f * (s->model[i].rigid.falling_time * s->model[i].rigid.falling_time);
 				}
-				SCENE.model[i].velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), SCENE.model[i].velocity);
+				s->model[i].velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), s->model[i].velocity);
 
 				/* 1st Collision Detection lvl. */
-				//if (SCENE.model[i].pk == camera)
-				//    staticOuterRadiusCollision(&SCENE.model[i]);
+				//if (s->model[i].pk == camera)
+				//    staticOuterRadiusCollision(s, &s->model[i]);
 
 				/* 2nd Collision Detection lvl. */
 				//int collide = 1;
 				//while (collide) {
-				//	sortCollisions(&SCENE.model[i]);
+				//	sortCollisions(s, &s->model[i]);
 				//	int colls[1] = { 3 };
-				//	collide = sweptAABBCollision(&SCENE.model[i], colls);
+				//	collide = sweptAABBCollision(s, &s->model[i], colls);
 				//}
 
 				/* 3rd Collision Detection lvl. */
-				//if (SCENE.model[i].pk == camera) {
-				//	staticOBBCollision(&SCENE.model[i], 3);
+				//if (s->model[i].pk == camera) {
+				//	staticOBBCollision(&s->model[i], 3);
 				//}
 
 				/* 4th Collision Detection lvl. */
 				/* At this point apply rotationColision. */
 			}
 
-			if (SCENE.model[i].rotate) {
-				//setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[0]);
-				setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[1]);
-				setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[2]);
-				setvec4RotateQuat(SCENE.model[i].rigid.q, &SCENE.model[i].coords.v[3]);
+			if (s->model[i].rotate) {
+				//setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[0]);
+				setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[1]);
+				setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[2]);
+				setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[3]);
 
-				SCENE.model[i].q = multiplyQuats(SCENE.model[i].q, SCENE.model[i].rigid.q);
+				s->model[i].q = multiplyQuats(s->model[i].q, s->model[i].rigid.q);
 			}
 
-			if (SCENE.model[i].model_type != MODEL_TYPE_TERRAIN) {
-				modelTerrainCollision(&SCENE.model[i]);
+			if (s->model[i].model_type != MODEL_TYPE_TERRAIN) {
+				modelTerrainCollision(s, &s->model[i]);
 			}
 
-			mat4x4 tm = translationMatrix(vec4ExtractX(SCENE.model[i].velocity), vec4ExtractY(SCENE.model[i].velocity), vec4ExtractZ(SCENE.model[i].velocity));
-			setvec4ArrayMulmat(SCENE.model[i].coords.v, 4, tm);
-			setfacesArrayMulMat(SCENE.model[i].rigid.f, SCENE.model[i].rigid.faces_indexes, tm);
+			mat4x4 tm = translationMatrix(vec4ExtractX(s->model[i].velocity), vec4ExtractY(s->model[i].velocity), vec4ExtractZ(s->model[i].velocity));
+			setvec4ArrayMulmat(s->model[i].coords.v, 4, tm);
+			setfacesArrayMulMat(s->model[i].rigid.f, s->model[i].rigid.faces_indexes, tm);
 		}
 	}
 }

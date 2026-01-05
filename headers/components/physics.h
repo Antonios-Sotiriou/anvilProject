@@ -28,7 +28,7 @@
     #include "headers/components/collisions.h"
 #endif // !COLLISIONS_H
 
-void applyPhysics(metrics *mtr);
+void applyPhysics(scene *s);
 
 #endif // !PHYSICS_H
 

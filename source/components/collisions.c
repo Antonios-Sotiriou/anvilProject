@@ -15,9 +15,9 @@ const float planeDistance(vec4 plane, vec4 v) {
     return ((vec4ExtractX(r) + vec4ExtractY(r) + vec4ExtractZ(r)) - dotProduct(plane, vec4Normalize(plane)));
 }
 
-void modelTerrainCollision(model *m) {
+void modelTerrainCollision(scene *s, model *m) {
     vec4 pos, normal;
-    getModelPositionData(m, &pos, &normal);
+    getModelPositionData(s, m, &pos, &normal);
 
     getRigidLimits(&m->rigid);
 
@@ -77,15 +77,15 @@ void modelTerrainCollision(model *m) {
 //    }
 //}
 /* Checks for collisions whithin a radius sourounding the mesh. */
-const int staticOuterRadiusCollision(model *m) {
+const int staticOuterRadiusCollision(scene *s, model *m) {
     //vec4 newPos = vecAddvec(m->coords.v[0], m->velocity);
     int pk;
-    for (int i = 0; i < SCENE.t.quad[m->quad_index].mpks_indexes; i++) {
-        pk = SCENE.t.quad[m->quad_index].mpks[i];
+    for (int i = 0; i < s->t.quad[m->quad_index].mpks_indexes; i++) {
+        pk = s->t.quad[m->quad_index].mpks[i];
         if (pk != m->pk) {
 
-            vec4 dis = vecSubvec(m->coords.v[0], SCENE.model[pk].coords.v[0]);
-            if (vec4Length(dis) <= (SCENE.model[pk].outer_radius + m->outer_radius))
+            vec4 dis = vecSubvec(m->coords.v[0], s->model[pk].coords.v[0]);
+            if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius))
                 // logvec4(dis);
                 printf("checking for collision: %d --> %d\n", m->pk, pk);
         }
@@ -94,7 +94,7 @@ const int staticOuterRadiusCollision(model *m) {
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
-const int sweptAABBCollision(model *m, const int pks[]) {
+const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
@@ -104,16 +104,16 @@ const int sweptAABBCollision(model *m, const int pks[]) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+        int pk = s->t.quad[m->quad_index].mpks[i];
 
         if (pk != m->pk) {
 
-            min = roundvec4(vecSubvec(SCENE.model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(SCENE.model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
             tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
             tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
@@ -215,7 +215,7 @@ const int sweptAABBCollision(model *m, const int pks[]) {
     return 0;
 }
 /* Swept Sorting the collisions for AABB. */
-void sortCollisions(model *m) {
+void sortCollisions(scene *s, model *m) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. sortCollisions().\n", m->quad_index);
@@ -225,16 +225,16 @@ void sortCollisions(model *m) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+        int pk = s->t.quad[m->quad_index].mpks[i];
 
         if (pk != m->pk) {
 
-            min = roundvec4(vecSubvec(SCENE.model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(SCENE.model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
             tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
             tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
@@ -278,19 +278,19 @@ void sortCollisions(model *m) {
             if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
                 continue;
 
-            SCENE.model[pk].rigid.collision_t = t_near;
+            s->model[pk].rigid.collision_t = t_near;
         }
     }
     model cache_1, cache_2;
     for (int i = 0; i < num_of_members; i++) {
-        int pk1 = SCENE.t.quad[m->quad_index].mpks[i];
-        cache_1 = SCENE.model[pk1];
+        int pk1 = s->t.quad[m->quad_index].mpks[i];
+        cache_1 = s->model[pk1];
         for (int j = 0; j < num_of_members; j++) {
-            int pk2 = SCENE.t.quad[m->quad_index].mpks[j];
-            cache_2 = SCENE.model[pk2];
+            int pk2 = s->t.quad[m->quad_index].mpks[j];
+            cache_2 = s->model[pk2];
             if (cache_1.pk != m->pk) {
                 if (cache_1.rigid.collision_t < cache_2.rigid.collision_t) {
-                    swap(&SCENE.t.quad[m->quad_index].mpks[i], &SCENE.t.quad[m->quad_index].mpks[j], 4);
+                    swap(&s->t.quad[m->quad_index].mpks[i], &s->t.quad[m->quad_index].mpks[j], 4);
                 }
             }
         }
@@ -298,7 +298,7 @@ void sortCollisions(model *m) {
 }
 #else // ITERATIVE_CODE #########################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
-const int sweptAABBCollision(model *m, const int pks[]) {
+const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
@@ -308,16 +308,16 @@ const int sweptAABBCollision(model *m, const int pks[]) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+        int pk = s->t.quad[m->quad_index].mpks[i];
 
         if (pk != m->pk) {
 
-            min = roundvec4(vecSubvec(SCENE.model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(SCENE.model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
             tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
             tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
@@ -408,7 +408,7 @@ const int sweptAABBCollision(model *m, const int pks[]) {
     return 0;
 }
 /* Swept Sorting the collisions for AABB. */
-void sortCollisions(model *m) {
+void sortCollisions(scene *s, model *m) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
@@ -418,16 +418,16 @@ void sortCollisions(model *m) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = SCENE.t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = SCENE.t.quad[m->quad_index].mpks[i];
+        int pk = s->t.quad[m->quad_index].mpks[i];
 
         if (pk != m->pk) {
 
-            min = roundvec4(vecSubvec(SCENE.model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(SCENE.model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
             tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
             tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
@@ -458,19 +458,19 @@ void sortCollisions(model *m) {
             if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
                 continue;
 
-            SCENE.model[pk].rigid.collision_t = t_near;
+            s->model[pk].rigid.collision_t = t_near;
         }
     }
     model cache_1, cache_2;
     for (int i = 0; i < num_of_members; i++) {
-        int pk1 = SCENE.t.quad[m->quad_index].mpks[i];
-        cache_1 = SCENE.model[pk1];
+        int pk1 = s->t.quad[m->quad_index].mpks[i];
+        cache_1 = s->model[pk1];
         for (int j = 0; j < num_of_members; j++) {
-            int pk2 = SCENE.t.quad[m->quad_index].mpks[j];
-            cache_2 = SCENE.model[pk2];
+            int pk2 = s->t.quad[m->quad_index].mpks[j];
+            cache_2 = s->model[pk2];
             if (cache_1.pk != m->pk) {
                 if (cache_1.rigid.collision_t < cache_2.rigid.collision_t) {
-                    swap(&SCENE.t.quad[m->quad_index].mpks[i], &SCENE.t.quad[m->quad_index].mpks[j], 4);
+                    swap(&s->t.quad[m->quad_index].mpks[i], &s->t.quad[m->quad_index].mpks[j], 4);
                 }
             }
         }

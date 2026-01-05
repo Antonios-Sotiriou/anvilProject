@@ -38,7 +38,7 @@
 extern void glErrorReport(void);
 
 const int initTestShader(void);
-void testShader(void);
+void testShader(scene *s);
 
 #endif // !TESTSHADER_H
 

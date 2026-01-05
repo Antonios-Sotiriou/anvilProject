@@ -26,7 +26,7 @@
 extern void glErrorReport(void);
 
 const int initRigidShader(void);
-void rigidShader(void);
+void rigidShader(scene *s);
 
 #endif // !RIGIDSHADER_H
 
