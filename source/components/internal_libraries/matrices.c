@@ -69,8 +69,8 @@ mat4x4 orthographicMatrix(const float l, const float r, const float t, const flo
     return  (mat4x4) {{
         _mm_setr_ps(2.f / (r - l), 0.f, 0.f, 0.f),
         _mm_setr_ps(0.f, 2.f / (b - t), 0.f, 0.f),
-        _mm_setr_ps(0.f, 0.f, 1.0f / (n - f), 0.f),
-        _mm_setr_ps(((r + l) / (r - l)), ((b + t) / (b - t)), ((f + n) / (n - f)), 1.f)
+        _mm_setr_ps(0.f, 0.f, 1.0f / (f - n), 0.f),
+        _mm_setr_ps(((r + l) / (r - l)), ((b + t) / (b - t)), ((f + n) / (f - n)), 1.f)
     }};
 }
 /* Perspective Projection Matrix. */
@@ -308,10 +308,10 @@ mat4x4 orthographicMatrix(const float l, const float r, const float t, const flo
     mat4x4 m = { 0 };
     m.m[0].m128_f32[0] = 2.f / (r - l);
     m.m[1].m128_f32[1] = 2.f / (b - t);
-    m.m[2].m128_f32[2] = (1.0f / (n - f));
+    m.m[2].m128_f32[2] = (1.0f / (f - n));
     m.m[3].m128_f32[0] = ((r + l) / (r - l));
     m.m[3].m128_f32[1] = ((b + t) / (b - t));
-    m.m[3].m128_f32[2] = ((f + n) / (n - f));
+    m.m[3].m128_f32[2] = ((f + n) / (f - n));
     m.m[3].m128_f32[3] = 1.0f;
     return m;
 }

@@ -12,14 +12,19 @@ const void rasterize(scene *s) {
     s->VIEW_M = inverseMatrix(s->LOOKAT_M);
     s->PROJECTION_M = matMulMat(s->VIEW_M, s->PERSPECTIVE_M);
 
+    shadowShader(s);
     //mainShader(s);
     testShader(s);
-    if (s->DISPLAY_RIGID)
+    if (s->DISPLAY_RIGID) {
         rigidShader(s);
+    }
 
     drawOnSceneCanvas(&s->canvas, s->textures.activeTexture);
 }
 const int rigidFrustumCulling(rigid *r, mat4x4 *PROJECTION_M) {
+    if (r->faces_indexes == 0) {
+        return 0;
+    }
     rigid temp = { 0 };
     int f_bytes = r->faces_indexes * sizeof(face);
     temp.f = malloc(f_bytes);

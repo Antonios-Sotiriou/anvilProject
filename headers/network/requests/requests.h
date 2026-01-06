@@ -13,6 +13,10 @@
     #include <stdlib.h>
 #endif
 
+#ifndef _STDINT
+    #include <stdint.h>
+#endif // !_STDINT
+
 #ifndef STRUCTS_H
     #include "headers/structs.h"
 #endif // !STRUCTS_H

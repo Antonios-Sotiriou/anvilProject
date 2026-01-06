@@ -8,16 +8,16 @@ const static char *vertexShaderSource = "#version 450 core\n"
 "uniform mat4 vpMatrix;\n"
 "uniform mat4 modelMatrix;\n"
 "uniform mat4 meshMatrix;\n"
-//"uniform int mesh_id;\n"
+//"uniform int mesh_pk;\n"
 
-//"layout (location = 0) out int id;\n"
+//"layout (location = 0) out int pk;\n"
 
 "void main() {\n"
 "    gl_Position = (vpMatrix * (modelMatrix * meshMatrix)) * vec4(vsPos, 1.f);\n"
-//"    id = mesh_id;\n"
+//"    pk = mesh_pk;\n"
 "}\n\0";
 const static char *fragmentShaderSource = "#version 450 core\n"
-//"layout (location = 0) in flat int id;\n"
+//"layout (location = 0) in flat int mesh_pk;\n"
 
  //"float near = 0.1f;\n"
  //"float far = 100.f;\n"
@@ -27,10 +27,12 @@ const static char *fragmentShaderSource = "#version 450 core\n"
  //"};\n"
 
 "layout (location = 0) out vec4 FragColor;\n"
+//"layout (location = 1) out ivec2 mesh_info;\n"
 
 "void main() {\n"
 "    FragColor = vec4(1.f, 0.f, 0.5f, 1.f);\n"
- //"    gl_FragDepth = linearizeDepth(gl_FragCoord.z) / far;\n"
+//"    gl_FragDepth = linearizeDepth(gl_FragCoord.z) / far;\n"
+//"    mesh_info = ivec2(fs_in.id, gl_PrimitiveID);\n"
 "}\n\0";
 
 const int initTestShader(void) {

@@ -5,6 +5,8 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
 static void cursor_pos_callback(GLFWwindow* win, double x, double y);
 static void mouse_callback(GLFWwindow* win, int button, int action, int mods);
 
+int zfar = 18000, znear = -2000;
+
 int main(int argc, char* argv[]) {
 
     scene mainScene = { 0 };
@@ -68,6 +70,8 @@ int main(int argc, char* argv[]) {
 
     /* Create the Perspective Matrix which is in most cases constant. Changes only with window resize events. */
     mainScene.PERSPECTIVE_M = perspectiveMatrix(45.f, mainScene.WIDTH / (float)mainScene.HEIGHT, 10.f, INT32_MAX);
+    /* Create the Orthographic Matrix which is in most cases constant. Changes only with window resize events. */
+    mainScene.ORTHOGRAPHIC_M = orthographicMatrix(-10000.f, 10000.f, -10000.f, 10000.f, znear, zfar);
 
     initTimeCounter(&mainScene.mtr);
     // float time_diff;
@@ -79,7 +83,7 @@ int main(int argc, char* argv[]) {
 
     /* Enable PYTHON_INTERFACE */
 #if (PYTHON_INTERFACE)
-    enablePythonAPI();
+    enablePythonAPI(&mainScene);
 #endif
 
     //float time_diff = 0;
@@ -131,6 +135,7 @@ int main(int argc, char* argv[]) {
 }
 static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
     scene *s = glfwGetWindowUserPointer(win);
+    printf("key pressed: %d, scancode: %d\n", key, scancode);
     switch (key) {
         case GLFW_KEY_W:
         case GLFW_KEY_A:
@@ -164,8 +169,24 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
                 if (s->textures.activeTexture == s->textures.totalTextures) {
                     s->textures.activeTexture = 0;
                 }
+                printf("active texture: %d\n", s->textures.activeTexture);
             }
+            break;
+        case GLFW_KEY_KP_ADD:
+            zfar += 10;
+            break;
+        case GLFW_KEY_KP_SUBTRACT:
+            zfar -= 10;
+            break;
+        case GLFW_KEY_RIGHT_BRACKET:
+            znear += 10;
+            break;
+        case GLFW_KEY_SLASH:
+            znear -= 10;
+            break;
     }
+    printf("znear: %d,    zfar: %d\n", znear, zfar);
+    s->ORTHOGRAPHIC_M = orthographicMatrix(-10000.f, 10000.f, -10000.f, 10000.f, znear, zfar);
 }
 static void window_size_callback(GLFWwindow *win, int width, int height) {
     scene *s = glfwGetWindowUserPointer(win);

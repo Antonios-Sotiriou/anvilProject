@@ -6,14 +6,10 @@
 # sudo apt install libxkbcommon-dev
 
 # Minimum CMake verion.
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.10)
 
 # Starting Project.
 project(anvil VERSION 1.0)
-
-set(CMAKE_C_STANDARD)
-set(CMAKE_C_STANDARD_REQUIRED True)
-set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 # Whether or not compile with networking enabled.
 set(NETWORK_INTERFACE 0)
@@ -31,10 +27,68 @@ endif()
 # Creates an executable.
 if (LINUX)
     set(CMAKE_C_FLAGS "-Wall -Werror -Wno-missing-braces -Wno-stringop-overread -msse4.1 -O3 -DGLEW_NO_GLU" CACHE STRING "" FORCE)
-    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/internal_libraries/matrices.c" "source/components/internal_libraries/vec_math.c" "source/components/internal_libraries/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/internal_libraries/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "source/components/dbapi.c" "source/components/internal_libraries/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c")
+    add_executable(
+        anvil 
+        "${Network_Files}" 
+        "${Python_Files}" 
+        "source/main.c" 
+        "source/shaders/mainShader.c" 
+        "source/shaders/displayShader.c" 
+        "source/shaders/testShader.c" 
+        "source/shaders/shadowShader.c" 
+        "source/components/rasterization.c" 
+        "source/components/scene.c" 
+        "source/components/mesh.c" 
+        "source/components/logging.c" 
+        "source/components/internal_libraries/matrices.c" 
+        "source/components/internal_libraries/vec_math.c" 
+        "source/components/internal_libraries/quaternions.c" 
+        "source/components/camera.c" "source/components/physics.c" 
+        "source/components/internal_libraries/bmp.c" 
+        "source/components/terrain.c" 
+        "source/components/openGL.c" 
+        "source/components/dbapi.c" 
+        "source/components/internal_libraries/obj.c" 
+        "source/components/collisions.c" 
+        "source/components/rigid.c" "source/components/general.c" 
+        "source/shaders/rigidShader.c" 
+        "source/components/model.c" 
+        "source/components/animations.c" 
+        "source/components/animText.c" 
+        "source/components/relations.c" 
+    )
 elseif (WIN32)
     set(CMAKE_C_FLAGS "" CACHE STRING "" FORCE)
-    add_executable(anvil "${Network_Files}" "${Python_Files}" "source/main.c" "source/shaders/mainShader.c" "source/shaders/displayShader.c" "source/shaders/testShader.c" "source/components/rasterization.c" "source/components/scene.c" "source/components/mesh.c" "source/components/logging.c" "source/components/internal_libraries/matrices.c" "source/components/internal_libraries/vec_math.c" "source/components/internal_libraries/quaternions.c" "source/components/camera.c" "source/components/physics.c" "source/components/internal_libraries/bmp.c" "source/components/terrain.c" "source/components/openGL.c" "source/components/dbapi.c" "source/components/internal_libraries/obj.c" "source/components/collisions.c" "source/components/rigid.c" "source/components/general.c" "source/shaders/rigidShader.c" "source/components/model.c" "source/components/animations.c" "source/components/animText.c" "source/components/relations.c")
+    add_executable(
+        anvil 
+        "${Network_Files}" 
+        "${Python_Files}" 
+        "source/main.c" 
+        "source/shaders/mainShader.c" 
+        "source/shaders/displayShader.c" 
+        "source/shaders/testShader.c" 
+        "source/shaders/shadowShader.c" 
+        "source/components/rasterization.c" 
+        "source/components/scene.c" 
+        "source/components/mesh.c" 
+        "source/components/logging.c" 
+        "source/components/internal_libraries/matrices.c" 
+        "source/components/internal_libraries/vec_math.c" 
+        "source/components/internal_libraries/quaternions.c" 
+        "source/components/camera.c" "source/components/physics.c" 
+        "source/components/internal_libraries/bmp.c" 
+        "source/components/terrain.c" 
+        "source/components/openGL.c" 
+        "source/components/dbapi.c" 
+        "source/components/internal_libraries/obj.c" 
+        "source/components/collisions.c" 
+        "source/components/rigid.c" "source/components/general.c" 
+        "source/shaders/rigidShader.c" 
+        "source/components/model.c" 
+        "source/components/animations.c" 
+        "source/components/animText.c" 
+        "source/components/relations.c" 
+    )
 endif()
 
 # LIBRARIES  ####################################################################################

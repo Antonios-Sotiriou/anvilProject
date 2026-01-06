@@ -23,6 +23,10 @@
     #include "headers/shaders/rigidShader.h"
 #endif // !RIGIDSHADER_H
 
+#ifndef SHADOWSHADER_H
+    #include "headers/shaders/shadowShader.h"
+#endif // !SHADOWSHADER_H
+
 void initOpenGLComponents(void);
 void createSceneFrameBuffers(scene *s);
 void createMeshVAO(mesh *m);

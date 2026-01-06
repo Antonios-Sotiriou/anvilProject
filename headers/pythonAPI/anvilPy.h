@@ -46,14 +46,15 @@ typedef struct meshPy {
         vecs_indexes,                    // Number of vectors in vbo. ( vbo_indexes / 8 or faces_indexes * 3).
         vbo_size,                        // The size of the vbo in bytes.( vbo_indexes * 4 ).
         pk,                              // Primary key of the mesh, representing its position in the database. That is also the mesh index in the SCENE meshes array.
-        type,                            // The type of the mesh.
+        asset_type,                      // The type of the asset.Can be terrain, model, mesh, etc.Identifies a base structure. 
+        mesh_type,                       // The type of the mesh.
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
         owns_anim;                       // Wether or not the mesh has an animation.
     GLuint VAO,                          // VAO id or name represented by an unsigned integer.
         VBO;                             // VBO id or name represented by an unsigned integer.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
-    struct meshPy **children;                 // The children mesh array of the mesh
-    struct meshPy *parent;                    // The parent at which the mesh belongs.
+    struct meshPy **children;            // The children mesh array of the mesh
+    struct meshPy *parent;               // The parent at which the mesh belongs.
     animation anim;
     int number_of_children,              // The number of the children that the mesh owns
         owns_rigid;                      // Wether or not the model has a rigid body attached to it.
@@ -68,7 +69,7 @@ typedef struct {
 
 PyMODINIT_FUNC PyInit_meshPy(void);
 
-void enablePythonAPI(void);
+void enablePythonAPI(scene *s);
 void disablePythonAPI(void);
 
 #endif // !ANVILPY_H

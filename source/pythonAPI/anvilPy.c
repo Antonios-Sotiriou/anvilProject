@@ -12,6 +12,7 @@
 //static PyObject *Custom_get_meshPy(PyTypeObject *type, PyObject *args);
 //static PyMethodDef Custom_methods;
 static PyTypeObject meshPyType;
+scene *scene;
 //static PyMethodDef Custom_module_methods;
 //static PyModuleDef custommodule;
 
@@ -109,13 +110,14 @@ static meshPy *meshPy_FromMesh(mesh *m) {
         self->cname                 = PyUnicode_FromString(m->cname);
         self->vbo                   = m->vbo;
         self->outer_radius          = m->outer_radius;
-        self->length_cname          = m->length_cname;
+        self->length_cname          = m->cname_length;
         self->vbo_indexes           = m->vbo_indexes;
         self->faces_indexes         = m->faces_indexes;
         self->vecs_indexes          = m->vecs_indexes;
         self->vbo_size              = m->vbo_size;
         self->pk                    = m->pk;
-        self->type                  = m->type;
+        self->asset_type            = m->asset_type;
+        self->mesh_type             = m->mesh_type;
         self->visible               = m->visible;
         self->owns_anim             = m->owns_anim;
         self->VAO                   = m->VAO;
@@ -260,8 +262,8 @@ DWORD WINAPI startPythonAPI(void *args);
 /* Create a seperate thread to run the Server. */
 HANDLE thread;
 
-void enablePythonAPI(void) {
-    thread = CreateThread(NULL, 0, startPythonAPI, NULL, 0, NULL);
+void enablePythonAPI(scene *s) {
+    thread = CreateThread(NULL, 0, startPythonAPI, s, 0, NULL);
     if (thread == NULL) {
         debug_log_critical(stderr, "HANDLE thread = CreateThread(NULL, 0, startTCPServer, NULL, 0, NULL)");
         exit(-1);

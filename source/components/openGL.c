@@ -1,7 +1,7 @@
 #include "headers/components/openGL.h"
 
 /* OpenGL Global veriables. */
-GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
+GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram, shadowShaderProgram;
 
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
@@ -35,6 +35,7 @@ void initOpenGLComponents(void) {
     displayShaderProgram = initDisplayShader();
     testShaderProgram = initTestShader();
     rigidShaderProgram = initRigidShader();
+    shadowShaderProgram = initShadowShader();
 }
 /* Initializes user defined framebuffers and framebuffers textures. */
 void createSceneFrameBuffers(scene *s) {
@@ -97,7 +98,7 @@ void createSceneFrameBuffers(scene *s) {
 
     s->buffers.drawBuffers[0] = GL_COLOR_ATTACHMENT0;
     s->buffers.drawBuffers[1] = GL_COLOR_ATTACHMENT1;
-    s->textures.totalTextures = 2;
+    s->textures.totalTextures = 4;
 }
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
 void createMeshVAO(mesh *m) {

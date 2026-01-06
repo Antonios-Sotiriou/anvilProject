@@ -11,7 +11,7 @@
 #endif // !STRUCTS_H
 
 /* defined in rasterization.c. */
-extern GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram;
+extern GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram, shadowShaderProgram;
 
 #endif // !GLOBAL_H
 
