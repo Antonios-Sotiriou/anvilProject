@@ -15,10 +15,6 @@
     #include "headers/structs.h"
 #endif // !STRUCTS_H
 
-#define DEBUG_LVL_1 1
-#define debug_log_INFO()\
-        do { if (DEBUG_LVL_1) fprintf(stderr, "CRITICAL:%s:%d:%s()\n", __FILE__, __LINE__, __func__); } while (0)
-
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     #ifndef _WINSOCKAPI_
         #include <WinSock2.h>
@@ -31,9 +27,16 @@
     #include <pthread.h>
 #endif
 
+#ifndef VEC4PY_H
+    #include "headers/pythonAPI/vec4Py.h"
+#endif // !VEC4PY_H
+
+#define debug_log_INFO()\
+        do { if (DEBUG_LVL_1) fprintf(stderr, "CRITICAL:%s:%d:%s()\n", __FILE__, __LINE__, __func__); } while (0)
+
 typedef struct meshPy {
     PyObject_HEAD
-    coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
+    PyObject *coords;                    // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
     vec4 scale;                          // Vector to store the scale of the model.
     mat4x4 model_matrix;
