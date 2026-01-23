@@ -26,21 +26,21 @@ void applyPhysics(scene *s) {
 				float g_accelaration = 0.f;
 				if (!s->model[i].rigid.grounded) {
 					s->model[i].rigid.falling_time += s->mtr.deltaTime;
-					g_accelaration = 9.81f * (s->model[i].rigid.falling_time * s->model[i].rigid.falling_time);
+					g_accelaration = 0.0081f * (s->model[i].rigid.falling_time * s->model[i].rigid.falling_time);
 				}
 				s->model[i].velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), s->model[i].velocity);
 
 				/* 1st Collision Detection lvl. */
 				//if (s->model[i].pk == camera)
-				//    staticOuterRadiusCollision(s, &s->model[i]);
+				    staticOuterRadiusCollision(s, &s->model[i]);
 
 				/* 2nd Collision Detection lvl. */
-				//int collide = 1;
-				//while (collide) {
-				//	sortCollisions(s, &s->model[i]);
-				//	int colls[1] = { 3 };
-				//	collide = sweptAABBCollision(s, &s->model[i], colls);
-				//}
+				int collide = 1;
+				while (collide) {
+					sortCollisions(s, &s->model[i]);
+					int colls[1] = { 3 };
+					collide = sweptAABBCollision(s, &s->model[i], colls);
+				}
 
 				/* 3rd Collision Detection lvl. */
 				//if (s->model[i].pk == camera) {

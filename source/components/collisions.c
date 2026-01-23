@@ -78,7 +78,10 @@ void modelTerrainCollision(scene *s, model *m) {
 //}
 /* Checks for collisions whithin a radius sourounding the mesh. */
 const int staticOuterRadiusCollision(scene *s, model *m) {
-    //vec4 newPos = vecAddvec(m->coords.v[0], m->velocity);
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOuterRadiusCollision().\n", m->quad_index);
+        return;
+    }
     int pk;
     for (int i = 0; i < s->t.quad[m->quad_index].mpks_indexes; i++) {
         pk = s->t.quad[m->quad_index].mpks[i];

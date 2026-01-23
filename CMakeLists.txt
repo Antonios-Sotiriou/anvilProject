@@ -14,7 +14,7 @@ project(anvil VERSION 1.0)
 # Whether or not compile with networking enabled.
 set(NETWORK_INTERFACE 0)
 # Whether or not compile with embeded python enabled.
-set(PYTHON_INTERFACE 1)
+set(PYTHON_INTERFACE 0)
 
 if (NETWORK_INTERFACE)
     set(Network_Files "source/network/c_interface/TCPServer.c" "source/network/c_interface/TCPClient.c" "source/network/requests/requests.c")

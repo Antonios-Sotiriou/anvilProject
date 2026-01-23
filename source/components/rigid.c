@@ -11,7 +11,6 @@ void loadModelRigid(model *m) {
 	// Iterate throught all the obj file entries to find the model rigid entry.
 	for (int i = 0; i < obj.e_indexes; i++) {
 		if (strncmp(m->cname, obj.e[i].cname, strlen(m->cname)) == 0) {
-			printf("Entry found : %s\n", obj.e[i].cname);
 
 			// Initialize the faces array from .obj file data.
 			m->rigid.vbo_indexes = (obj.e[i].f_indexes / 9) * 24;
