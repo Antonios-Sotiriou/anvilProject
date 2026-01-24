@@ -222,6 +222,7 @@ void initModelQuadInfo(scene *s, model *m) {
     m->quad_index = quad_index;
     m->quad_face = quad_face;
     m->quad_init = 1;
+    updateSurroundingQuads(s, m);  // Here we have to find out the surrounding quads of the quad that the medel is in.
     addModelToQuad(s, m);
 }
 /* Adds a Mesh to the Quad that is standing on to, if its not already a member of this Quad. */
@@ -417,6 +418,116 @@ const TerrainPointInfo getvec4PositionData(scene *s, const vec4 v) {
     tp.quad_face = uol;
 
     return tp;
+}
+void updateSurroundingQuads(scene *s, model *m) {
+    int edge = 0;    // this variable tracks in which edge we are on the grid. 1 is Buttom and 2 is Upper edge. If this variable stays zero, that means we are not on an edgerather on middle.
+    if (m->quad_index - s->t.quad_rows < 0)
+        edge = 1;
+    else if (m->quad_index + s->t.quad_rows > (s->t.quad_indexes - 1))
+        edge = 2;
+
+    if (m->surroundingQuads) {
+        free(m->surroundingQuads);
+    }
+    m->surroundingQuads = malloc(1);
+    m->surroundingQuadsIndexes = 0;
+
+    if (m->quad_index % s->t.quad_rows == 0) {
+        printf("Beginning\n");
+        if (edge == 1) {
+            printf("Bottom Edge");
+            m->surroundingQuads = realloc(m->surroundingQuads, 16);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index + 1;
+            m->surroundingQuads[2] = m->quad_index + s->t.quad_rows;
+            m->surroundingQuads[3] = m->surroundingQuads[2] + 1;
+            m->surroundingQuadsIndexes = 4;
+        } else if (edge == 2) {
+            printf("Up Edge");
+            m->surroundingQuads = realloc(m->surroundingQuads, 16);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index + 1;
+            m->surroundingQuads[2] = m->quad_index - s->t.quad_rows;
+            m->surroundingQuads[3] = m->surroundingQuads[2] + 1;
+            m->surroundingQuadsIndexes = 4;
+        } else {
+            m->surroundingQuads = realloc(m->surroundingQuads, 24);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index + 1;
+            m->surroundingQuads[2] = m->quad_index + s->t.quad_rows;
+            m->surroundingQuads[3] = m->surroundingQuads[2] + 1;
+            m->surroundingQuads[4] = m->quad_index - s->t.quad_rows;
+            m->surroundingQuads[5] = m->surroundingQuads[4] + 1;
+            m->surroundingQuadsIndexes = 6;
+        }
+    } else if ((m->quad_index + 1) % s->t.quad_rows == 0) {
+        printf("End\n");
+        if (edge == 1) {
+            printf("Bottom Edge");
+            m->surroundingQuads = realloc(m->surroundingQuads, 16);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index - 1;
+            m->surroundingQuads[2] = m->quad_index + s->t.quad_rows;
+            m->surroundingQuads[3] = m->surroundingQuads[2] - 1;
+            m->surroundingQuadsIndexes = 4;
+        } else if (edge == 2) {
+            printf("Up Edge");
+            m->surroundingQuads = realloc(m->surroundingQuads, 16);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index - 1;
+            m->surroundingQuads[2] = m->quad_index - s->t.quad_rows;
+            m->surroundingQuads[3] = m->surroundingQuads[2] - 1;
+            m->surroundingQuadsIndexes = 4;
+        } else {
+            m->surroundingQuads = realloc(m->surroundingQuads, 24);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index - 1;
+            m->surroundingQuads[2] = m->quad_index + s->t.quad_rows;
+            m->surroundingQuads[3] = m->surroundingQuads[2] - 1;
+            m->surroundingQuads[4] = m->quad_index - s->t.quad_rows;
+            m->surroundingQuads[5] = m->surroundingQuads[4] - 1;
+            m->surroundingQuadsIndexes = 6;
+        }
+    } else {
+        printf("Middle\n");
+        if (edge == 1) {
+            printf("Bottom Edge");
+            m->surroundingQuads = realloc(m->surroundingQuads, 24);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index + 1;
+            m->surroundingQuads[2] = m->quad_index - 1;
+            m->surroundingQuads[3] = m->quad_index + s->t.quad_rows;
+            m->surroundingQuads[4] = m->surroundingQuads[3] + 1;
+            m->surroundingQuads[5] = m->surroundingQuads[3] - 1;
+            m->surroundingQuadsIndexes = 6;
+        } else if (edge == 2) {
+            printf("Up Edge");
+            m->surroundingQuads = realloc(m->surroundingQuads, 24);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index + 1;
+            m->surroundingQuads[2] = m->quad_index - 1;
+            m->surroundingQuads[3] = m->quad_index - s->t.quad_rows;
+            m->surroundingQuads[4] = m->surroundingQuads[3] + 1;
+            m->surroundingQuads[5] = m->surroundingQuads[3] - 1;
+            m->surroundingQuadsIndexes = 6;
+        } else {
+            m->surroundingQuads = realloc(m->surroundingQuads, 36);
+            m->surroundingQuads[0] = m->quad_index;
+            m->surroundingQuads[1] = m->quad_index + 1;
+            m->surroundingQuads[2] = m->quad_index - 1;
+            m->surroundingQuads[3] = m->quad_index + s->t.quad_rows;
+            m->surroundingQuads[4] = m->surroundingQuads[3] + 1;
+            m->surroundingQuads[5] = m->surroundingQuads[3] - 1;
+            m->surroundingQuads[6] = m->quad_index - s->t.quad_rows;
+            m->surroundingQuads[7] = m->surroundingQuads[6] + 1;
+            m->surroundingQuads[8] = m->surroundingQuads[6] - 1;
+            m->surroundingQuadsIndexes = 9;
+        }
+    }
+
+    for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
+        printf(" %d ", m->surroundingQuads[i]);
+    }
 }
 /* Prints the members of given Quad index. */
 void logTerrainQuad(scene *s, const int quad_index) {

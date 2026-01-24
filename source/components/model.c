@@ -43,6 +43,8 @@ void releaseModel(model *m) {
 
     if (m->owns_anim == ENABLED)
         releaseAnimations(&m->anim);
+
+    free(m->surroundingQuads);
 }
 
 

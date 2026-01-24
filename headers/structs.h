@@ -156,7 +156,9 @@ typedef struct {
         rotate,                          // The rotation angle of the rigid body.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
-        quad_face;                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+        quad_face,                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
+        surroundingQuadsIndexes,         // How many surrounding quads the surrounding quads array holds. It can vary, because the quads number differs at the middle of the terrain from the edges.
+        *surroundingQuads;              // The Quads of the terrain which surrounding the current quad aka(quad_index); Thats usefull to detect collisions when a model is on the edges between quads.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     animation anim;
 } model;
