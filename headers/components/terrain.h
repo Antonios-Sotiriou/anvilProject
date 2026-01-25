@@ -38,6 +38,7 @@ void getTerrainPointInfo(scene *s, vec4 coords, int *qi, int *uol);
 void getModelPositionData(scene *s, model *m, vec4 *tp, vec4 *tn);
 const TerrainPointInfo getvec4PositionData(scene *s, const vec4 v);
 void updateSurroundingQuads(scene *s, model *m);
+int* retrieveNearbyColliders(scene* s, model* m);
 void logTerrainQuad(scene *s, const int quad_index);
 void logTerrainInfo(scene* s);
 

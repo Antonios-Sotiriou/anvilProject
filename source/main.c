@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
 }
 static void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods) {
     scene *s = glfwGetWindowUserPointer(win);
-    printf("key pressed: %d, scancode: %d\n", key, scancode);
+    //printf("key pressed: %d, scancode: %d\n", key, scancode); // CODE TO BE REMOVED
     switch (key) {
         case GLFW_KEY_W:
         case GLFW_KEY_A:
@@ -185,7 +185,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             znear -= 10;
             break;
     }
-    printf("znear: %d,    zfar: %d\n", znear, zfar); // CODE TO BE REMOVED
+    //printf("znear: %d,    zfar: %d\n", znear, zfar); // CODE TO BE REMOVED
     s->ORTHOGRAPHIC_M = orthographicMatrix(-10000.f, 10000.f, -10000.f, 10000.f, znear, zfar); // CODE TO BE REMOVED
 }
 static void window_size_callback(GLFWwindow *win, int width, int height) {

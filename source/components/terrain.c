@@ -222,8 +222,8 @@ void initModelQuadInfo(scene *s, model *m) {
     m->quad_index = quad_index;
     m->quad_face = quad_face;
     m->quad_init = 1;
-    updateSurroundingQuads(s, m);  // Here we have to find out the surrounding quads of the quad that the medel is in.
     addModelToQuad(s, m);
+    updateSurroundingQuads(s, m);  // Here we have to find out the surrounding quads of the quad that the medel is in.
 }
 /* Adds a Mesh to the Quad that is standing on to, if its not already a member of this Quad. */
 void addModelToQuad(scene *s, model *m) {
@@ -231,20 +231,29 @@ void addModelToQuad(scene *s, model *m) {
 
     if ((quad_index < 0 || !m->pk)) {
         /* Mesh is out of terrain if its quadIndex is less than Zero or it is the terrain if its ID is 0. */
-        debug_log_info(stdout, "Model %s is out of terrain boundaries\n", m->cname);
-        debug_log_warning(stdout, "Out of terrain boundaries");
+        debug_log_info(stdout, "Model %s is out of terrain boundaries. addModelToQuad()\n", m->cname);
         return;
     }
 
     if (!s->t.quad[quad_index].mpks) {
         /* Quad had not previous members in it so we must allocate memory for the new member. */
         s->t.quad[quad_index].mpks = calloc(1, 4);
+        if (!s->t.quad[quad_index].mpks) {
+            debug_log_critical(stdout, "s->t.quad[quad_index].mpks = calloc(1, 4);\n");
+            return;
+        }
         s->t.quad[quad_index].mpks_indexes = 1;
         s->t.quad[quad_index].mpks[0] = m->pk;
-        debug_log_message(stdout, "Adding 1st quad member");
+        debug_log_info(stdout, "Adding 1st quad member");
         return;
     }
-
+    for (int i = 0; i < s->t.quad[quad_index].mpks_indexes; i++) {
+        if (s->t.quad[quad_index].mpks[i] == m->pk) {
+            /* Mesh is already a member of the Quad. */
+            debug_log_info(stdout, "Model is already a member of the Quad");
+            return;
+        }
+    }
     /* Increase the size of Quad members pointer to add the new member.Increment the necessery values also. */
     int *temp = realloc(s->t.quad[quad_index].mpks, (s->t.quad[quad_index].mpks_indexes + 1) * 4);
     if (!temp) {
@@ -261,21 +270,15 @@ void removeModelFromQuad(scene *s, model *m) {
 
     if (quad_index < 0) {
         /* Mesh is out of terrain if its quadIndex is less than Zero. */
-        debug_log_info(stdout, "Model %s is out of terrain boundaries\n", m->cname);
-        debug_log_warning(stdout, "Out of terrain boundaries");
+        debug_log_info(stdout, "Model %s is out of terrain boundaries. removeModelFromQuad()\n", m->cname);
         return;
     }
     const int num_of_indexes = s->t.quad[quad_index].mpks_indexes - 1;
-    if (!num_of_indexes) {
-        return;
-    }
-
     int *new_array = calloc(num_of_indexes, 4);
     if (!new_array) {
-        debug_log_warning(stdout, "new_array");
+        debug_log_critical(stdout, "int *new_array = calloc(num_of_indexes, 4);\n");
         return;
     }
-
     int inc = 0;
     for (int i = 0; i < s->t.quad[quad_index].mpks_indexes; i++) {
         if (s->t.quad[quad_index].mpks[i] != m->pk) {
@@ -286,7 +289,7 @@ void removeModelFromQuad(scene *s, model *m) {
     free(s->t.quad[quad_index].mpks);
     s->t.quad[quad_index].mpks = realloc(new_array, (num_of_indexes * 4));
     s->t.quad[quad_index].mpks_indexes = num_of_indexes;
-    debug_log_message(stdout, "Removed mesh from quad members");
+    debug_log_info(stdout, "Removed model from quad members\n");
 }
 /* Retrieves Terrain Quad index and terrain triangle at given coords. Terrain triangle Can either be UPPER: 0 or LOWER: 1. Returns Terrain quad index -1 if outside of terrain.*/
 void getTerrainPointInfo(scene *s, vec4 coords, int* qi, int* uol) {
@@ -435,7 +438,7 @@ void updateSurroundingQuads(scene *s, model *m) {
     if (m->quad_index % s->t.quad_rows == 0) {
         printf("Beginning\n");
         if (edge == 1) {
-            printf("Bottom Edge");
+            printf("Bottom Edge\n");
             m->surroundingQuads = realloc(m->surroundingQuads, 16);
             m->surroundingQuads[0] = m->quad_index;
             m->surroundingQuads[1] = m->quad_index + 1;
@@ -443,7 +446,7 @@ void updateSurroundingQuads(scene *s, model *m) {
             m->surroundingQuads[3] = m->surroundingQuads[2] + 1;
             m->surroundingQuadsIndexes = 4;
         } else if (edge == 2) {
-            printf("Up Edge");
+            printf("Up Edge\n");
             m->surroundingQuads = realloc(m->surroundingQuads, 16);
             m->surroundingQuads[0] = m->quad_index;
             m->surroundingQuads[1] = m->quad_index + 1;
@@ -463,7 +466,7 @@ void updateSurroundingQuads(scene *s, model *m) {
     } else if ((m->quad_index + 1) % s->t.quad_rows == 0) {
         printf("End\n");
         if (edge == 1) {
-            printf("Bottom Edge");
+            printf("Bottom Edge\n");
             m->surroundingQuads = realloc(m->surroundingQuads, 16);
             m->surroundingQuads[0] = m->quad_index;
             m->surroundingQuads[1] = m->quad_index - 1;
@@ -471,7 +474,7 @@ void updateSurroundingQuads(scene *s, model *m) {
             m->surroundingQuads[3] = m->surroundingQuads[2] - 1;
             m->surroundingQuadsIndexes = 4;
         } else if (edge == 2) {
-            printf("Up Edge");
+            printf("Up Edge\n");
             m->surroundingQuads = realloc(m->surroundingQuads, 16);
             m->surroundingQuads[0] = m->quad_index;
             m->surroundingQuads[1] = m->quad_index - 1;
@@ -491,7 +494,7 @@ void updateSurroundingQuads(scene *s, model *m) {
     } else {
         printf("Middle\n");
         if (edge == 1) {
-            printf("Bottom Edge");
+            printf("Bottom Edge\n");
             m->surroundingQuads = realloc(m->surroundingQuads, 24);
             m->surroundingQuads[0] = m->quad_index;
             m->surroundingQuads[1] = m->quad_index + 1;
@@ -501,7 +504,7 @@ void updateSurroundingQuads(scene *s, model *m) {
             m->surroundingQuads[5] = m->surroundingQuads[3] - 1;
             m->surroundingQuadsIndexes = 6;
         } else if (edge == 2) {
-            printf("Up Edge");
+            printf("Up Edge\n");
             m->surroundingQuads = realloc(m->surroundingQuads, 24);
             m->surroundingQuads[0] = m->quad_index;
             m->surroundingQuads[1] = m->quad_index + 1;
@@ -525,9 +528,19 @@ void updateSurroundingQuads(scene *s, model *m) {
         }
     }
 
+    //for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
+    //    printf(" %d ", m->surroundingQuads[i]);
+    //}
+    retrieveNearbyColliders(s, m);
+}
+int *retrieveNearbyColliders(scene *s, model *m) {
+    int total_models = 0;
     for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
-        printf(" %d ", m->surroundingQuads[i]);
+        //for (int y = 0; y < s->t.quad[m->surroundingQuads[i]].mpks_indexes; y++) {
+            total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;
+        //}
     }
+    printf("total colliders: %d\n", total_models);
 }
 /* Prints the members of given Quad index. */
 void logTerrainQuad(scene *s, const int quad_index) {
