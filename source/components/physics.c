@@ -12,6 +12,7 @@ void applyPhysics(scene *s) {
 			if ((s->model[i].model_type != MODEL_TYPE_TERRAIN && !s->model[i].rigid.grounded) || (checkAllZeros(s->model[i].velocity) || s->model[i].rotate)) {
 
 				initModelQuadInfo(s, &s->model[i]);
+				retrieveNearbyColliders(s, &s->model[i]);
 
 				// Compute air resistance (drag).
 				// Fd = 0.5f * p * v^2 * Cd * A;

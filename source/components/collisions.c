@@ -302,7 +302,6 @@ void sortCollisions(scene *s, model *m) {
 #else // ITERATIVE_CODE #########################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
 const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
-
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
         return 0;
@@ -310,12 +309,20 @@ const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
 
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
+    //printf("\x1b[H\x1b[J");
+    //if (m->pk == 1) {
+    //    printf("colliders: ");
+    //    for (int i = 0; i < m->collidersIndexes; i++) {
+    //        printf("%d ", m->colliders[i]);
+    //    }
+    //    printf("\n");
+    //}
 
-    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = m->collidersIndexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = s->t.quad[m->quad_index].mpks[i];
+        int pk = m->colliders[i];
 
         if (pk != m->pk) {
 
@@ -421,11 +428,11 @@ void sortCollisions(scene *s, model *m) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = m->collidersIndexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = s->t.quad[m->quad_index].mpks[i];
+        int pk = m->colliders[i];
 
         if (pk != m->pk) {
 
@@ -466,14 +473,14 @@ void sortCollisions(scene *s, model *m) {
     }
     model cache_1, cache_2;
     for (int i = 0; i < num_of_members; i++) {
-        int pk1 = s->t.quad[m->quad_index].mpks[i];
+        int pk1 = m->colliders[i];
         cache_1 = s->model[pk1];
         for (int j = 0; j < num_of_members; j++) {
-            int pk2 = s->t.quad[m->quad_index].mpks[j];
+            int pk2 = m->colliders[j];
             cache_2 = s->model[pk2];
             if (cache_1.pk != m->pk) {
                 if (cache_1.rigid.collision_t < cache_2.rigid.collision_t) {
-                    swap(&s->t.quad[m->quad_index].mpks[i], &s->t.quad[m->quad_index].mpks[j], 4);
+                    swap(&m->colliders[i], &m->colliders[j], 4);
                 }
             }
         }

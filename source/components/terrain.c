@@ -217,6 +217,7 @@ void initModelQuadInfo(scene *s, model *m) {
     } else if (m->quad_index == quad_index && m->quad_init) {
         /* Mesh is already a member of this quad. */
         m->quad_face = quad_face;
+        retrieveNearbyColliders(s, m);
         return;
     }
     m->quad_index = quad_index;
@@ -533,8 +534,7 @@ void updateSurroundingQuads(scene *s, model *m) {
             m->surroundingQuadsIndexes = 9;
         }
     }
-
-    retrieveNearbyColliders(s, m);
+    /*retrieveNearbyColliders(s, m);*/
 }
 int *retrieveNearbyColliders(scene *s, model *m) {
     int total_models = 0;
@@ -553,8 +553,9 @@ int *retrieveNearbyColliders(scene *s, model *m) {
             index++;
         }
     }
-
-    /*printf("total colliders: %d\n", total_models);*/
+    if (m->pk == 1) {
+        printf("Initializing colliders\n");
+    }
 }
 /* Prints the members of given Quad index. */
 void logTerrainQuad(scene *s, const int quad_index) {
