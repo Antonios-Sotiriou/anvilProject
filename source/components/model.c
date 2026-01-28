@@ -45,6 +45,7 @@ void releaseModel(model *m) {
         releaseAnimations(&m->anim);
 
     free(m->surroundingQuads);
+    free(m->colliders);
 }
 
 

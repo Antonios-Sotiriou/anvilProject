@@ -423,6 +423,12 @@ const TerrainPointInfo getvec4PositionData(scene *s, const vec4 v) {
     return tp;
 }
 void updateSurroundingQuads(scene *s, model *m) {
+    if (m->quad_index < 0) {
+        m->surroundingQuadsIndexes = 0;
+        m->collidersIndexes = 0;
+        debug_log_warning(stdout, "Out of terrain boundaries - updateSurroundingQuads().");
+        return;
+    }
     int edge = 0;    // this variable tracks in which edge we are on the grid. 1 is Buttom and 2 is Upper edge. If this variable stays zero, that means we are not on an edgerather on middle.
     if (m->quad_index - s->t.quad_rows < 0)
         edge = 1;
@@ -528,19 +534,27 @@ void updateSurroundingQuads(scene *s, model *m) {
         }
     }
 
-    //for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
-    //    printf(" %d ", m->surroundingQuads[i]);
-    //}
     retrieveNearbyColliders(s, m);
 }
 int *retrieveNearbyColliders(scene *s, model *m) {
     int total_models = 0;
     for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
-        //for (int y = 0; y < s->t.quad[m->surroundingQuads[i]].mpks_indexes; y++) {
-            total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;
-        //}
+        total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;
     }
-    printf("total colliders: %d\n", total_models);
+    m->collidersIndexes = total_models;
+    if (m->colliders) {
+        free(m->colliders);
+    }
+    m->colliders = malloc(m->collidersIndexes * 4);
+    int index = 0;
+    for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
+        for (int y = 0; y < s->t.quad[m->surroundingQuads[i]].mpks_indexes; y++) {
+            m->colliders[index] = s->t.quad[m->surroundingQuads[i]].mpks[y];
+            index++;
+        }
+    }
+
+    /*printf("total colliders: %d\n", total_models);*/
 }
 /* Prints the members of given Quad index. */
 void logTerrainQuad(scene *s, const int quad_index) {

@@ -35,12 +35,12 @@ void applyPhysics(scene *s) {
 				    //staticOuterRadiusCollision(s, &s->model[i]);
 
 				/* 2nd Collision Detection lvl. */
-				//int collide = 1;
-				//while (collide) {
-				//	sortCollisions(s, &s->model[i]);
-				//	int colls[1] = { 3 };
-				//	collide = sweptAABBCollision(s, &s->model[i], colls);
-				//}
+				int collide = 1;
+				while (collide) {
+					sortCollisions(s, &s->model[i]);
+					int colls[1] = { 3 };
+					collide = sweptAABBCollision(s, &s->model[i], colls);
+				}
 
 				/* 3rd Collision Detection lvl. */
 				//if (s->model[i].pk == camera) {

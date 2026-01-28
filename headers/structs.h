@@ -158,7 +158,9 @@ typedef struct {
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face,                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
         surroundingQuadsIndexes,         // How many surrounding quads the surrounding quads array holds. It can vary, because the quads number differs at the middle of the terrain from the edges.
-        *surroundingQuads;              // The Quads of the terrain which surrounding the current quad aka(quad_index); Thats usefull to detect collisions when a model is on the edges between quads.
+        *surroundingQuads,               // The Quads of the terrain which surrounding the current quad aka(quad_index); Thats usefull to detect collisions when a model is on the edges between quads.
+        collidersIndexes,                // How many entries of colliders the colliders pointer array has.
+        *colliders;                      // Pointer array to hold the primary keys of the models that are likely to collide with the moving object.
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     animation anim;
 } model;
