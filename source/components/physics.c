@@ -32,16 +32,14 @@ void applyPhysics(scene *s) {
 				s->model[i].velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), s->model[i].velocity);
 
 				/* 1st Collision Detection lvl. */
-				//if (s->model[i].pk == camera)
-				    //staticOuterRadiusCollision(s, &s->model[i]);
-
-				/* 2nd Collision Detection lvl. */
-				int collide = 1;
-				while (collide) {
-					sortCollisions(s, &s->model[i]);
-					int colls[1] = { 3 };
-					collide = sweptAABBCollision(s, &s->model[i], colls);
-				}
+				//if (staticOuterRadiusCollision(s, &s->model[i])) {
+					/* 2nd Collision Detection lvl. */
+					int collide = 1;
+					while (collide) {
+						sortCollisions(s, &s->model[i]);
+						collide = sweptAABBCollision(s, &s->model[i]);
+					}
+				//}
 
 				/* 3rd Collision Detection lvl. */
 				//if (s->model[i].pk == camera) {
@@ -53,12 +51,14 @@ void applyPhysics(scene *s) {
 			}
 
 			if (s->model[i].rotate) {
+				rotationCollision(s, &s->model[i]);
 				//setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[0]);
 				setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[1]);
 				setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[2]);
 				setvec4RotateQuat(s->model[i].rigid.q, &s->model[i].coords.v[3]);
 
 				s->model[i].q = multiplyQuats(s->model[i].q, s->model[i].rigid.q);
+				setfacesArrayMulMat(s->model[i].rigid.f, s->model[i].rigid.faces_indexes, matFromQuat(s->model[i].rigid.q, s->model[i].coords.v[0]));
 			}
 
 			if (s->model[i].model_type != MODEL_TYPE_TERRAIN) {

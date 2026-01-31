@@ -534,7 +534,6 @@ void updateSurroundingQuads(scene *s, model *m) {
             m->surroundingQuadsIndexes = 9;
         }
     }
-    /*retrieveNearbyColliders(s, m);*/
 }
 int *retrieveNearbyColliders(scene *s, model *m) {
     int total_models = 0;
@@ -552,9 +551,6 @@ int *retrieveNearbyColliders(scene *s, model *m) {
             m->colliders[index] = s->t.quad[m->surroundingQuads[i]].mpks[y];
             index++;
         }
-    }
-    if (m->pk == 1) {
-        printf("Initializing colliders\n");
     }
 }
 /* Prints the members of given Quad index. */

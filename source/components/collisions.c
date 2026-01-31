@@ -14,12 +14,11 @@ const float planeDistance(vec4 plane, vec4 v) {
     vec4 r = vecMulvec(plane, v);
     return ((vec4ExtractX(r) + vec4ExtractY(r) + vec4ExtractZ(r)) - dotProduct(plane, vec4Normalize(plane)));
 }
-
 void modelTerrainCollision(scene *s, model *m) {
     vec4 pos, normal;
     getModelPositionData(s, m, &pos, &normal);
 
-    getRigidLimits(&m->rigid);
+    getRigidLimits(&m->rigid);  // Possible target for removal.
 
     if (m->model_type == MODEL_TYPE_LIGHT) {
 
@@ -80,17 +79,18 @@ void modelTerrainCollision(scene *s, model *m) {
 const int staticOuterRadiusCollision(scene *s, model *m) {
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOuterRadiusCollision().\n", m->quad_index);
-        return;
+        return 0;
     }
     int pk;
-    for (int i = 0; i < s->t.quad[m->quad_index].mpks_indexes; i++) {
-        pk = s->t.quad[m->quad_index].mpks[i];
+    for (int i = 0; i < m->collidersIndexes; i++) {
+        pk = m->colliders[i];
         if (pk != m->pk) {
 
-            vec4 dis = vecSubvec(m->coords.v[0], s->model[pk].coords.v[0]);
-            if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius))
-                // logvec4(dis);
-                printf("checking for collision: %d --> %d\n", m->pk, pk);
+            vec4 dis = vecSubvec(vecAddvec(m->coords.v[0], m->velocity), s->model[pk].coords.v[0]);
+            if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius)) {
+                // Its not working very well with AABB on the corners. Outer collision at corners when detected AABB is already penetrating.
+                return 1;
+            }
         }
     }
     return 0;
@@ -107,11 +107,11 @@ const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = m->collidersIndexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = s->t.quad[m->quad_index].mpks[i];
+        int pk = m->colliders[i];
 
         if (pk != m->pk) {
 
@@ -228,11 +228,11 @@ void sortCollisions(scene *s, model *m) {
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
 
-    const int num_of_members = s->t.quad[m->quad_index].mpks_indexes;
+    const int num_of_members = m->collidersIndexes;
 
     for (int i = 0; i < num_of_members; i++) {
 
-        int pk = s->t.quad[m->quad_index].mpks[i];
+        int pk = m->colliders[i];
 
         if (pk != m->pk) {
 
@@ -286,14 +286,14 @@ void sortCollisions(scene *s, model *m) {
     }
     model cache_1, cache_2;
     for (int i = 0; i < num_of_members; i++) {
-        int pk1 = s->t.quad[m->quad_index].mpks[i];
+        int pk1 = m->colliders[i];
         cache_1 = s->model[pk1];
         for (int j = 0; j < num_of_members; j++) {
-            int pk2 = s->t.quad[m->quad_index].mpks[j];
+            int pk2 = m->colliders[j];
             cache_2 = s->model[pk2];
             if (cache_1.pk != m->pk) {
                 if (cache_1.rigid.collision_t < cache_2.rigid.collision_t) {
-                    swap(&s->t.quad[m->quad_index].mpks[i], &s->t.quad[m->quad_index].mpks[j], 4);
+                    swap(&m->colliders[i], &m->colliders[j], 4);
                 }
             }
         }
@@ -301,7 +301,7 @@ void sortCollisions(scene *s, model *m) {
 }
 #else // ITERATIVE_CODE #########################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
-const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
+const int sweptAABBCollision(scene *s, model *m) {
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
         return 0;
@@ -309,14 +309,6 @@ const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
 
     getRigidLimits(&m->rigid);
     vec4 tnear, tfar, min, max;
-    //printf("\x1b[H\x1b[J");
-    //if (m->pk == 1) {
-    //    printf("colliders: ");
-    //    for (int i = 0; i < m->collidersIndexes; i++) {
-    //        printf("%d ", m->colliders[i]);
-    //    }
-    //    printf("\n");
-    //}
 
     const int num_of_members = m->collidersIndexes;
 
@@ -380,7 +372,7 @@ const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
             }
 
             if (t_near == 0.f) {
-                printf("Sliding.... %f\n", t_near);
+                //printf("Sliding.... %f\n", t_near);
 
                 float dot = dotProduct(m->velocity, normal);
                 m->velocity = vecSubvec(m->velocity, vecMulf32(normal, dot));
@@ -415,6 +407,73 @@ const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
             }
         }
     }
+    return 0;
+}
+const int rotationCollision(scene *s, model *m) {
+    if (m->quad_index < 0) {
+        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. rotationCollision().\n", m->quad_index);
+        return 0;
+    }
+
+    mat4x4 tm = matFromQuat(m->rigid.q, m->coords.v[0]);
+    rigid temp_rigid = { 0 };
+    temp_rigid.faces_indexes = m->rigid.faces_indexes;
+    temp_rigid.f = facesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
+
+    getRigidLimits(&temp_rigid);
+    vec4 tnear, tfar, min, max;
+
+    const int num_of_members = m->collidersIndexes;
+
+    for (int i = 0; i < num_of_members; i++) {
+
+        int pk = m->colliders[i];
+
+        if (pk != m->pk) {
+
+            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], temp_rigid.min)));
+            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], temp_rigid.max)));
+
+            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+
+            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+                continue;
+
+            if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
+            if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
+            if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
+
+            if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
+                continue;
+
+            float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
+            float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
+
+            /* ##################### Y ############################ */
+            if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
+                continue;
+
+            if (tnear.m128_f32[1] > t_near)
+                t_near = tnear.m128_f32[1];
+            if (tfar.m128_f32[1] < t_far)
+                t_far = tfar.m128_f32[1];
+            /* ##################### Y ############################ */
+
+            if ((t_far <= 0) || (t_near > 1.f))
+                continue;
+
+            if (t_near < 0) {
+                printf("PENETRATION: %f    mesh.id: %d\n", t_near, m->pk);
+                m->rigid.q = unitQuat();
+
+                free(temp_rigid.f);
+                return 1;
+            }
+        }
+    }
+    free(temp_rigid.f);
+
     return 0;
 }
 /* Swept Sorting the collisions for AABB. */
