@@ -17,47 +17,37 @@ const float planeDistance(vec4 plane, vec4 v) {
 void modelTerrainCollision(scene *s, model *m) {
     vec4 pos, normal;
     getModelPositionData(s, m, &pos, &normal);
+    normal = vec4Normalize(normal);
 
-    getRigidLimits(&m->rigid);  // Possible target for removal.
-    float move_dir = dotProduct(vec4Normalize(normal), vec4Normalize(m->velocity));
+    getRigidLimits(&m->rigid);
+    float move_dir = dotProduct(normal, vec4Normalize(m->velocity));
 
-    if (m->model_type == MODEL_TYPE_LIGHT) {
+    vec4 min = setvec4(vec4ExtractX(m->coords.v[0]), vec4ExtractY(m->rigid.min), vec4ExtractZ(m->coords.v[0]), 1.f);
+    vec4 t_near = vecDivvec(vecSubvec(pos, min), m->velocity);
 
-        vec4 min = setvec4(vec4ExtractX(m->coords.v[0]), vec4ExtractY(m->rigid.min), vec4ExtractZ(m->coords.v[0]), 1.f);
-        vec4 t_near = vecDivvec(vecSubvec(pos, min), m->velocity);
+    if ((vec4ExtractY(t_near) <= 1 && vec4ExtractY(t_near) > 0)) {
+        m->velocity = vecMulf32(m->velocity, vec4ExtractY(t_near));
 
-        if ((vec4ExtractY(t_near) <= 1 && vec4ExtractY(t_near) > 0) && !m->rigid.grounded ) {
-            m->velocity = vecMulf32(m->velocity, vec4ExtractY(t_near));
+        m->rigid.grounded = 1;
+        m->rigid.falling_time = 0;
 
-            m->rigid.grounded = 1;
-            m->rigid.falling_time = 0;
+        mat4x4 tm = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
+        setvec4ArrayMulmat(m->coords.v, 4, tm);
+        setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
 
-            mat4x4 tm = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
-            setvec4ArrayMulmat(m->coords.v, 4, tm);
-            setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
-
-            float col_dot = dotProduct(m->velocity, vec4Normalize(normal));
-            m->velocity = vecSubvec(m->velocity, vecMulf32(vec4Normalize(normal), col_dot));
-
-        } else if (vec4ExtractY(t_near) < 0) {
-            printf("Terrain penetration\n");
-        }
-
+        float col_dot = dotProduct(m->velocity, normal);
+        m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
+        printf("<= 1 > 0 && !grounded : %d\n", m->pk);
         return;
     }
-
-    float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));   // Posible bugg with height here after changed scale to vec4.
+    float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));
     if (height_diff >= 0) {
         m->rigid.grounded = 1;
         m->rigid.falling_time = 0;
-    }
-
-    //if (m->rigid.grounded) {
         mat4x4 tm = translationMatrix(0, height_diff, 0);
-
         setvec4ArrayMulmat(m->coords.v, 4, tm);
         setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
-    //}
+    }
 }
 //const void terrainHeightDifference(Mesh* terrain, Mesh* obj) {
 //    vec4f next_pos = obj->cd.v[P] + obj->velocity + (obj->mvdir * obj->scale);
