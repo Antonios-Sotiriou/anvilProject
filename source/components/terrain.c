@@ -535,7 +535,7 @@ void updateSurroundingQuads(scene *s, model *m) {
         }
     }
 }
-int *retrieveNearbyColliders(scene *s, model *m) {
+void retrieveNearbyColliders(scene *s, model *m) {
     int total_models = 0;
     for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
         total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;

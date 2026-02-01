@@ -1,6 +1,6 @@
-prefix=C:/Users/anton/Desktop/anvilProject/out/install/x64-Release
+prefix=C:/Users/anton/Desktop/personal_projects/anvilProject/out/install/x64-Release
 exec_prefix=${prefix}
-libdir=C:/Users/anton/Desktop/anvilProject/out/install/x64-Release/lib
+libdir=C:/Users/anton/Desktop/personal_projects/anvilProject/out/install/x64-Release/lib
 includedir=${prefix}/include
 
 Name: glew
