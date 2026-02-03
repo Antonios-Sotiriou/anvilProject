@@ -68,7 +68,7 @@ const int staticOuterRadiusCollision(scene *s, model *m) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOuterRadiusCollision().\n", m->quad_index);
         return 0;
     }
-    int pk;
+    int pk, count = 0;
     for (int i = 0; i < m->collidersIndexes; i++) {
         pk = m->colliders[i];
         if (pk != m->pk) {
@@ -76,11 +76,20 @@ const int staticOuterRadiusCollision(scene *s, model *m) {
             vec4 dis = vecSubvec(vecAddvec(m->coords.v[0], m->velocity), s->model[pk].coords.v[0]);
             if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius)) {
                 // Its not working very well with AABB on the corners. Outer collision at corners when detected AABB is already penetrating.
-                // Improvement is possible here. Maybe the colliders array must be manipulated accordingly.
+                //m->colliders[count] = pk;
+                //count++;
                 return 1;
             }
         }
     }
+    //if (m->pk == 1) {
+    //    for (int i = 0; i < count; i++) {
+    //        printf("%d ", m->colliders[i]);
+    //    }
+    //    printf("\n");
+    //}
+    //m->collidersIndexes = count;
+    //return count != 0 ? 1 : 0;
     return 0;
 }
 #ifdef VECTORIZED_CODE // #######################################################################################

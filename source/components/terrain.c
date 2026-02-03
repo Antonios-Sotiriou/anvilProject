@@ -536,27 +536,44 @@ void updateSurroundingQuads(scene *s, model *m) {
     }
 }
 void retrieveNearbyColliders(scene *s, model *m) {
+    if (m->quad_index < 0) {
+        m->surroundingQuadsIndexes = 0;
+        m->collidersIndexes = 0;
+        debug_log_warning(stdout, "Out of terrain boundaries - retrieveNearbyColliders().");
+        return;
+    }
     int total_models = 0;
     for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
         total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;
     }
-    m->collidersIndexes = total_models;
+    m->collidersIndexes = total_models - 1; // Minus 1 here because we don't want to count the active model also.
     if (m->colliders) {
         free(m->colliders);
     }
-    m->colliders = malloc(m->collidersIndexes * 4);
-    int index = 0;
-    for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
-        for (int y = 0; y < s->t.quad[m->surroundingQuads[i]].mpks_indexes; y++) {
-            m->colliders[index] = s->t.quad[m->surroundingQuads[i]].mpks[y];
-            index++;
+
+    if (m->collidersIndexes > 0) {
+
+        m->colliders = malloc(m->collidersIndexes * 4);
+        if (!m->colliders) {
+            debug_log_warning(stdout, "m->colliders = malloc(m->collidersIndexes * 4)");
+            return;
         }
+        int index = 0;
+        for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
+            for (int y = 0; y < s->t.quad[m->surroundingQuads[i]].mpks_indexes; y++) {
+                if (m->colliders[index] != s->t.quad[m->surroundingQuads[i]].mpks[y]) {
+                    m->colliders[index] = s->t.quad[m->surroundingQuads[i]].mpks[y];
+                    index++;
+                }
+            }
+        }
+    } else {
+        m->collidersIndexes = 0;
     }
 }
 /* Prints the members of given Quad index. */
 void logTerrainQuad(scene *s, const int quad_index) {
     if (quad_index < 0) {
-        /* Mesh is out of terrain if its quadIndex is less than Zero. */
         debug_log_warning(stdout, "Out of terrain boundaries");
         return;
     }
