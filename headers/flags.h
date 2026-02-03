@@ -8,7 +8,7 @@
 #include "headers/cmake_variables.h"
 
 /* Flag to compile with SSE code or without. */
- //#define VECTORIZED_CODE
+//  #define VECTORIZED_CODE
 //printf("\x1b[H\x1b[J");
 
 #ifdef anvil_VERSION_MAJOR

@@ -157,7 +157,7 @@ void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint 
     printf("%s type = %d, severity = %d, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
 }
 GLenum glCheckError_(const char *file, int line) {
-    const char *errorString;
+    const char *errorString = { 0 };
     GLenum errorCode = { 0 };
     while ((errorCode = glGetError()) != GL_NO_ERROR) {
         switch (errorCode) {

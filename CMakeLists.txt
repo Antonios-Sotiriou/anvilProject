@@ -26,7 +26,7 @@ endif()
 
 # Creates an executable.
 if (LINUX)
-    set(CMAKE_C_FLAGS "-Wall -Werror -Wno-missing-braces -Wno-stringop-overread -msse4.1 -O3 -DGLEW_NO_GLU" CACHE STRING "" FORCE)
+    set(CMAKE_C_FLAGS "-Wall -Werror -g -Wno-missing-braces -Wno-stringop-overread -msse4.1 -O3 -DGLEW_NO_GLU" CACHE STRING "" FORCE)
     add_executable(
         anvil 
         "${Network_Files}" 

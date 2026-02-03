@@ -20,7 +20,7 @@ void modelTerrainCollision(scene *s, model *m) {
     normal = vec4Normalize(normal);
 
     getRigidLimits(&m->rigid);
-    float move_dir = dotProduct(normal, vec4Normalize(m->velocity));
+    // float move_dir = dotProduct(normal, vec4Normalize(m->velocity));
 
     vec4 min = setvec4(vec4ExtractX(m->coords.v[0]), vec4ExtractY(m->rigid.min), vec4ExtractZ(m->coords.v[0]), 1.f);
     vec4 t_near = vecDivvec(vecSubvec(pos, min), m->velocity);
@@ -76,25 +76,25 @@ const int staticOuterRadiusCollision(scene *s, model *m) {
             vec4 dis = vecSubvec(vecAddvec(m->coords.v[0], m->velocity), s->model[pk].coords.v[0]);
             if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius)) {
                 // Its not working very well with AABB on the corners. Outer collision at corners when detected AABB is already penetrating.
-                //m->colliders[count] = pk;
-                //count++;
-                return 1;
+                m->colliders[count] = pk;
+                count++;
+                // return 1;
             }
         }
     }
-    //if (m->pk == 1) {
-    //    for (int i = 0; i < count; i++) {
-    //        printf("%d ", m->colliders[i]);
-    //    }
-    //    printf("\n");
-    //}
-    //m->collidersIndexes = count;
-    //return count != 0 ? 1 : 0;
-    return 0;
+    if (m->pk == 1) {
+       for (int i = 0; i < count; i++) {
+           printf("%d ", m->colliders[i]);
+       }
+       printf("\n");
+    }
+    m->collidersIndexes = count;
+    return count != 0 ? 1 : 0;
+    // return 0;
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
-const int sweptAABBCollision(scene *s, model *m, const int pks[]) {
+const int sweptAABBCollision(scene *s, model *m) {
 
     if (m->quad_index < 0) {
         fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);

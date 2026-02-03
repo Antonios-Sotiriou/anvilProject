@@ -159,9 +159,10 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
                 s->DISPLAY_RIGID = s->DISPLAY_RIGID == 0 ? 1 : 0;
             break;
         case GLFW_KEY_SPACE:
-            if (action == GLFW_PRESS)
+            if (action == GLFW_PRESS) {
                 s->model[light].velocity = vecAddvec(s->model[light].velocity, setvec4(0, 1000, 0, 0));
                 s->model[light].rigid.grounded = 0;
+            }
             break;
         case GLFW_KEY_T:
             if (action == GLFW_PRESS) {

@@ -225,6 +225,7 @@ void initModelQuadInfo(scene *s, model *m) {
     m->quad_init = 1;
     addModelToQuad(s, m);
     updateSurroundingQuads(s, m);  // Here we have to find out the surrounding quads of the quad that the medel is in.
+    retrieveNearbyColliders(s, m);
 }
 /* Adds a Mesh to the Quad that is standing on to, if its not already a member of this Quad. */
 void addModelToQuad(scene *s, model *m) {
@@ -544,7 +545,8 @@ void retrieveNearbyColliders(scene *s, model *m) {
     }
     int total_models = 0;
     for (int i = 0; i < m->surroundingQuadsIndexes; i++) {
-        total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;
+        if (s->t.quad[m->surroundingQuads[i]].mpks_indexes)
+            total_models += s->t.quad[m->surroundingQuads[i]].mpks_indexes;
     }
     m->collidersIndexes = total_models - 1; // Minus 1 here because we don't want to count the active model also.
     if (m->colliders) {

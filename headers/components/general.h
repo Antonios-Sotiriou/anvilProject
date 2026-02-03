@@ -34,7 +34,9 @@ void swap(void* a, void* b, unsigned long size);
 const float radians(const float value);
 void getvec4ArrayLimits(vec4 v[], const int array_len, vec4 *min, vec4 *max);
 void usleep(const int usec);
-void gettimeofday(struct timeval* tv, struct timezone* tzp);
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64) 
+    void gettimeofday(struct timeval* tv, struct timezone* tzp);
+#endif
 void initTimeCounter(metrics* mtr);
 void updateTimeCounter(metrics* mtr);
 void calculateFPS(metrics* mtr);
