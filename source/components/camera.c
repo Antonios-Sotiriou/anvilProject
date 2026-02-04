@@ -1,6 +1,6 @@
 #include "headers/components/camera.h"
 
-#define FORCE      500.3f    // Force to apply on velocity to move the object.
+#define FORCE      50.3f    // Force to apply on velocity to move the object.
 #define ANGLE      0.1f     // Angle by which to rotate the camera.
 
 void movementDispatch(model *m, const int key, const int action) {

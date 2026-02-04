@@ -37,7 +37,7 @@ void modelTerrainCollision(scene *s, model *m) {
 
         float col_dot = dotProduct(m->velocity, normal);
         m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
-        printf("<= 1 > 0 && !grounded : %d\n", m->pk);
+        //printf("<= 1 > 0 && !grounded : %d\n", m->pk);
         return;
     }
     float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));
@@ -49,55 +49,45 @@ void modelTerrainCollision(scene *s, model *m) {
         setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
     }
 }
-//const void terrainHeightDifference(Mesh* terrain, Mesh* obj) {
-//    vec4f next_pos = obj->cd.v[P] + obj->velocity + (obj->mvdir * obj->scale);
-//    // displayPoint(next_pos, worldMatrix, 0xffccaa);
-//    TerrainPointInfo tp_0 = getTerrainPointData(terrain, obj->cd.v[0], obj);
-//    TerrainPointInfo tp_1 = getTerrainPointData(terrain, next_pos, obj);
-//
-//    float height_0 = tp_0.pos[1] - (obj->cd.v[P][1] - obj->scale);
-//    float height_1 = tp_1.pos[1] - (next_pos[1] - obj->scale);
-//
-//    if ((obj->grounded) && (height_1 - height_0 > 50)) {
-//        obj->velocity -= obj->velocity;
-//    }
-//}
+const void terrainHeightDifference(scene *s, model *m) {
+    vec4 next_pos = vecAddvec(m->coords.v[0], vecMulvec(m->velocity, m->scale));
+
+    TerrainPointInfo tp_0 = getvec4PositionData(s, m->coords.v[0]);
+    TerrainPointInfo tp_1 = getvec4PositionData(s, next_pos);
+
+    float height_0 = vec4ExtractY(tp_0.pos) - (vec4ExtractY(m->coords.v[0]) - vec4ExtractY(m->scale));
+    float height_1 = vec4ExtractY(tp_1.pos) - (vec4ExtractY(next_pos) - vec4ExtractY(m->scale));
+
+    if ((m->rigid.grounded) && (height_1 - height_0 > 50)) {
+        m->velocity = setvec4Zero();
+    }
+}
 /* Checks for collisions whithin a radius sourounding the mesh. */
 const int staticOuterRadiusCollision(scene *s, model *m) {
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOuterRadiusCollision().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. staticOuterRadiusCollision().\n", m->cname);
         return 0;
     }
     int pk, count = 0;
     for (int i = 0; i < m->collidersIndexes; i++) {
         pk = m->colliders[i];
-        if (pk != m->pk) {
 
-            vec4 dis = vecSubvec(vecAddvec(m->coords.v[0], m->velocity), s->model[pk].coords.v[0]);
-            if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius)) {
-                // Its not working very well with AABB on the corners. Outer collision at corners when detected AABB is already penetrating.
-                m->colliders[count] = pk;
-                count++;
-                // return 1;
-            }
+        vec4 dis = vecSubvec(vecAddvec(m->coords.v[0], m->velocity), s->model[pk].coords.v[0]);
+        if (vec4Length(dis) <= (s->model[pk].outer_radius + m->outer_radius)) {
+            // Its not working very well with AABB on the corners. Outer collision at corners when detected AABB is already penetrating.
+            m->colliders[count] = pk;
+            count++;
         }
-    }
-    if (m->pk == 1) {
-       for (int i = 0; i < count; i++) {
-           printf("%d ", m->colliders[i]);
-       }
-       printf("\n");
     }
     m->collidersIndexes = count;
     return count != 0 ? 1 : 0;
-    // return 0;
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
 const int sweptAABBCollision(scene *s, model *m) {
 
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. sweptAABBCollision().\n", m->cname);
         return 0;
     }
 
@@ -110,113 +100,110 @@ const int sweptAABBCollision(scene *s, model *m) {
 
         int pk = m->colliders[i];
 
-        if (pk != m->pk) {
+        min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+        max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
-            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+        tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+        tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
 
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+        if ( vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar) )
+            continue;
 
-            if ( vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar) )
-                continue;
+        min = _mm_min_ps(tnear, tfar);
+        max = _mm_max_ps(tnear, tfar);
 
-            min = _mm_min_ps(tnear, tfar);
-            max = _mm_max_ps(tnear, tfar);
+        int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
+        if ( check_xz == 1 || check_xz == 4 ) {
+            continue;
+        }
 
-            int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
-            if ( check_xz == 1 || check_xz == 4 ) {
-                continue;
+        float t_near = 0.f, t_far = 0.f;
+        if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+            t_near = _mm_cvtss_f32(min);
+        } else {
+            t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
+        }
+
+        if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+            t_far = _mm_cvtss_f32(max);
+        } else {
+            t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
+        }
+
+        /* ##################### Y ############################ */
+        if ( (t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far) )
+            continue;
+
+        if ( _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near )
+            t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
+        if ( _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far )
+            t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
+        /* ##################### Y ############################ */
+
+        if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+            continue;
+
+        vec4 normal = { 0.f };
+        if (vec4ExtractX(min) >= vec4ExtractY(min) && vec4ExtractX(min) >= vec4ExtractZ(min)) {
+            if (vec4ExtractX(m->velocity) < 0) {
+                vec4SetX(&normal, 1.f);
+            } else if (vec4ExtractX(m->velocity) > 0) {
+                vec4SetX(&normal, -1.f);
             }
-
-            float t_near = 0.f, t_far = 0.f;
-            if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_near = _mm_cvtss_f32(min);
-            } else {
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
+        } else if (vec4ExtractY(min) >= vec4ExtractX(min) && vec4ExtractY(min) >= vec4ExtractZ(min)) {
+            if (vec4ExtractY(m->velocity) < 0) {
+                vec4SetY(&normal, 1.f);
+            } else if (vec4ExtractY(m->velocity) > 0) {
+                vec4SetY(&normal, -1.f);
             }
-
-            if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_far = _mm_cvtss_f32(max);
-            } else {
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
+        } else if (vec4ExtractZ(min) >= vec4ExtractX(min) && vec4ExtractZ(min) >= vec4ExtractY(min)) {
+            if (vec4ExtractZ(m->velocity) < 0) {
+                vec4SetZ(&normal, 1.f);
+            } else if (vec4ExtractZ(m->velocity) > 0) {
+                vec4SetZ(&normal, -1.f);
             }
+        }
 
-            /* ##################### Y ############################ */
-            if ( (t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far) )
-                continue;
+        if (t_near == 0.f) {
+            //printf("Sliding.... %f\n", t_near);
 
-            if ( _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near )
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
-            if ( _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far )
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
-            /* ##################### Y ############################ */
+            float dot = dotProduct(m->velocity, normal);
+            m->velocity = vecSubvec(m->velocity, vecMulf32(normal, dot));
 
-            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
-                continue;
+            //if (tnear.m128_f32[1] == 0) {
+            //    //obj->falling_time = 0.f;
+            //    //m->velocity = vecMulvec(m->velocity,  m->rigid.momentum);
+            //}
+            //else {
+            //    m->velocity = (gravity_epicenter * (98.1f * (m->rigid.falling_time * 2.f))) + (m->velocity * m->rigid.momentum);
+            //}
+            return 2;
 
-            vec4 normal = { 0.f };
-            if (vec4ExtractX(min) >= vec4ExtractY(min) && vec4ExtractX(min) >= vec4ExtractZ(min)) {
-                if (vec4ExtractX(m->velocity) < 0) {
-                    vec4SetX(&normal, 1.f);
-                } else if (vec4ExtractX(m->velocity) > 0) {
-                    vec4SetX(&normal, -1.f);
-                }
-            } else if (vec4ExtractY(min) >= vec4ExtractX(min) && vec4ExtractY(min) >= vec4ExtractZ(min)) {
-                if (vec4ExtractY(m->velocity) < 0) {
-                    vec4SetY(&normal, 1.f);
-                } else if (vec4ExtractY(m->velocity) > 0) {
-                    vec4SetY(&normal, -1.f);
-                }
-            } else if (vec4ExtractZ(min) >= vec4ExtractX(min) && vec4ExtractZ(min) >= vec4ExtractY(min)) {
-                if (vec4ExtractZ(m->velocity) < 0) {
-                    vec4SetZ(&normal, 1.f);
-                } else if (vec4ExtractZ(m->velocity) > 0) {
-                    vec4SetZ(&normal, -1.f);
-                }
-            }
+        } else if (((t_near > 0.f) && (t_near <= 1.f))) {
+            //printf("COLLISION  ######################### : %f    mesh.id: %d\n", t_near, pk);
 
-            if (t_near == 0.f) {
-                //printf("Sliding.... %f\n", t_near);
+            m->velocity = vecMulf32(m->velocity, t_near);
 
-                float dot = dotProduct(m->velocity, normal);
-                m->velocity = vecSubvec(m->velocity, vecMulf32(normal, dot));
+            mat4x4 trans = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
 
-                //if (tnear.m128_f32[1] == 0) {
-                //    //obj->falling_time = 0.f;
-                //    //m->velocity = vecMulvec(m->velocity,  m->rigid.momentum);
-                //}
-                //else {
-                //    m->velocity = (gravity_epicenter * (98.1f * (m->rigid.falling_time * 2.f))) + (m->velocity * m->rigid.momentum);
-                //}
-                return 2;
+            setvec4ArrayMulmat(m->coords.v, 4, trans);
+            setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, trans);
 
-            } else if (((t_near > 0.f) && (t_near <= 1.f))) {
-                //printf("COLLISION  ######################### : %f    mesh.id: %d\n", t_near, pk);
-
-                m->velocity = vecMulf32(m->velocity, t_near);
-
-                mat4x4 trans = translationMatrix(vec4ExtractX(m->velocity), vec4ExtractY(m->velocity), vec4ExtractZ(m->velocity));
-
-                setvec4ArrayMulmat(m->coords.v, 4, trans);
-                setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, trans);
-
-                //obj->momentum *= cache->fr_coef;
-                //float dot = dot_product(normal, obj->mvdir);
-                //obj->mvdir = obj->mvdir - (dot * normal);
-                //obj->velocity = (obj->mvdir * obj->momentum);
-                float col_dot = dotProduct(m->velocity, normal);
-                m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
-                printf("Collision Detected...depth: %f    col_dot: %f\n", t_near, col_dot);
-                return 1;
-            }
+            //obj->momentum *= cache->fr_coef;
+            //float dot = dot_product(normal, obj->mvdir);
+            //obj->mvdir = obj->mvdir - (dot * normal);
+            //obj->velocity = (obj->mvdir * obj->momentum);
+            float col_dot = dotProduct(m->velocity, normal);
+            m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
+            printf("Collision Detected...depth: %f    col_dot: %f\n", t_near, col_dot);
+            return 1;
         }
     }
     return 0;
 }
 const int rotationCollision(scene *s, model *m) {
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. rotationCollision().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. rotationCollision().\n", m->cname);
         return 0;
     }
 
@@ -234,60 +221,57 @@ const int rotationCollision(scene *s, model *m) {
 
         int pk = m->colliders[i];
 
-        if (pk != m->pk) {
+        min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], temp_rigid.min)));
+        max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], temp_rigid.max)));
 
-            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], temp_rigid.min)));
-            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], temp_rigid.max)));
+        tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+        tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
 
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+        if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+            continue;
 
-            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
-                continue;
+        min = _mm_min_ps(tnear, tfar);
+        max = _mm_max_ps(tnear, tfar);
 
-            min = _mm_min_ps(tnear, tfar);
-            max = _mm_max_ps(tnear, tfar);
+        int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
+        if (check_xz == 1 || check_xz == 4) {
+            continue;
+        }
 
-            int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
-            if (check_xz == 1 || check_xz == 4) {
-                continue;
-            }
+        float t_near = 0.f, t_far = 0.f;
+        if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+            t_near = _mm_cvtss_f32(min);
+        }
+        else {
+            t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
+        }
 
-            float t_near = 0.f, t_far = 0.f;
-            if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_near = _mm_cvtss_f32(min);
-            }
-            else {
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
-            }
+        if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+            t_far = _mm_cvtss_f32(max);
+        }
+        else {
+            t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
+        }
 
-            if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_far = _mm_cvtss_f32(max);
-            }
-            else {
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
-            }
+        /* ##################### Y ############################ */
+        if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
+            continue;
 
-            /* ##################### Y ############################ */
-            if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
-                continue;
+        if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
+            t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
+        if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
+            t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
+        /* ##################### Y ############################ */
 
-            if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
-            if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
-            /* ##################### Y ############################ */
+        if ((t_far <= 0) || (t_near > 1.f))
+            continue;
 
-            if ((t_far <= 0) || (t_near > 1.f))
-                continue;
+        if (t_near < 0) {
+            printf("PENETRATION: %f    mesh.id: %d\n", t_near, m->pk);
+            m->rigid.q = unitQuat();
 
-            if (t_near < 0) {
-                printf("PENETRATION: %f    mesh.id: %d\n", t_near, m->pk);
-                m->rigid.q = unitQuat();
-
-                free(temp_rigid.f);
-                return 1;
-            }
+            free(temp_rigid.f);
+            return 1;
         }
     }
     free(temp_rigid.f);
@@ -298,7 +282,7 @@ const int rotationCollision(scene *s, model *m) {
 void sortCollisions(scene *s, model *m) {
 
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. sortCollisions().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. sortCollisions().\n", m->cname);
         return;
     }
 
@@ -311,55 +295,52 @@ void sortCollisions(scene *s, model *m) {
 
         int pk = m->colliders[i];
 
-        if (pk != m->pk) {
+        min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+        max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
-            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+        tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+        tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
 
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+        if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+            continue;
 
-            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
-                continue;
+        min = _mm_min_ps(tnear, tfar);
+        max = _mm_max_ps(tnear, tfar);
 
-            min = _mm_min_ps(tnear, tfar);
-            max = _mm_max_ps(tnear, tfar);
-
-            int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
-            if (check_xz == 1 || check_xz == 4) {
-                continue;
-            }
-
-            float t_near = 0.f, t_far = 0.f;
-            if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_near = _mm_cvtss_f32(min);
-            }
-            else {
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
-            }
-
-            if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
-                t_far = _mm_cvtss_f32(max);
-            }
-            else {
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
-            }
-
-            /* ##################### Y ############################ */
-            if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
-                continue;
-
-            if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
-                t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
-            if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
-                t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
-            /* ##################### Y ############################ */
-
-            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
-                continue;
-
-            s->model[pk].rigid.collision_t = t_near;
+        int check_xz = _mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 0, 1, 2))));
+        if (check_xz == 1 || check_xz == 4) {
+            continue;
         }
+
+        float t_near = 0.f, t_far = 0.f;
+        if (_mm_movemask_ps(_mm_cmpgt_ps(min, _mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+            t_near = _mm_cvtss_f32(min);
+        }
+        else {
+            t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 2)));
+        }
+
+        if (_mm_movemask_ps(_mm_cmplt_ps(max, _mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)))) == 1) {
+            t_far = _mm_cvtss_f32(max);
+        }
+        else {
+            t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 2)));
+        }
+
+        /* ##################### Y ############################ */
+        if ((t_near > _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)))) || (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_far))
+            continue;
+
+        if (_mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1))) > t_near)
+            t_near = _mm_cvtss_f32(_mm_shuffle_ps(min, min, _MM_SHUFFLE(3, 2, 1, 1)));
+        if (_mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1))) > t_far)
+            t_far = _mm_cvtss_f32(_mm_shuffle_ps(max, max, _MM_SHUFFLE(3, 2, 1, 1)));
+        /* ##################### Y ############################ */
+
+        if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+            continue;
+
+        s->model[pk].rigid.collision_t = t_near;
     }
     model cache_1, cache_2;
     for (int i = 0; i < num_of_members; i++) {
@@ -380,7 +361,7 @@ void sortCollisions(scene *s, model *m) {
 /* Check swept Axis Aligned Bounding Boxes collisions between, given mesh (*m) and a Primary keys array of possible colliders (pks). */
 const int sweptAABBCollision(scene *s, model *m) {
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. sweptAABBCollision().\n", m->cname);
         return 0;
     }
 
@@ -393,102 +374,99 @@ const int sweptAABBCollision(scene *s, model *m) {
 
         int pk = m->colliders[i];
 
-        if (pk != m->pk) {
+        min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+        max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
-            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+        tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+        tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
 
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+        if ( vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar) )
+            continue;
 
-            if ( vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar) )
-                continue;
+        if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
+        if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
+        if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
 
-            if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
-            if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
-            if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
+        if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
+            continue;
 
-            if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
-                continue;
+        float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
+        float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
 
-            float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
-            float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
+        /* ##################### Y ############################ */
+        if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
+            continue;
 
-            /* ##################### Y ############################ */
-            if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
-                continue;
+        if (tnear.m128_f32[1] > t_near)
+            t_near = tnear.m128_f32[1];
+        if (tfar.m128_f32[1] < t_far)
+            t_far = tfar.m128_f32[1];
+        /* ##################### Y ############################ */
 
-            if (tnear.m128_f32[1] > t_near)
-                t_near = tnear.m128_f32[1];
-            if (tfar.m128_f32[1] < t_far)
-                t_far = tfar.m128_f32[1];
-            /* ##################### Y ############################ */
+        if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+            continue;
 
-            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
-                continue;
-
-            vec4 normal = { 0.f };
-            if (tnear.m128_f32[0] >= tnear.m128_f32[1] && tnear.m128_f32[0] >= tnear.m128_f32[2]) {
-                if (m->velocity.m128_f32[0] < 0) {
-                    normal.m128_f32[0] = 1.f;
-                } else if (m->velocity.m128_f32[0] > 0) {
-                    normal.m128_f32[0] = -1.f;
-                }
-            } else if (tnear.m128_f32[1] >= tnear.m128_f32[0] && tnear.m128_f32[1] >= tnear.m128_f32[2]) {
-                if (m->velocity.m128_f32[1] < 0) {
-                    normal.m128_f32[1] = 1.f;
-                } else if (m->velocity.m128_f32[1] > 0) {
-                    normal.m128_f32[1] = -1.f;
-                }
-            } else if (tnear.m128_f32[2] >= tnear.m128_f32[0] && tnear.m128_f32[2] >= tnear.m128_f32[1]) {
-                if (m->velocity.m128_f32[2] < 0) {
-                    normal.m128_f32[2] = 1.f;
-                } else if (m->velocity.m128_f32[2] > 0) {
-                    normal.m128_f32[2] = -1.f;
-                }
+        vec4 normal = { 0.f };
+        if (tnear.m128_f32[0] >= tnear.m128_f32[1] && tnear.m128_f32[0] >= tnear.m128_f32[2]) {
+            if (m->velocity.m128_f32[0] < 0) {
+                normal.m128_f32[0] = 1.f;
+            } else if (m->velocity.m128_f32[0] > 0) {
+                normal.m128_f32[0] = -1.f;
             }
-
-            if (t_near == 0.f) {
-                //printf("Sliding.... %f\n", t_near);
-
-                float dot = dotProduct(m->velocity, normal);
-                m->velocity = vecSubvec(m->velocity, vecMulf32(normal, dot));
-
-                //if (tnear.m128_f32[1] == 0) {
-                //    //obj->falling_time = 0.f;
-                //    //m->velocity = vecMulvec(m->velocity,  m->rigid.momentum);
-                //}
-                //else {
-                //    m->velocity = (gravity_epicenter * (98.1f * (m->rigid.falling_time * 2.f))) + (m->velocity * m->rigid.momentum);
-                //}
-                return 2;
-
-            } else if (((t_near > 0.f) && (t_near <= 1.f))) {
-                printf("COLLISION  ######################### : %f    mesh.id: %d\n", t_near, pk);
-
-                m->velocity = vecMulf32(m->velocity, t_near);
-
-                mat4x4 trans = translationMatrix(m->velocity.m128_f32[0], m->velocity.m128_f32[1], m->velocity.m128_f32[2]);
-
-                setvec4ArrayMulmat(m->coords.v, 4, trans);
-                setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, trans);
-
-                //obj->momentum *= cache->fr_coef;
-                //float dot = dot_product(normal, obj->mvdir);
-                //obj->mvdir = obj->mvdir - (dot * normal);
-                //obj->velocity = (obj->mvdir * obj->momentum);
-                float col_dot = dotProduct(m->velocity, normal);
-                m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
-
-                return 1;
+        } else if (tnear.m128_f32[1] >= tnear.m128_f32[0] && tnear.m128_f32[1] >= tnear.m128_f32[2]) {
+            if (m->velocity.m128_f32[1] < 0) {
+                normal.m128_f32[1] = 1.f;
+            } else if (m->velocity.m128_f32[1] > 0) {
+                normal.m128_f32[1] = -1.f;
             }
+        } else if (tnear.m128_f32[2] >= tnear.m128_f32[0] && tnear.m128_f32[2] >= tnear.m128_f32[1]) {
+            if (m->velocity.m128_f32[2] < 0) {
+                normal.m128_f32[2] = 1.f;
+            } else if (m->velocity.m128_f32[2] > 0) {
+                normal.m128_f32[2] = -1.f;
+            }
+        }
+
+        if (t_near == 0.f) {
+            //printf("Sliding.... %f\n", t_near);
+
+            float dot = dotProduct(m->velocity, normal);
+            m->velocity = vecSubvec(m->velocity, vecMulf32(normal, dot));
+
+            //if (tnear.m128_f32[1] == 0) {
+            //    //obj->falling_time = 0.f;
+            //    //m->velocity = vecMulvec(m->velocity,  m->rigid.momentum);
+            //}
+            //else {
+            //    m->velocity = (gravity_epicenter * (98.1f * (m->rigid.falling_time * 2.f))) + (m->velocity * m->rigid.momentum);
+            //}
+            return 2;
+
+        } else if (((t_near > 0.f) && (t_near <= 1.f))) {
+            printf("COLLISION  ######################### : %f    mesh.id: %d\n", t_near, pk);
+
+            m->velocity = vecMulf32(m->velocity, t_near);
+
+            mat4x4 trans = translationMatrix(m->velocity.m128_f32[0], m->velocity.m128_f32[1], m->velocity.m128_f32[2]);
+
+            setvec4ArrayMulmat(m->coords.v, 4, trans);
+            setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, trans);
+
+            //obj->momentum *= cache->fr_coef;
+            //float dot = dot_product(normal, obj->mvdir);
+            //obj->mvdir = obj->mvdir - (dot * normal);
+            //obj->velocity = (obj->mvdir * obj->momentum);
+            float col_dot = dotProduct(m->velocity, normal);
+            m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
+
+            return 1;
         }
     }
     return 0;
 }
 const int rotationCollision(scene *s, model *m) {
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. rotationCollision().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. rotationCollision().\n", m->cname);
         return 0;
     }
 
@@ -506,47 +484,44 @@ const int rotationCollision(scene *s, model *m) {
 
         int pk = m->colliders[i];
 
-        if (pk != m->pk) {
+        min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], temp_rigid.min)));
+        max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], temp_rigid.max)));
 
-            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], temp_rigid.min)));
-            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], temp_rigid.max)));
+        tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+        tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
 
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+        if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+            continue;
 
-            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
-                continue;
+        if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
+        if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
+        if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
 
-            if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
-            if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
-            if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
+        if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
+            continue;
 
-            if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
-                continue;
+        float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
+        float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
 
-            float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
-            float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
+        /* ##################### Y ############################ */
+        if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
+            continue;
 
-            /* ##################### Y ############################ */
-            if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
-                continue;
+        if (tnear.m128_f32[1] > t_near)
+            t_near = tnear.m128_f32[1];
+        if (tfar.m128_f32[1] < t_far)
+            t_far = tfar.m128_f32[1];
+        /* ##################### Y ############################ */
 
-            if (tnear.m128_f32[1] > t_near)
-                t_near = tnear.m128_f32[1];
-            if (tfar.m128_f32[1] < t_far)
-                t_far = tfar.m128_f32[1];
-            /* ##################### Y ############################ */
+        if ((t_far <= 0) || (t_near > 1.f))
+            continue;
 
-            if ((t_far <= 0) || (t_near > 1.f))
-                continue;
+        if (t_near < 0) {
+            printf("PENETRATION: %f    mesh.id: %d\n", t_near, m->pk);
+            m->rigid.q = unitQuat();
 
-            if (t_near < 0) {
-                printf("PENETRATION: %f    mesh.id: %d\n", t_near, m->pk);
-                m->rigid.q = unitQuat();
-
-                free(temp_rigid.f);
-                return 1;
-            }
+            free(temp_rigid.f);
+            return 1;
         }
     }
     free(temp_rigid.f);
@@ -557,7 +532,7 @@ const int rotationCollision(scene *s, model *m) {
 void sortCollisions(scene *s, model *m) {
 
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. ObjectEnvironmentCollision().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. sortCollisions().\n", m->cname);
         return;
     }
 
@@ -570,42 +545,39 @@ void sortCollisions(scene *s, model *m) {
 
         int pk = m->colliders[i];
 
-        if (pk != m->pk) {
+        min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
+        max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
 
-            min = roundvec4(vecSubvec(s->model[pk].rigid.min, vecSubvec(m->coords.v[0], m->rigid.min)));
-            max = roundvec4(vecSubvec(s->model[pk].rigid.max, vecSubvec(m->coords.v[0], m->rigid.max)));
+        tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
+        tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
 
-            tnear = vecDivvec(vecSubvec(min, m->coords.v[0]), m->velocity);
-            tfar = vecDivvec(vecSubvec(max, m->coords.v[0]), m->velocity);
+        if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
+            continue;
 
-            if (vecEqualvec(tnear, tnear) || vecEqualvec(tfar, tfar))
-                continue;
+        if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
+        if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
+        if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
 
-            if (tnear.m128_f32[0] > tfar.m128_f32[0]) swap(&tnear.m128_f32[0], &tfar.m128_f32[0], 4);
-            if (tnear.m128_f32[1] > tfar.m128_f32[1]) swap(&tnear.m128_f32[1], &tfar.m128_f32[1], 4);
-            if (tnear.m128_f32[2] > tfar.m128_f32[2]) swap(&tnear.m128_f32[2], &tfar.m128_f32[2], 4);
+        if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
+            continue;
 
-            if (tnear.m128_f32[0] > tfar.m128_f32[2] || tnear.m128_f32[2] > tfar.m128_f32[0])
-                continue;
+        float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
+        float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
 
-            float t_near = tnear.m128_f32[0] > tnear.m128_f32[2] ? tnear.m128_f32[0] : tnear.m128_f32[2];
-            float t_far = tfar.m128_f32[0] < tfar.m128_f32[2] ? tfar.m128_f32[0] : tfar.m128_f32[2];
+        /* ##################### Y ############################ */
+        if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
+            continue;
 
-            /* ##################### Y ############################ */
-            if (t_near > tfar.m128_f32[1] || tnear.m128_f32[1] > t_far)
-                continue;
+        if (tnear.m128_f32[1] > t_near)
+            t_near = tnear.m128_f32[1];
+        if (tfar.m128_f32[1] < t_far)
+            t_far = tfar.m128_f32[1];
+        /* ##################### Y ############################ */
 
-            if (tnear.m128_f32[1] > t_near)
-                t_near = tnear.m128_f32[1];
-            if (tfar.m128_f32[1] < t_far)
-                t_far = tfar.m128_f32[1];
-            /* ##################### Y ############################ */
+        if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
+            continue;
 
-            if (((t_far < 0) || (t_near < 0)) || (t_near > 1.f))
-                continue;
-
-            s->model[pk].rigid.collision_t = t_near;
-        }
+        s->model[pk].rigid.collision_t = t_near;
     }
     model cache_1, cache_2;
     for (int i = 0; i < num_of_members; i++) {
@@ -627,7 +599,7 @@ void sortCollisions(scene *s, model *m) {
 const int staticOBBCollision(model *m, const int pk) {
 
     if (m->quad_index < 0) {
-        fprintf(stderr, "obj->quadIndex : %d. Out of Terrain. staticOBBCollisions().\n", m->quad_index);
+        debug_log_info(stderr, "Model %s out of Terrain. staticOBBCollision().\n", m->cname);
         return 0;
     }
     return 1;
