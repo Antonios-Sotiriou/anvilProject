@@ -292,7 +292,10 @@ void removeModelFromQuad(scene *s, model *m) {
         }
     }
     free(s->t.quad[quad_index].mpks);
-    s->t.quad[quad_index].mpks = realloc(new_array, (num_of_indexes * 4));
+    s->t.quad[quad_index].mpks = NULL;
+    if (num_of_indexes > 0) {
+        s->t.quad[quad_index].mpks = realloc(new_array, (num_of_indexes * 4));
+    }
     s->t.quad[quad_index].mpks_indexes = num_of_indexes;
     debug_log_info(stdout, "Removed model from quad members\n");
 }
@@ -439,6 +442,7 @@ void updateSurroundingQuads(scene *s, model *m) {
 
     if (m->surroundingQuads) {
         free(m->surroundingQuads);
+        m->surroundingQuads = NULL;
     }
 
     if (m->quad_index % s->t.quad_rows == 0) {
