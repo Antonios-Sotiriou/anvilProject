@@ -178,8 +178,6 @@ void mainShader(scene *s) {
         }
     }
 
-    debug_log_OpenGL();
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

@@ -26,9 +26,6 @@
     #include "headers/components/internal_libraries/quaternions.h"
 #endif // !QUATERNIONS_H
 
-/* Defined in openGL.c */
-extern void glErrorReport(void);
-
 const int initMainShader(void);
 void mainShader(scene *s);
 

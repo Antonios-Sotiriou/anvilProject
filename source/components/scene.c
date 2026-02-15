@@ -35,7 +35,7 @@ void createScene(scene *s) {
 
     /* Loads the main Terrain from the database and increases the Scene model indexes value by one. Terrain is appended on the end to be rendered last.
        At this point we could calculate also the player position to load the appropriate terrain in the future when we will enter more terrains. */
-    dbloadTable(GITANA_DB, s, TABLE_TERRAIN, "SELECT * FROM terrain WHERE pk=1;");
+    dbloadTable(GITANA_DB, s, TABLE_TERRAIN, "SELECT * FROM terrain WHERE pk = 1;");
     createModel(&s->model[s->model_indexes]);
     s->last_model_index = s->model_indexes;
     s->model_indexes += 1;
@@ -79,8 +79,6 @@ void drawOnSceneCanvas(canvas *c, const int textureIndex) {
 
     glBindVertexArray(c->VAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    debug_log_OpenGL();
 }
 /* Releases allocated ressources of the GLOBAL SCENE. */
 void releaseScene(scene *s) {

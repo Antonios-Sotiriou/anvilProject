@@ -104,9 +104,6 @@ void testShader(scene *s) {
             }
         }
     }
-    /* Just for testing purposes code. ##################### */
-
-    debug_log_OpenGL();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     //glPolygonMode(GL_FRONT, GL_FILL);

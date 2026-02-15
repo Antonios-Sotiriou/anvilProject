@@ -34,9 +34,6 @@
     #include "headers/components/rasterization.h"
 #endif // !RASTERIZATION_H
 
-/* Defined in openGL.c */
-extern void glErrorReport(void);
-
 const int initTestShader(void);
 void testShader(scene *s);
 

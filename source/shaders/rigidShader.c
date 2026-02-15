@@ -94,8 +94,6 @@ void rigidShader(scene *s) {
         }
     }
 
-    debug_log_OpenGL();
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glPolygonMode(GL_FRONT, GL_FILL);
     //glEnable(GL_DEPTH_TEST);

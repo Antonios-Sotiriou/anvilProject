@@ -2,8 +2,6 @@
 
 /* Function pointer to dispatch the appropriate function, according to the type of Table. */
 static int (*callback)(void*, int, char**, char**);
-// Pointer to use for initialization of the entries of terrains in the database.
-static TerrainInitInfo* temp;
 
 /* Loads terrains from the Database terrain Table to the Global params->s-> */
 static int terrainCallback(void *NotUsed, int argc, char **argv, char **azColName) {
@@ -274,35 +272,35 @@ void dbExecuteCommand(const char dbpath[], const char sql_cmd[]) {
  /*   FOR TERRAIN INITIALIZATION #################################################################################    */
 static int terrainInfoCallback(void *NotUsed, int argc, char** argv, char** azColName) {
 
-    int idx = *(int*)NotUsed;
+    DBTinit *tinit = (DBTinit*)NotUsed;
+    int idx = tinit->index;
     int name_index = 0;
     for (int i = 0; i < argc; i++) {
         if (strcmp(azColName[i], "cname") == 0) {
             name_index = i;
         } else if (strncmp(azColName[i], "cname_length", 12) == 0) {
-            temp[idx].cname_length = atoi(argv[i]);
+            tinit->tinfo[idx].cname_length = atoi(argv[i]);
         } else if (strncmp(azColName[i], "width", 5) == 0) {
-            temp[idx].width = atoi(argv[i]);
+            tinit->tinfo[idx].width = atoi(argv[i]);
         } else if (strncmp(azColName[i], "height", 6) == 0) {
-            temp[idx].height = atoi(argv[i]);
+            tinit->tinfo[idx].height = atoi(argv[i]);
         }
     }
     /* Compose cname with a NULL terminating string. */
-    temp[idx].cname = malloc(temp[idx].cname_length + 1); // +1 For the NULL terminating character also.
-    if (!temp[idx].cname) {
+    tinit->tinfo[idx].cname = malloc(tinit->tinfo[idx].cname_length + 1); // +1 For the NULL terminating character also.
+    if (!tinit->tinfo[idx].cname) {
         debug_log_error(stdout, "temp[idx].cname = malloc(temp[idx].cname_length + 1)");
         return 1;
     }
-    memcpy(temp[idx].cname, argv[name_index], temp[idx].cname_length + 1);
-
-    *(int*)NotUsed += 1;
+    memcpy(tinit->tinfo[idx].cname, argv[name_index], tinit->tinfo[idx].cname_length + 1);
+    
+    tinit->index += 1;
 
     return 0;
 }
 /* Execute sql_cmd to the path Database. */
-void dbloadTerrainInfo(const char dbpath[], TerrainInitInfo *tif) {
-    temp = tif;
-    sqlite3* db;
+void dbloadTerrainInfo(const char dbpath[], TerrainInitInfo *t) {
+    sqlite3 *db;
     char *sql_cmd = "SELECT * FROM terrain;";
     char *zErrMsg = 0;
     int rc;
@@ -313,16 +311,18 @@ void dbloadTerrainInfo(const char dbpath[], TerrainInitInfo *tif) {
         sqlite3_close(db);
         return;
     }
-
-    int param = 0; // Passing an increment value to the calback, to initialize the SCENE mesh every invocation.
-    rc = sqlite3_exec(db, sql_cmd, terrainInfoCallback, &param, &zErrMsg);
+    
+    DBTinit tinfo = {
+        .tinfo = t,
+        .index = 0
+    };
+    rc = sqlite3_exec(db, sql_cmd, terrainInfoCallback, &tinfo, &zErrMsg);
     if (rc != SQLITE_OK) {
         printf("SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
     }
 
     sqlite3_close(db);
-    tif = temp;
     return;
 }
 

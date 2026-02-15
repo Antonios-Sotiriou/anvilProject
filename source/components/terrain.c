@@ -23,6 +23,10 @@ int initTerrainsHeightMaps(void) {
     }
 
     debug_log_info(stdout, "Initialized %d terrain entries.\n", terrain_entries);
+
+    for (int i = 0; i < terrain_entries; i++) {
+        free(tif[i].cname);
+    }
     free(tif);
 
     return 0;
@@ -53,10 +57,7 @@ static int initIndividualTerrainHeightMap(TerrainInitInfo *tif) {
         return -1;
     }
     /* Write the header informations of newly created bmp file.Infos are name of the objects, materials that we may use etc. */
-    char header[100] = { 0 };
-    anvil_snprintf(header, 100, "# Blender 3.3.0\n# www.blender.org\no %s\n", tif->cname);
-
-    fwrite(header, strlen(header), 1, fp);
+    fprintf(fp, "# Blender 3.3.0\n# www.blender.org\no %s\n", tif->cname);
     fclose(fp);
 
     /* Vectors initialization. ############################## */
@@ -70,7 +71,6 @@ static int initIndividualTerrainHeightMap(TerrainInitInfo *tif) {
     initTerrainFaces(&bmp, num_of_faces, filepath);
     /* Update the Values in the database which help us with terrain collisions. */
     updateTerrainQuadsInfoDB(&bmp, tif->cname);
-
 
     releaseBMP(&bmp);
     return 0;
@@ -91,7 +91,6 @@ static void initTerrainVectors(BMP *bmp, const int emvadon, const char new_file_
 
     int vcols_count = bmp->info.Width;
     for (int x = 0; x < emvadon; x++) {
-        char data[50] = { 0 };
         if (x == vcols_count) {
             x_step_cache = start_x;
             z_step_cache += step_z;
@@ -99,8 +98,7 @@ static void initTerrainVectors(BMP *bmp, const int emvadon, const char new_file_
             vcols_count += bmp->info.Width;
         }
 
-        anvil_snprintf(data, 50, "v %f %f %f\n", x_step_cache, bmp->data[x] / 255.f, z_step_cache);
-        fwrite(&data, strlen(data), 1, fp);
+        fprintf(fp, "v %f %f %f\n", x_step_cache, bmp->data[x] / 255.f, z_step_cache);
 
         x_step_cache += step_x;
     }
@@ -108,16 +106,14 @@ static void initTerrainVectors(BMP *bmp, const int emvadon, const char new_file_
     fclose(fp);
 }
 static void initTerrainNormals(BMP* bmp, const int emvadon, const char new_file_path[]) {
-    FILE* fp = fopen(new_file_path, "a");
+    FILE *fp = fopen(new_file_path, "a");
     if (fp == NULL) {
         debug_log_error(stdout, "Could not open file to initialize terrain normals from height map.");
         return;
     }
 
     for (int x = 0; x < emvadon; x++) {
-        char data[50] = { 0 };
-        anvil_snprintf(data, 50, "vn %f %f %f\n", 0.f, 1.f, 0.f);
-        fwrite(&data, strlen(data), 1, fp);
+        fprintf(fp, "vn %f %f %f\n", 0.f, 1.f, 0.f);
     }
 
     fclose(fp);
@@ -138,7 +134,6 @@ static void initTerrainTextors(BMP* bmp, const int emvadon, const char new_file_
 
     int tx_count = bmp->info.Height;
     for (int x = 0; x < emvadon; x++) {
-        char data[25] = { 0 };
         if (x == tx_count) {
             tu_step_cache = start_tu;
             tv_step_cache += step_tv;
@@ -146,8 +141,7 @@ static void initTerrainTextors(BMP* bmp, const int emvadon, const char new_file_
             tx_count += bmp->info.Height;
         }
 
-        anvil_snprintf(data, 25, "vt %f %f\n", tu_step_cache, tv_step_cache);
-        fwrite(&data, strlen(data), 1, fp);
+        fprintf(fp, "vt %f %f\n", tu_step_cache, tv_step_cache);
 
         tu_step_cache += step_tu;
     }
@@ -171,8 +165,6 @@ static void initTerrainFaces(BMP* bmp, const int num_of_faces, const char new_fi
 
     int face_counter = 0;
     for (int x = 0; x < num_of_faces; x += 18) {
-        char data_1[90] = { 0 };
-        char data_2[90] = { 0 };
         if (face_counter == faces_per_row) {
             face_1_0 += 1;
             face_1_1 += 1;
@@ -182,12 +174,10 @@ static void initTerrainFaces(BMP* bmp, const int num_of_faces, const char new_fi
         }
 
         /* Face 1st Up. */
-        anvil_snprintf(data_1, 90, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", face_1_0, face_1_0, 0, face_1_1, face_1_1, 0, face_1_2, face_1_2, 0);
-        fwrite(&data_1, strlen(data_1), 1, fp);
+        fprintf(fp, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", face_1_0, face_1_0, face_1_0, face_1_1, face_1_1, face_1_1, face_1_2, face_1_2, face_1_2);
 
         /* Face 2nd Down. */
-        anvil_snprintf(data_2, 90, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", face_1_0, face_1_0, 0, face_1_2, face_1_2, 0, face_1_0 + 1, face_1_0 + 1, 0);
-        fwrite(&data_2, strlen(data_2), 1, fp);
+        fprintf(fp, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", face_1_0, face_1_0, face_1_0, face_1_2, face_1_2, face_1_2, face_1_0 + 1, face_1_0 + 1, face_1_0 + 1);
 
         face_1_0++;
         face_1_1++;
@@ -551,14 +541,8 @@ void retrieveNearbyColliders(scene *s, model *m) {
     }
 
     m->collidersIndexes = total_models - 1; // Minus 1 here because we don't want to count the active model also.
-    if (m->collidersIndexes <= 0) {
-        if (m->colliders) {
-            free(m->colliders);
-            m->colliders = NULL;
-        }
-        m->collidersIndexes = 0;
-        return;
-    }
+    free(m->colliders);
+    m->colliders = NULL;
 
     m->colliders = malloc(m->collidersIndexes * 4);
     if (!m->colliders) {

@@ -19,10 +19,14 @@ void loadModelRigid(model *m) {
 			m->rigid.vbo_size = m->rigid.vbo_indexes * 4;
 
 			m->rigid.vbo = malloc(m->rigid.vbo_size);
-			m->rigid.f = malloc(m->rigid.faces_indexes * 48);
 			if (!m->rigid.vbo) {
 				debug_log_critical(stdout, "m->rigid.vbo");
-				return;
+				exit(EXIT_FAILURE);				
+			}
+			m->rigid.f = malloc(m->rigid.faces_indexes * 48);
+			if (!m->rigid.f) {
+				debug_log_critical(stdout, "m->rigid.f");
+				exit(EXIT_FAILURE);
 			}
 
 			// Initialize the rigid body VBO which we send to the GPU.

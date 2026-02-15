@@ -83,6 +83,7 @@ void shadowShader(scene *s) {
             }
         }
     }
+
     glViewport(0, 0, s->WIDTH, s->HEIGHT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
