@@ -236,7 +236,7 @@ void addModelToQuad(scene *s, model *m) {
         }
         s->t.quad[quad_index].mpks_indexes = 1;
         s->t.quad[quad_index].mpks[0] = m->pk;
-        debug_log_info(stdout, "Adding 1st quad member");
+        debug_log_info(stdout, "Adding 1st quad member\n");
         return;
     }
 
