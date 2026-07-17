@@ -36,6 +36,9 @@ int main(int argc, char* argv[]) {
     debug_log_info(stdout, "GLFW Version Minor        : %d\n", vers[1]);
     debug_log_info(stdout, "GLFW Version revision     : %d\n", vers[2]);
 
+    /* Enable Multisample Anti-Alliasing */
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = glfwCreateWindow(1000, 1000, "anvil", NULL, NULL);
     if (!window) {

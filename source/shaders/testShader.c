@@ -80,7 +80,8 @@ void testShader(scene *s) {
 
     //glPolygonMode(GL_FRONT, GL_LINE);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.msaaFrameBuffer);
+    glDrawBuffers(1, s->buffers.drawBuffers);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */
@@ -106,6 +107,11 @@ void testShader(scene *s) {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, s->buffers.msaaFrameBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->buffers.mainFrameBuffer);
+    glBlitFramebuffer(0, 0, s->WIDTH, s->HEIGHT, 0, 0, s->WIDTH, s->HEIGHT, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     //glPolygonMode(GL_FRONT, GL_FILL);
 }
 

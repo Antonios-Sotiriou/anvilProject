@@ -32,14 +32,14 @@ void applyPhysics(scene *s) {
 				s->model[i].velocity = vecAddvec(vecMulf32(gravity_epicenter, g_accelaration), s->model[i].velocity);
 
 				/* 1st Collision Detection lvl. */
-				if (staticOuterRadiusCollision(s, &s->model[i])) {
+				//if (staticOuterRadiusCollision(s, &s->model[i])) {
 					/* 2nd Collision Detection lvl. */
 					int collide = 1;
 					while (collide) {
 						sortCollisions(s, &s->model[i]);
 						collide = sweptAABBCollision(s, &s->model[i]);
 					}
-				}
+				//}
 
 				/* 3rd Collision Detection lvl. */
 				//if (s->model[i].pk == camera) {

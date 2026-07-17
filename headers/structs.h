@@ -216,7 +216,7 @@ typedef struct {
     TerrainInfo t;
     metrics mtr;
     mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M, ORTHOGRAPHIC_M;
-    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID;
+    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID, msaaSamples;
     buffers buffers;
     textures textures;
     canvas canvas;

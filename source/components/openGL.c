@@ -1,6 +1,6 @@
 #include "headers/components/openGL.h"
 
-/* OpenGL Global veriables. */
+/* OpenGL Global variables. */
 GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram, shadowShaderProgram;
 
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
@@ -11,6 +11,8 @@ void initOpenGLComponents(void) {
     glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_MULTISAMPLE);
 
     /* Initialize Glew and check for Errors. */
     const GLenum err = glewInit();
@@ -39,6 +41,29 @@ void initOpenGLComponents(void) {
 }
 /* Initializes user defined framebuffers and framebuffers textures. */
 void createSceneFrameBuffers(scene *s) {
+    /* Create Multisampling texture. */
+    glGenFramebuffers(1, &s->buffers.msaaFrameBuffer);
+
+    s->msaaSamples = 4;
+    glGenTextures(1, &s->textures.msaaColorTexture);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaColorTexture);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, s->msaaSamples, GL_RGB, s->WIDTH, s->HEIGHT, GL_TRUE);
+
+    glGenTextures(1, &s->textures.msaaDepthStencilTexture);
+    glActiveTexture(GL_TEXTURE6);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaDepthStencilTexture);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, s->msaaSamples, GL_DEPTH24_STENCIL8, s->WIDTH, s->HEIGHT, GL_TRUE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.msaaFrameBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaColorTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaDepthStencilTexture, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        debug_log_error(stdout, "glCheckFramebufferStatus(). Problem with the Multisample FBO!");
+        return -1;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     /* Create a user specific framebuffer to use it for rendering instead of the default framebuffer.*/
     glGenFramebuffers(1, &s->buffers.mainFrameBuffer);
 
@@ -69,7 +94,7 @@ void createSceneFrameBuffers(scene *s) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, s->textures.mainDepthStencilTexture, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, s->textures.mainInfoTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        debug_log_error(stdout, "glCheckFramebufferStatus()");
+        debug_log_error(stdout, "glCheckFramebufferStatus(). Problem with the Main FBO!");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -92,13 +117,13 @@ void createSceneFrameBuffers(scene *s) {
     glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.shadowFrameBuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, s->textures.shadowDepthTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        debug_log_error(stdout, "glCheckFramebufferStatus()");
+        debug_log_error(stdout, "glCheckFramebufferStatus(). Problem with the Shadow FBO!");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     s->buffers.drawBuffers[0] = GL_COLOR_ATTACHMENT0;
     s->buffers.drawBuffers[1] = GL_COLOR_ATTACHMENT1;
-    s->textures.totalTextures = 4;
+    s->textures.totalTextures = 6;
 }
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
 void createMeshVAO(mesh *m) {
