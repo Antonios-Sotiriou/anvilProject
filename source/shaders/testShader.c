@@ -78,10 +78,7 @@ void testShader(scene *s) {
 
     glUseProgram(testShaderProgram);
 
-    //glPolygonMode(GL_FRONT, GL_LINE);
-
     glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.msaaFrameBuffer);
-    glDrawBuffers(1, s->buffers.drawBuffers);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Just for testing purposes code. ##################### */
@@ -94,10 +91,13 @@ void testShader(scene *s) {
 
         if (s->model[i].visible) {
 
+            //glBindTexture(GL_TEXTURE_2D, s->model[i].texture);
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&s->model[i].model_matrix);
 
             for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
+                //glBindTexture(GL_TEXTURE_2D, s->textures.mainColorTexture);
+                //glBindTexture(GL_TEXTURE_2D, s->model[i].mesh[x].texture);
                 glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&s->model[i].mesh[x].model_matrix);
                 //glUniform1i(2, i + 1);
                 glBindVertexArray(s->model[i].mesh[x].VAO);

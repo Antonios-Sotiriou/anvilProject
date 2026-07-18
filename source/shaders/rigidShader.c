@@ -63,19 +63,16 @@ void rigidShader(scene *s) {
 
     glPolygonMode(GL_FRONT, GL_LINE);
 
-    //glViewport(0, 0, s->WIDTH, s->HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
     //glDisable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);
 
-    mat4x4 modelMatrix;
     for (int i = 0; i < s->model_indexes; i++) {
         if (s->model[i].owns_rigid) {
 
-            modelMatrix = modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]);
-            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+            glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&s->model[i].model_matrix);
 
             glBindVertexArray(s->model[i].rigid.VAO);
             glDrawArrays(GL_TRIANGLES, 0, s->model[i].rigid.vecs_indexes);
@@ -84,8 +81,7 @@ void rigidShader(scene *s) {
 
                 if (s->model[i].mesh[x].owns_rigid) {
 
-                    modelMatrix = modelMatFromQST(s->model[i].mesh[x].q, s->model[i].mesh[x].scale, s->model[i].mesh[x].coords.v[0]);
-                    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&modelMatrix);
+                    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&s->model[i].mesh[x].model_matrix);
 
                     glBindVertexArray(s->model[i].mesh[x].rigid.VAO);
                     glDrawArrays(GL_TRIANGLES, 0, s->model[i].mesh[x].rigid.vecs_indexes);

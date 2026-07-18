@@ -46,12 +46,12 @@ void createSceneFrameBuffers(scene *s) {
 
     s->msaaSamples = 4;
     glGenTextures(1, &s->textures.msaaColorTexture);
-    glActiveTexture(GL_TEXTURE5);
+    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaColorTexture);
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, s->msaaSamples, GL_RGB, s->WIDTH, s->HEIGHT, GL_TRUE);
 
     glGenTextures(1, &s->textures.msaaDepthStencilTexture);
-    glActiveTexture(GL_TEXTURE6);
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaDepthStencilTexture);
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, s->msaaSamples, GL_DEPTH24_STENCIL8, s->WIDTH, s->HEIGHT, GL_TRUE);
 

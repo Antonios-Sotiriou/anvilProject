@@ -155,7 +155,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
         case GLFW_KEY_L:
             if (action == GLFW_PRESS)
-                s->eyePoint = s->eyePoint == camera ? light : camera;
+                s->eyePoint = s->eyePoint == camera ? player : camera;
             break;
         case GLFW_KEY_B:
             if (action == GLFW_PRESS)

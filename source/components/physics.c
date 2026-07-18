@@ -68,6 +68,7 @@ void applyPhysics(scene *s) {
 			mat4x4 tm = translationMatrix(vec4ExtractX(s->model[i].velocity), vec4ExtractY(s->model[i].velocity), vec4ExtractZ(s->model[i].velocity));
 			setvec4ArrayMulmat(s->model[i].coords.v, 4, tm);
 			setfacesArrayMulMat(s->model[i].rigid.f, s->model[i].rigid.faces_indexes, tm);
+			s->model[i].model_matrix = modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]);
 		}
 	}
 }
