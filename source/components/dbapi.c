@@ -58,6 +58,8 @@ static int terrainCallback(void *NotUsed, int argc, char **argv, char **azColNam
             params->s->t.quad_rows = atoi(argv[i]);
         } else if (strncmp(azColName[i], "quads_indexes", 13) == 0) {
             params->s->t.quad_indexes = atoi(argv[i]);
+        } else if (strncmp(azColName[i], "owns_texture_atlas", 18) == 0) {
+            params->s->model[params->s->model_indexes].owns_texture_atlas = atoi(argv[i]);
         }
     }
     /* Compose cname with a NULL terminating string. */
@@ -118,6 +120,8 @@ static int modelCallback(void *NotUsed, int argc, char **argv, char **azColName)
             params->s->model[params->index].cname_length = atoi(argv[i]);
         } else if (strncmp(azColName[i], "owns_anim", 9) == 0) {
             params->s->model[params->index].owns_anim = atoi(argv[i]);
+        } else if (strncmp(azColName[i], "owns_texture_atlas", 18) == 0) {
+            params->s->model[params->index].owns_texture_atlas = atoi(argv[i]);
         }
     }
     /* Compose cname with a NULL terminating string. */
@@ -269,7 +273,7 @@ void dbExecuteCommand(const char dbpath[], const char sql_cmd[]) {
     sqlite3_close(db);
     return;
 }
- /*   FOR TERRAIN INITIALIZATION #################################################################################    */
+/*   FOR TERRAIN INITIALIZATION #################################################################################    */
 static int terrainInfoCallback(void *NotUsed, int argc, char** argv, char** azColName) {
 
     DBTinit *tinit = (DBTinit*)NotUsed;

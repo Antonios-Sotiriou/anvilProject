@@ -580,11 +580,12 @@ void logTerrainQuad(scene *s, const int quad_index) {
 }
 /* Prints the TerrainInfo struct. */
 void logTerrainInfo(scene *s) {
-    printf("vecWidth : %d\n", s->t.vec_width);
-    printf("vecHeight: %d\n", s->t.vec_height);
-    printf("quadRows : %d\n", s->t.quad_rows);
-    printf("quadCols : %d\n", s->t.quad_cols);
-    printf("quadsArea: %d\n", s->t.quad_indexes);
+    printf("vecWidth           : %d\n", s->t.vec_width);
+    printf("vecHeight          : %d\n", s->t.vec_height);
+    printf("quadRows           : %d\n", s->t.quad_rows);
+    printf("quadCols           : %d\n", s->t.quad_cols);
+    printf("quadsArea          : %d\n", s->t.quad_indexes);
+    printf("owns_texture_atlas : %d\n", s->t.owns_texture_atlas);
 }
 
 

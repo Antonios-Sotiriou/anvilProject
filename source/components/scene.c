@@ -31,6 +31,7 @@ void createScene(scene *s) {
 
     for (int i = 0; i < s->model_indexes; i++) {
         createModel(&s->model[i]);
+        //logmodel(s->model[i]);
     }
 
     /* Loads the main Terrain from the database and increases the Scene model indexes value by one. Terrain is appended on the end to be rendered last.
@@ -39,6 +40,8 @@ void createScene(scene *s) {
     createModel(&s->model[s->model_indexes]);
     s->last_model_index = s->model_indexes;
     s->model_indexes += 1;
+
+    //logmodel(s->model[s->last_model_index]);
 }
 void createSceneCanvas(canvas *c) {
     /* Main Vertex Buffer Object buffer initiallization. */
