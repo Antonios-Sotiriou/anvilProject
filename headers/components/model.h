@@ -29,6 +29,10 @@
     #include "headers/components/internal_libraries/matrices.h"
 #endif // !MATRICES_H
 
+#ifndef TEXTURES_H
+    #include "headers/components/texture.h"
+#endif // !TEXTURES_H
+
 void createModel(model *m);
 void releaseModel(model *m);
 

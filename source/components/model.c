@@ -29,9 +29,9 @@ void createModel(model *m) {
     if (m->owns_anim)
         loadModelAnimations(m);
 
-    //if (m->owns_texture_atlas) {
-    //    loadModelTextureAtlas(m);
-    //}
+    if (m->owns_texture_atlas) {
+        loadModelTextureAtlas(m);
+    }
 
     releaseOBJ(&obj);
 }
