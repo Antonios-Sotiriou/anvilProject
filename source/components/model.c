@@ -48,6 +48,10 @@ void releaseModel(model *m) {
     if (m->owns_anim == ENABLED)
         releaseAnimations(&m->anim);
 
+    if (m->owns_texture_atlas == ENABLED) {
+        glDeleteTextures(1, &m->texture_atlas);
+    }
+
     free(m->surroundingQuads);
     free(m->colliders);
 }

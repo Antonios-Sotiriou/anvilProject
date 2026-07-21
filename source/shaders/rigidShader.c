@@ -64,7 +64,7 @@ void rigidShader(scene *s) {
     glPolygonMode(GL_FRONT, GL_LINE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
-    //glDisable(GL_DEPTH_TEST);
+
     glClear(GL_DEPTH_BUFFER_BIT);
 
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);
@@ -92,7 +92,6 @@ void rigidShader(scene *s) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glPolygonMode(GL_FRONT, GL_FILL);
-    //glEnable(GL_DEPTH_TEST);
 }
 
 

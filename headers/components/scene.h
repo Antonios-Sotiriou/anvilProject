@@ -25,12 +25,13 @@
     #include "headers/components/animations.h"
 #endif // !ANIMATIONS_H
 
+void doNothink(scene *s);
 void initScene(scene* s, int winWidth, int winHeight);
 void createScene(scene *s);
 void releaseScene(scene *s);
 void createSceneCanvas(canvas *c);
 void releaseSceneCanvas(canvas *c);
-void drawOnSceneCanvas(canvas *c, const int textureIndex);
+void drawOnSceneCanvas(canvas *c, const int textureID);
 
 #endif // !SCENE_H
 

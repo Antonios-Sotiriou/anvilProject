@@ -158,9 +158,9 @@ typedef struct {
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
         owns_rigid,                      // Wether or not the model has a rigid body attached to it.
         owns_anim,                       // Wether or not the model has an animation.
-        owns_texture_atlas,              // Wether or not the model includes a texture atlas for the meshes it owns.
-        texture_atlas,                   // Here will be assigned the generated texture id.
-        rotate,                          // The rotation angle of the rigid body.
+        owns_texture_atlas;              // Wether or not the model includes a texture atlas for the meshes it owns.
+    GLuint texture_atlas;                // Here will be assigned the generated texture id.
+    int rotate,                          // The rotation angle of the rigid body.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face,                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
@@ -233,10 +233,11 @@ typedef struct {
     TerrainInfo t;
     metrics mtr;
     mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M, ORTHOGRAPHIC_M;
-    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID, msaaSamples;
+    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, msaaSamples;
     buffers buffers;
     textures textures;
     canvas canvas;
+    void (*shaderDispatch)(struct scene*);
 } scene;
 
 #endif // !STRUCTS_H

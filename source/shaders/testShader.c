@@ -10,13 +10,16 @@ const static char *vertexShaderSource = "#version 450 core\n"
 "uniform mat4 meshMatrix;\n"
 //"uniform int mesh_pk;\n"
 
+"layout (location = 0) out vec2 fsTexels;\n"
 //"layout (location = 0) out int pk;\n"
 
 "void main() {\n"
 "    gl_Position = (vpMatrix * (modelMatrix * meshMatrix)) * vec4(vsPos, 1.f);\n"
+"    fsTexels = vsTexels;\n"
 //"    pk = mesh_pk;\n"
 "}\n\0";
 const static char *fragmentShaderSource = "#version 450 core\n"
+"layout (location = 0) in vec2 fsTexels;\n"
 //"layout (location = 0) in flat int mesh_pk;\n"
 
  //"float near = 0.1f;\n"
@@ -26,11 +29,14 @@ const static char *fragmentShaderSource = "#version 450 core\n"
  //"    return (2.f * near * far) / (far + near - z * (far - near));\n"
  //"};\n"
 
+"uniform sampler2D modelTexture;\n"
+
 "layout (location = 0) out vec4 FragColor;\n"
 //"layout (location = 1) out ivec2 mesh_info;\n"
 
 "void main() {\n"
-"    FragColor = vec4(1.f, 0.f, 0.5f, 1.f);\n"
+"    FragColor = texture(modelTexture, fsTexels);\n"
+//"    FragColor = vec4(1.f, 0.f, 0.5f, 1.f);\n"
 //"    gl_FragDepth = linearizeDepth(gl_FragCoord.z) / far;\n"
 //"    mesh_info = ivec2(fs_in.id, gl_PrimitiveID);\n"
 "}\n\0";
@@ -91,18 +97,21 @@ void testShader(scene *s) {
 
         if (s->model[i].visible) {
 
-            //glBindTexture(GL_TEXTURE_2D, s->model[i].texture);
+            if (s->model[i].owns_texture_atlas) {
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, s->model[i].texture_atlas);
+                glUniform1i(3, 1);
+            }
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&s->model[i].model_matrix);
 
             for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
-                //glBindTexture(GL_TEXTURE_2D, s->textures.mainColorTexture);
-                //glBindTexture(GL_TEXTURE_2D, s->model[i].mesh[x].texture);
                 glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat*)&s->model[i].mesh[x].model_matrix);
                 //glUniform1i(2, i + 1);
                 glBindVertexArray(s->model[i].mesh[x].VAO);
                 glDrawArrays(GL_TRIANGLES, 0, s->model[i].mesh[x].vecs_indexes);
             }
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 
@@ -111,8 +120,7 @@ void testShader(scene *s) {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->buffers.mainFrameBuffer);
     glBlitFramebuffer(0, 0, s->WIDTH, s->HEIGHT, 0, 0, s->WIDTH, s->HEIGHT, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    //glPolygonMode(GL_FRONT, GL_FILL);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 

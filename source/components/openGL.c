@@ -46,12 +46,10 @@ void createSceneFrameBuffers(scene *s) {
 
     s->msaaSamples = 4;
     glGenTextures(1, &s->textures.msaaColorTexture);
-    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaColorTexture);
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, s->msaaSamples, GL_RGB, s->WIDTH, s->HEIGHT, GL_TRUE);
 
     glGenTextures(1, &s->textures.msaaDepthStencilTexture);
-    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaDepthStencilTexture);
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, s->msaaSamples, GL_DEPTH24_STENCIL8, s->WIDTH, s->HEIGHT, GL_TRUE);
 
@@ -60,15 +58,14 @@ void createSceneFrameBuffers(scene *s) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, s->textures.msaaDepthStencilTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         debug_log_error(stdout, "glCheckFramebufferStatus(). Problem with the Multisample FBO!");
-        return -1;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     /* Create a user specific framebuffer to use it for rendering instead of the default framebuffer.*/
     glGenFramebuffers(1, &s->buffers.mainFrameBuffer);
 
+    s->textures.activeTexture = 3;
     glGenTextures(1, &s->textures.mainColorTexture);
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, s->textures.mainColorTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, s->WIDTH, s->HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -76,7 +73,6 @@ void createSceneFrameBuffers(scene *s) {
 
     /* Create a 2D Texture to use it as the depth buffer for the user created framebuffer. */
     glGenTextures(1, &s->textures.mainDepthStencilTexture);
-    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, s->textures.mainDepthStencilTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, s->WIDTH, s->HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -84,7 +80,6 @@ void createSceneFrameBuffers(scene *s) {
 
     /* Create a INFO texture.*/
     glGenTextures(1, &s->textures.mainInfoTexture);
-    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, s->textures.mainInfoTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32I, s->WIDTH, s->HEIGHT, 0, GL_RG_INTEGER, GL_INT, NULL);
 
@@ -98,7 +93,6 @@ void createSceneFrameBuffers(scene *s) {
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
     /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
@@ -107,7 +101,6 @@ void createSceneFrameBuffers(scene *s) {
 
     /* Create a 2D Texture to use it as the depth buffer for the Shadow Map. */
     glGenTextures(1, &s->textures.shadowDepthTexture);
-    glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, s->textures.shadowDepthTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -123,7 +116,7 @@ void createSceneFrameBuffers(scene *s) {
 
     s->buffers.drawBuffers[0] = GL_COLOR_ATTACHMENT0;
     s->buffers.drawBuffers[1] = GL_COLOR_ATTACHMENT1;
-    s->textures.totalTextures = 6;
+    s->textures.totalTextures = 8;
 }
 /* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
 void createMeshVAO(mesh *m) {
@@ -172,6 +165,8 @@ void releaseRigidVAO(rigid *r) {
 void releaseSceneFrameBuffers(scene *s) {
     glDeleteFramebuffers(1, &s->buffers.mainFrameBuffer);
     glDeleteTextures(1, &s->textures.msaaColorTexture);
+    glDeleteTextures(1, &s->textures.msaaDepthStencilTexture);
+    glDeleteTextures(1, &s->textures.mainColorTexture);
     glDeleteTextures(1, &s->textures.mainDepthStencilTexture);
     glDeleteTextures(1, &s->textures.mainInfoTexture);
 
