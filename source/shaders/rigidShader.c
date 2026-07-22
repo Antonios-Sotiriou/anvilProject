@@ -15,7 +15,7 @@ const static char *fragmentShaderSource = "#version 450 core\n"
 "layout (location = 0) out vec4 FragColor;\n"
 
 "void main() {\n"
-"    FragColor = vec4(0.f, 1.f, 0.f, 1.f);\n"
+"    FragColor = vec4(1.f, 0.f, 0.f, 1.f);\n"
 "}\n\0";
 
 const int initRigidShader(void) {

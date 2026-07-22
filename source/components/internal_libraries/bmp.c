@@ -26,10 +26,11 @@ void readBMP(BMP *f, const char path[]) {
     fseek(fp, f->header.Res2, SEEK_SET);
 
     int emvadon = f->info.Height * f->info.Width;
+    int total_size = emvadon * 4;
     if (emvadon) {
-        f->data = malloc(emvadon * 4);
+        f->data = malloc(total_size);
         if (f->data) {
-            fread(f->data, emvadon, 1, fp);
+            fread(f->data, total_size, 1, fp);
         } else {
             debug_log_error(stdout, "malloc()");
         }

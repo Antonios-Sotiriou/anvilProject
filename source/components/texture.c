@@ -15,16 +15,18 @@ void loadModelTextureAtlas(model *m) {
     free(dynamic_path);
 
     glGenTextures(1, &m->texture_atlas);
-    printf("texture_atlas: %d\n", m->texture_atlas);
     glBindTexture(GL_TEXTURE_2D, m->texture_atlas);
 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, bmp.info.Width, bmp.info.Height, 0, GL_BGR, GL_UNSIGNED_BYTE, bmp.data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, bmp.info.Width, bmp.info.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data);
 #else
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, bmp.info.Width, bmp.info.Height, 0, GL_RGB, GL_UNSIGNED_BYTE, bmp.data);
 #endif
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 

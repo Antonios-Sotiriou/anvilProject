@@ -120,7 +120,6 @@ void testShader(scene *s) {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->buffers.mainFrameBuffer);
     glBlitFramebuffer(0, 0, s->WIDTH, s->HEIGHT, 0, 0, s->WIDTH, s->HEIGHT, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
