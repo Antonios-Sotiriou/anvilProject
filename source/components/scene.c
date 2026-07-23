@@ -1,11 +1,15 @@
 #include "headers/components/scene.h"
 
+/* Like name discribes. It does nothink. */
+void doNothink(scene *s) {}
+
 void initScene(scene *s, int winWidth, int winHeight) {
     s->WIDTH = winWidth;
     s->HEIGHT = winHeight;
     s->lastMouseX = winWidth * 0.5f;
     s->lastMouseY = winHeight * 0.5f;
     s->eyePoint = camera;
+    s->shaderDispatch = doNothink;
 
     /* Create all the framebuffers and main general textures we need for the scene. */
     createSceneFrameBuffers(s);
@@ -31,6 +35,7 @@ void createScene(scene *s) {
 
     for (int i = 0; i < s->model_indexes; i++) {
         createModel(&s->model[i]);
+        //logmodel(s->model[i]);
     }
 
     /* Loads the main Terrain from the database and increases the Scene model indexes value by one. Terrain is appended on the end to be rendered last.
@@ -39,6 +44,8 @@ void createScene(scene *s) {
     createModel(&s->model[s->model_indexes]);
     s->last_model_index = s->model_indexes;
     s->model_indexes += 1;
+
+    //logmodel(s->model[s->last_model_index]);
 }
 void createSceneCanvas(canvas *c) {
     /* Main Vertex Buffer Object buffer initiallization. */
@@ -69,13 +76,15 @@ void releaseSceneCanvas(canvas *c) {
     glDisableVertexAttribArray(1);
 }
 /* Displays texture with given texture index on full screen. */
-void drawOnSceneCanvas(canvas *c, const int textureIndex) {
+void drawOnSceneCanvas(canvas *c, const int textureID) {
 
     glUseProgram(displayShaderProgram);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUniform1i(0, textureIndex);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glUniform1i(0, 0);
 
     glBindVertexArray(c->VAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

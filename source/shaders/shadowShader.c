@@ -86,5 +86,6 @@ void shadowShader(scene *s) {
 
     glViewport(0, 0, s->WIDTH, s->HEIGHT);
 
+    //glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -15,9 +15,9 @@ const void rasterize(scene *s) {
     shadowShader(s);
     //mainShader(s);
     testShader(s);
-    if (s->DISPLAY_RIGID) {
-        rigidShader(s);
-    }
+
+    /* Function pointer within the scene struct to cast rigidShader if its on or do nothink if not. */
+    s->shaderDispatch(s);
 
     drawOnSceneCanvas(&s->canvas, s->textures.activeTexture);
 }

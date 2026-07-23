@@ -29,6 +29,12 @@ void createModel(model *m) {
     if (m->owns_anim)
         loadModelAnimations(m);
 
+    if (m->owns_texture_atlas) {
+        loadModelTextureAtlas(m);
+    } else {
+        loadDefaultModelTexture(m);
+    }
+
     releaseOBJ(&obj);
 }
 void releaseModel(model *m) {
@@ -43,6 +49,8 @@ void releaseModel(model *m) {
 
     if (m->owns_anim == ENABLED)
         releaseAnimations(&m->anim);
+
+    glDeleteTextures(1, &m->texture_atlas);
 
     free(m->surroundingQuads);
     free(m->colliders);

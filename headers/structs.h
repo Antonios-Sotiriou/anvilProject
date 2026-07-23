@@ -51,6 +51,7 @@ typedef union {
 typedef union {
     float m128_f32[4];
 } vec4;
+
 /* Quaternion's internal format is W X Y Z. */
 typedef vec4 quat;
 
@@ -63,6 +64,7 @@ typedef union {
 typedef union {
     float m64_f32[2];
 } vec2;
+
 /* Vector's internal format is X Y Z. Can't be used for intrinsics SSE, because it's size is 12 bytes. Not a power multiplier of 2. */
 typedef struct {
     float m96_f32[3];
@@ -72,6 +74,7 @@ typedef struct {
 typedef struct {
     vec4 v[4];
 } coords;
+
 /* Base struct to represent a face. */
 typedef struct {
     vec4 v[3];          // 3 vectors with 4 dimensions each
@@ -106,13 +109,14 @@ typedef struct {
         VBO;                             // VBO id or name represented by an unsigned integer.
     face *f;                             // The faces from them our rigid body consists.
 } rigid;
+
 /* Base structure to represent a shape. */
 typedef struct mesh {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
     quat q;                              // Quaternion to save rotations.
     vec4 scale;                          // Vector to store the scale of the model.
     mat4x4 model_matrix;
-    char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptaable null terminating string.
+    char *cname;                         // The name to identify a mesh. Thats a dynamically size adoptable null terminating string.
     float *vbo,                          // The vertex array object with format { vXvYvZtUtVnXnYnZ }. v: vector, t: texels, n: normal.
         outer_radius;                    // Value to hold the radius of the circle which surounding the mesh. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
     int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
@@ -135,6 +139,7 @@ typedef struct mesh {
     struct mesh *parent;                 // The parent at which the mesh belongs.
     animation anim;
 } mesh;
+
 /* Model structure to represent a collection of shapes. Probably we dont need a Children relation in this struct, because all the meshes it has are its children. */
 typedef struct {
     coords coords;                       // The coordinates and orientation axis of the mesh P, U, V, N.
@@ -142,7 +147,7 @@ typedef struct {
     vec4 velocity,                       // Velocity of a model.
         scale;                           // Vector to store the scale of the model.
     mat4x4 model_matrix;
-    char *cname;                         // The name to identify a model. Thats a dynamically size adoptaable null terminating string.
+    char *cname;                         // The name to identify a model. Thats a dynamically size adoptable null terminating string.
     float outer_radius;                  // Value to hold the radius of the circle which surounding the model. aka( sqrtf(scale * scale) + (scale * scale)). Pythagorean Theorem.
     mesh *mesh;                          // Meshes array from which the model is consisting.
     int mesh_indexes,                    // Number of mesh indexes that the mesh pointer holds.
@@ -153,7 +158,9 @@ typedef struct {
         visible,                         // Wether the mesh should be drawn on screen. Can be visible 1 to be drawn, or visible 0 not to.
         owns_rigid,                      // Wether or not the model has a rigid body attached to it.
         owns_anim,                       // Wether or not the model has an animation.
-        rotate,                          // The rotation angle of the rigid body.
+        owns_texture_atlas;              // Wether or not the model includes a texture atlas for the meshes it owns.
+    GLuint texture_atlas;                // Here will be assigned the generated texture id.
+    int rotate,                          // The rotation angle of the rigid body.
         quad_init,                       // Flag, which shows if the model went through the terrain initialization pipeline, at least one time, at the start of the program.
         quad_index,                      // The index of the terrain quad that the model is standing on.
         quad_face,                       // Flag to track on which triangle of the terrain quad we are in.Can be UPPER: 0, or LOWER: 1.
@@ -164,62 +171,73 @@ typedef struct {
     rigid rigid;                         // Rigid body struct, which holds all usefull variables, for Physics and Collision Detection.
     animation anim;
 } model;
-/* Struct which is usefull only to initialize terrains for the first time and create the obj files for them. */
-typedef struct {
-    char *cname;                         // The name to identify a terrain. Thats a dynamically size adoptaable null terminating string.
-    int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
-        width,                           // The width of the height map in pixels aka (vectors);
-        height;                          // The height of the height map in pixels aka (vectors);
-} TerrainInitInfo;
-/* Struct to retrieve data of terrain. */
-typedef struct {
-    vec4 pos, normal;
-    int quad_index, quad_face;
-} TerrainPointInfo;
+
 /* Holds infos about a terrain quad. */
 typedef struct {
     int* mpks,             // Integer array to save the Primary keys of the models, which are memmbers of this quad.
         mpks_indexes;      // m_pks: Primary keys aka(Scene index) of the models, m_indexes: number of m_pks in the m_pks array.
 } Quad;
+
+/* Struct to retrieve data of terrain. */
+typedef struct {
+    vec4 pos, normal;
+    int quad_index, quad_face;
+} TerrainPointInfo;
+
+/* Struct which is usefull only to initialize terrains for the first time and create the obj files for them. */
+typedef struct {
+    char *cname;                         // The name to identify a terrain. Thats a dynamically size adoptable null terminating string.
+    int cname_length,                    // Length of the cname char array. SOS !! (not included the NULL terminated char).
+        width,                           // The width of the height map in pixels aka (vectors);
+        height;                          // The height of the height map in pixels aka (vectors);
+} TerrainInitInfo;
+
 /* Holds usefull Terrain information to be available throught the program after we release the height map. */
 typedef struct {
-    Quad *quad;            // Quads pointer to save info about each quad of the terrain.
-    int vec_width,         // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
-        vec_height,        // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
-        quad_indexes,      // Emvadon of the Terrain quads.
-        quad_rows,         // Number os quads in rows direction. They are always vectors Width - 1.
-        quad_cols;         // Number os quads in columns direction. They are always vectors Height - 1.
+    Quad *quad;             // Quads pointer to save info about each quad of the terrain.
+    int vec_width,          // Number of vectors at width direction. Number is diferent from quads number, because some vectors are shared between quads.
+        vec_height,         // Number of vectors at height direction. Number is diferent from quads number, because some vectors are shared between quads.
+        quad_indexes,       // Emvadon of the Terrain quads.
+        quad_rows,          // Number of quads in rows direction. They are always vectors Width - 1.
+        quad_cols,          // Number of quads in columns direction. They are always vectors Height - 1.
+        owns_texture_atlas; // Wether or not the model includes a texture atlas for the meshes it owns.
 } TerrainInfo;
+
 /* Encapsulates usefull time measurements. */
 typedef struct metrics {
     float TimeCounter, LastFrameTimeCounter, deltaTime, prevTime, FPS;
     int Frame;
     struct timeval tv, tv0;
 } metrics;
+
 /* Encapsulates variables which are usefull, to draw the scene, or any texture we want on a quad. */
 typedef struct canvas {
     GLuint VAO, VBO;
 } canvas;
+
 /* Struct to encapsulate main scene or general Frame Buffers. */
 typedef struct buffers {
     GLuint msaaFrameBuffer, mainFrameBuffer, shadowFrameBuffer;
     GLenum drawBuffers[2];
 } buffers;
+
 /* Encapsulates main scene global textures. */
 typedef struct textures {
     int activeTexture, totalTextures;
     GLuint msaaColorTexture, msaaDepthStencilTexture, mainColorTexture, mainDepthStencilTexture, mainInfoTexture, shadowDepthTexture;
 } textures;
+
 /* Model structure to represent a scene which consists of one or more models. */
 typedef struct {
     model *model;
     TerrainInfo t;
     metrics mtr;
     mat4x4 LOOKAT_M, VIEW_M, PERSPECTIVE_M, PROJECTION_M, ORTHOGRAPHIC_M;
-    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, DISPLAY_RIGID, msaaSamples;
+    int model_indexes, last_model_index, WIDTH, HEIGHT, mouseX, mouseY, lastMouseX, lastMouseY, eyePoint, msaaSamples;
     buffers buffers;
     textures textures;
     canvas canvas;
+    void (*shaderDispatch)(struct scene*);
 } scene;
 
 #endif // !STRUCTS_H

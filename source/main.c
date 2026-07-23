@@ -159,7 +159,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             break;
         case GLFW_KEY_B:
             if (action == GLFW_PRESS)
-                s->DISPLAY_RIGID = s->DISPLAY_RIGID == 0 ? 1 : 0;
+                s->shaderDispatch = s->shaderDispatch == doNothink ? rigidShader : doNothink;
             break;
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
@@ -171,7 +171,7 @@ static void key_callback(GLFWwindow* win, int key, int scancode, int action, int
             if (action == GLFW_PRESS) {
                 s->textures.activeTexture++;
                 if (s->textures.activeTexture == s->textures.totalTextures) {
-                    s->textures.activeTexture = 0;
+                    s->textures.activeTexture = 1;
                 }
                 printf("active texture: %d\n", s->textures.activeTexture);
             }

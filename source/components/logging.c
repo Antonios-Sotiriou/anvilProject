@@ -84,40 +84,43 @@ void logmesh(const mesh m) {
 }
 void logmodel(const model m) {
 	logcoords(m.coords);
-	printf("Quat           : ");
+	printf("Quat                : ");
 	logvec4(m.q);
-	printf("velocity       : ");
+	printf("velocity            : ");
 	logvec4(m.velocity);
-	printf("scale          : ");
+	printf("scale               : ");
 	logvec4(m.scale);
-	printf("cname          : %s\n", m.cname);
-	printf("outer_radius   : %f\n", m.outer_radius);
-	printf("mesh           : %p\n", &m.mesh);
-	printf("mesh_indexes   : %d\n", m.mesh_indexes);
-	printf("cname_length   : %d\n", m.cname_length);
-	printf("pk             : %d\n", m.pk);
-	printf("asset_type     : %d\n", m.asset_type);
-	printf("model_type     : %d\n", m.model_type);
-	printf("visible        : %d\n", m.visible);
-	printf("quadInit       : %d\n", m.quad_init);
-	printf("quadIndex      : %d\n", m.quad_index);
-	printf("quad_face      : %d\n", m.quad_face);
-	printf("owns_rigid     : %d\n", m.owns_rigid);
+	printf("cname               : %s\n", m.cname);
+	printf("outer_radius        : %f\n", m.outer_radius);
+	printf("mesh                : %p\n", &m.mesh);
+	printf("mesh_indexes        : %d\n", m.mesh_indexes);
+	printf("cname_length        : %d\n", m.cname_length);
+	printf("pk                  : %d\n", m.pk);
+	printf("asset_type          : %d\n", m.asset_type);
+	printf("model_type          : %d\n", m.model_type);
+	printf("visible             : %d\n", m.visible);
+	printf("quadInit            : %d\n", m.quad_init);
+	printf("quadIndex           : %d\n", m.quad_index);
+	printf("quad_face           : %d\n", m.quad_face);
+	printf("owns_rigid          : %d\n", m.owns_rigid);
 	if (m.owns_rigid)
 		logrigid(m.rigid);
-	printf("owns_anim      : %d\n", m.owns_anim);
+	printf("owns_anim           : %d\n", m.owns_anim);
 	if (m.owns_anim)
 		loganim(m.anim);
+	printf("owns_texture_atlas  : %d\n", m.owns_texture_atlas);
+	printf("texture_atlas       : %d\n", m.texture_atlas);
 
-	printf("rotate         : %d\n", m.rotate);
+	printf("rotate              : %d\n", m.rotate);
 }
 void logscene(const scene s) {
-	printf("mesh_indexes         : %d\n", s.model_indexes);
-	printf("terrain quad_indexes : %d\n", s.t.quad_indexes);
-	printf("terrain vec_width    : %d\n", s.t.vec_width);
-	printf("terrain vec_height   : %d\n", s.t.vec_height);
-	printf("terrain quad_rows    : %d\n", s.t.quad_rows);
-	printf("terrain quad_cols    : %d\n", s.t.quad_cols);
+	printf("mesh_indexes               : %d\n", s.model_indexes);
+	printf("terrain quad_indexes       : %d\n", s.t.quad_indexes);
+	printf("terrain vec_width          : %d\n", s.t.vec_width);
+	printf("terrain vec_height         : %d\n", s.t.vec_height);
+	printf("terrain quad_rows          : %d\n", s.t.quad_rows);
+	printf("terrain quad_cols          : %d\n", s.t.quad_cols);
+	printf("terrain owns_texture_atlas : %d\n", s.t.owns_texture_atlas);
 }
 
 

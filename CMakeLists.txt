@@ -88,6 +88,7 @@ elseif (WIN32)
         "source/components/animations.c" 
         "source/components/animText.c" 
         "source/components/relations.c" 
+        "source/components/texture.c"
     )
 endif()
 

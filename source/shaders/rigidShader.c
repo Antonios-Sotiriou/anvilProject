@@ -15,7 +15,7 @@ const static char *fragmentShaderSource = "#version 450 core\n"
 "layout (location = 0) out vec4 FragColor;\n"
 
 "void main() {\n"
-"    FragColor = vec4(0.f, 1.f, 0.f, 1.f);\n"
+"    FragColor = vec4(1.f, 0.f, 0.f, 1.f);\n"
 "}\n\0";
 
 const int initRigidShader(void) {
@@ -64,7 +64,7 @@ void rigidShader(scene *s) {
     glPolygonMode(GL_FRONT, GL_LINE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, s->buffers.mainFrameBuffer);
-    //glDisable(GL_DEPTH_TEST);
+
     glClear(GL_DEPTH_BUFFER_BIT);
 
     glUniformMatrix4fv(0, 1, GL_FALSE, (GLfloat*)&s->PROJECTION_M);
@@ -92,7 +92,6 @@ void rigidShader(scene *s) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glPolygonMode(GL_FRONT, GL_FILL);
-    //glEnable(GL_DEPTH_TEST);
 }
 
 
