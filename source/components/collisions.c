@@ -37,7 +37,7 @@ void modelTerrainCollision(scene *s, model *m) {
 
         float col_dot = dotProduct(m->velocity, normal);
         m->velocity = vecSubvec(m->velocity, vecMulf32(normal, col_dot));
-        //printf("<= 1 > 0 && !grounded : %d\n", m->pk);
+
         return;
     }
     float height_diff = vec4ExtractY(vecSubvec(pos, vecSubvec(m->coords.v[0], vecSubvec(m->coords.v[0], m->rigid.min))));
@@ -47,6 +47,8 @@ void modelTerrainCollision(scene *s, model *m) {
         mat4x4 tm = translationMatrix(0, height_diff, 0);
         setvec4ArrayMulmat(m->coords.v, 4, tm);
         setfacesArrayMulMat(m->rigid.f, m->rigid.faces_indexes, tm);
+    } else if (height_diff < 0) {
+        //m->rigid.grounded = 0;
     }
 }
 const void terrainHeightDifference(scene *s, model *m) {

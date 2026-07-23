@@ -97,11 +97,10 @@ void testShader(scene *s) {
 
         if (s->model[i].visible) {
 
-            if (s->model[i].owns_texture_atlas) {
-                glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, s->model[i].texture_atlas);
-                glUniform1i(3, 1);
-            }
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, s->model[i].texture_atlas);
+            glUniform1i(3, 1);
+
             glUniformMatrix4fv(1, 1, GL_FALSE, (GLfloat*)&s->model[i].model_matrix);
 
             for (int x = 0; x < s->model[i].mesh_indexes; x++) {

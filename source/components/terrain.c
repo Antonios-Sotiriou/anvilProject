@@ -298,7 +298,7 @@ void getTerrainPointInfo(scene *s, vec4 coords, int* qi, int* uol) {
     vec4 t_coords = vecSubvec(coords, vecSubvec(s->model[s->last_model_index].coords.v[0], s->model[s->last_model_index].scale));
 
     if ((vec4ExtractX(t_coords) >= t_limit || vec4ExtractX(t_coords) < 0) || (vec4ExtractZ(t_coords) >= t_limit || vec4ExtractZ(t_coords) < 0)) {
-        debug_log_info(stdout, "Point { %f, %f, %f, %f } is out of terrain boundaries - getTerrainPointInfo()", vec4ExtractX(coords), vec4ExtractY(coords), vec4ExtractZ(coords), vec4ExtractW(coords));
+        debug_log_info(stdout, "Point { %f, %f, %f, %f } is out of terrain boundaries - getTerrainPointInfo()\n", vec4ExtractX(coords), vec4ExtractY(coords), vec4ExtractZ(coords), vec4ExtractW(coords));
         *qi = -1;
         return;
     }
@@ -532,7 +532,7 @@ void retrieveNearbyColliders(scene *s, model *m) {
     if (m->quad_index < 0) {
         m->surroundingQuadsIndexes = 0;
         m->collidersIndexes = 0;
-        debug_log_info(stdout, "Model %s out of terrain boundaries - retrieveNearbyColliders().", m->cname);
+        debug_log_info(stdout, "Model %s out of terrain boundaries - retrieveNearbyColliders().\n", m->cname);
         return;
     }
     int total_models = 0;
@@ -562,14 +562,14 @@ void retrieveNearbyColliders(scene *s, model *m) {
 /* Prints the members of given Quad index. */
 void logTerrainQuad(scene *s, const int quad_index) {
     if (quad_index < 0) {
-        debug_log_info(stdout, "Out of terrain boundaries - logTerrainQuad()");
+        debug_log_info(stdout, "Out of terrain boundaries - logTerrainQuad()\n");
         return;
     }
 
     printf("Quad: %d\n", quad_index);
     printf("indexes: %d\n", s->t.quad[quad_index].mpks_indexes);
     if (!s->t.quad[quad_index].mpks) {
-        debug_log_info(stdout, "Quad %d has no members.", quad_index);
+        debug_log_info(stdout, "Quad %d has no members.\n", quad_index);
         return;
     }
     printf("members ids: ");

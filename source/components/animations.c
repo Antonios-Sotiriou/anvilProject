@@ -84,13 +84,13 @@ void loadModelAnimations(model* m) {
 void animateModels(scene *s) {
 
     for (int i = 0; i < s->model_indexes; i++) {
-        if (s->model[i].visible) {
+        //if (s->model[i].visible) {
             if (s->model[i].owns_anim) {
 
                 if ((COUNT % 100) == 0) {
                     f_index += 1;
 
-                    if (f_index > s->model[i].anim.frames)
+                    if (f_index == s->model[i].anim.frames)
                         f_index = 0;
                 }
                 COUNT++;
@@ -101,6 +101,7 @@ void animateModels(scene *s) {
 
                 s->model[i].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
                 // s->model[i].anim.anim_matrix = s->model[i].anim.bm[f_index];
+                //s->model[i].model_matrix = matMulMat(s->model[i].anim.anim_matrix, modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]));  // to be removed!
 
                 if (s->model[i].mesh_indexes > 1) {
                     for (int x = 0; x < s->model[i].mesh_indexes; x++) {
@@ -118,7 +119,7 @@ void animateModels(scene *s) {
                     s->model[i].model_matrix = matMulMat(s->model[i].anim.anim_matrix, modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]));
                 }
             }
-        }
+        //}
     }
 }
 void releaseAnimations(animation *an) {

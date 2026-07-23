@@ -18,5 +18,6 @@
 #endif // !BMP_H
 
 void loadModelTextureAtlas(model *m);
+void loadDefaultModelTexture(model *m);
 
 #endif // !TEXTURE_H
