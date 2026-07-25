@@ -33,8 +33,8 @@ void loadModelTextureAtlas(model *m) {
     releaseBMP(&bmp);
 }
 void loadDefaultModelTexture(model *m) {
-    char dynamic_path[36];
-    anvil_snprintf(dynamic_path, 36, "textures/default_texture_atlas.bmp\0");
+    char dynamic_path[35];
+    anvil_snprintf(dynamic_path, 35, "textures/default_texture_atlas.bmp");
 
     BMP bmp;
     readBMP(&bmp, dynamic_path);

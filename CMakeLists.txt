@@ -56,6 +56,7 @@ if (LINUX)
         "source/components/animations.c" 
         "source/components/animText.c" 
         "source/components/relations.c" 
+        "source/components/texture.c"
     )
 elseif (WIN32)
     set(CMAKE_C_FLAGS "" CACHE STRING "" FORCE)
