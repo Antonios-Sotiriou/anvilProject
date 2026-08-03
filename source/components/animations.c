@@ -1,8 +1,6 @@
 #include "headers/components/animations.h"
 
-static int COUNT = 0;
-static int f_index = 0;
-float rot = 0.f;
+static float getAnimationTime(animation *an, const float FPS);
 
 void loadModelAnimations(model* m) {
     int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 36; // Plus 1 here for the null termination \0.
@@ -24,6 +22,7 @@ void loadModelAnimations(model* m) {
 
     /* Load Model animations. May will change in the future to load model and meshes, which belong to the model in one iteration. */
     m->anim.frames = ad.number_of_frames - 1;  // Minus 1 here because frames start from zero when we iterate them.
+ 
     for (int i = 0; i < ad.number_of_objects; i++) {
         if (strncmp(m->cname, ad.object[i].cname, strlen(m->cname)) == 0) {
 
@@ -87,40 +86,51 @@ void animateModels(scene *s) {
         //if (s->model[i].visible) {
             if (s->model[i].owns_anim) {
 
-                if ((COUNT % 100) == 0) {
-                    f_index += 1;
-
-                    if (f_index == s->model[i].anim.frames)
-                        f_index = 0;
+                if (s->model[i].anim.curr_frame == (s->model[i].anim.frames - 1)) {
+                    s->model[i].anim.next_frame = 0;
                 }
-                COUNT++;
 
-                vec4 lc = s->model[i].anim.lc[f_index];
-                quat rq = s->model[i].anim.rq[f_index];
-                vec4 sc = s->model[i].anim.sc[f_index];
+                if (s->model[i].anim.curr_frame >= s->model[i].anim.frames) {
+                    s->model[i].anim.curr_frame = 0;
+                    s->model[i].anim.next_frame = 1;
+                }
+
+                vec4 lc = lerp(s->model[i].anim.lc[s->model[i].anim.curr_frame], s->model[i].anim.lc[s->model[i].anim.next_frame], s->model[i].anim.frame_t);
+                quat rq = slerp(s->model[i].anim.rq[s->model[i].anim.curr_frame], s->model[i].anim.rq[s->model[i].anim.next_frame], s->model[i].anim.frame_t);
+                vec4 sc = lerp(s->model[i].anim.sc[s->model[i].anim.curr_frame], s->model[i].anim.sc[s->model[i].anim.next_frame], s->model[i].anim.frame_t);
 
                 s->model[i].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
-                // s->model[i].anim.anim_matrix = s->model[i].anim.bm[f_index];
+                // s->model[i].anim.anim_matrix = s->model[i].anim.bm[curr_frame];
                 //s->model[i].model_matrix = matMulMat(s->model[i].anim.anim_matrix, modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]));  // to be removed!
 
                 if (s->model[i].mesh_indexes > 1) {
                     for (int x = 0; x < s->model[i].mesh_indexes; x++) {
 
-                        vec4 lc = s->model[i].mesh[x].anim.lc[f_index];
-                        quat rq = s->model[i].mesh[x].anim.rq[f_index];
-                        vec4 sc = s->model[i].mesh[x].anim.sc[f_index];
+                        vec4 lc = lerp(s->model[i].mesh[x].anim.lc[s->model[i].anim.curr_frame], s->model[i].mesh[x].anim.lc[s->model[i].anim.next_frame], s->model[i].anim.frame_t);
+                        quat rq = slerp(s->model[i].mesh[x].anim.rq[s->model[i].anim.curr_frame], s->model[i].mesh[x].anim.rq[s->model[i].anim.next_frame], s->model[i].anim.frame_t);
+                        vec4 sc = lerp(s->model[i].mesh[x].anim.sc[s->model[i].anim.curr_frame], s->model[i].mesh[x].anim.sc[s->model[i].anim.next_frame], s->model[i].anim.frame_t);
 
                         s->model[i].mesh[x].anim.anim_matrix = modelMatFromQST(rq, sc, lc);
-                        // s->model[i].mesh[x].anim.anim_matrix = s->model[i].mesh[x].anim.bm[f_index];
+                        // s->model[i].mesh[x].anim.anim_matrix = s->model[i].mesh[x].anim.bm[curr_frame];
 
                         s->model[i].mesh[x].model_matrix = matMulMat(s->model[i].mesh[x].anim.anim_matrix, modelMatFromQST(s->model[i].mesh[x].q, s->model[i].mesh[x].scale, s->model[i].mesh[x].coords.v[0]));
                     }
                 } else {
                     s->model[i].model_matrix = matMulMat(s->model[i].anim.anim_matrix, modelMatFromQST(s->model[i].q, s->model[i].scale, s->model[i].coords.v[0]));
                 }
+
+                if (s->model[i].anim.frame_t >= 1) {
+                    s->model[i].anim.curr_frame++;
+                    s->model[i].anim.next_frame = s->model[i].anim.curr_frame + 1;
+                    s->model[i].anim.frame_t = 0.f;
+                }
+
+                s->model[i].anim.frame_t += getAnimationTime(&s->model[i].anim, s->mtr.FPS);
             }
-        //}
     }
+}
+float getAnimationTime(animation *an, const float FPS) {
+    return 0.05f; // 1.f / (FPS / an->frames);
 }
 void releaseAnimations(animation *an) {
     free(an->lc);
@@ -128,5 +138,3 @@ void releaseAnimations(animation *an) {
     free(an->sc);
     free(an->bm);
 }
-
-

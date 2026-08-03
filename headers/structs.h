@@ -89,7 +89,10 @@ typedef struct {
     vec4 *sc;                            // Scales array. Every index represents a frame with a given scale.
     mat4x4 *bm;                          // Bone matrices array.Every index represents a bone matrix frame.
     mat4x4 anim_matrix;
-    int frames;                          // Number of frames which the data are represent. That is also the array length of all the struct members.
+    int frames,                          // Number of frames which the data are represent. That is also the array length of all the struct members.
+        curr_frame,                      // The index of the current frame the animation is currently on.
+        next_frame;                      // The next frame index to interpolate between.
+    float frame_t;                       // Time passed between frames. Helpfull to interpolate between frames.
 } animation;
 
 typedef struct {
@@ -237,7 +240,8 @@ typedef struct {
     buffers buffers;
     textures textures;
     canvas canvas;
-    void (*shaderDispatch)(struct scene*);
+    struct scene *sc;      // A self pointer so we can avoid errors when we want to pass self in the function pointer.
+    void (*shaderDispatch)(sc);
 } scene;
 
 #endif // !STRUCTS_H
