@@ -1,26 +1,6 @@
 #ifndef BMP_H
 #define BMP_H 1
 
-#if !defined(STDIO_H) || !defined(_STDIO_H)
-    #include <stdio.h>
-#endif // !STDIO_H _STDIO_H
-
-#if !defined(NC_STRING) || !defined(_STRING_H)
-    #include <string.h>
-#endif // !INC_STRING _STRING_H
-
-#if !defined(_INC_STDLIB) || !defined(_STDLIB_H)
-    #include <stdlib.h>
-#endif //!_INC_STDLIB _STDLIB_H
-
-#ifndef FLAGS_H
-    #include "headers/flags.h"
-#endif // !FLAGS_H
-
-#ifndef anvil_VERSION_MAJOR
-    #include "headers/cmake_variables.h"
-#endif // !anvil_VERSION_MAJOR
-
 /* BMP Image file reading structs. */
 typedef struct {
     unsigned short Type;

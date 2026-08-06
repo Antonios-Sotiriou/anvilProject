@@ -1,4 +1,11 @@
 #include "headers/components/collisions.h"
+#include "headers/components/terrain.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/components/internal_libraries/quaternions.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 extern void swap(void *a, void *b, unsigned long size);
 /* For testing purposes. Return t time of collision. */

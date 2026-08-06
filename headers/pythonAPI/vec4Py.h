@@ -1,10 +1,8 @@
 #ifndef VEC4PY_H
 #define VEC4PY_H 1
 
-#ifndef Py_PYTHON_H
-    #define PY_SSIZE_T_CLEAN
-    #include <Python.h>
-#endif // !Py_PYTHON_H
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
 typedef struct vec4Py {
     PyObject_HEAD

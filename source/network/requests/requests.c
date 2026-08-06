@@ -1,4 +1,7 @@
 #include "headers/network/requests/requests.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 #define SA struct sockaddr
 

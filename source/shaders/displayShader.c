@@ -1,4 +1,8 @@
 #include "headers/shaders/displayShader.h"
+#include "libraries/glew-2.1.0/include/GL/glew.h"
+#include "flags.h"
+
+#include <stdio.h>
 
 const static char *displayVertexShaderSource = "#version 450 core\n"
 "layout (location = 0) in vec3 vsPos;\n"

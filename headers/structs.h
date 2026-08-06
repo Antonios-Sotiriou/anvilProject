@@ -17,31 +17,16 @@
 #else
 #endif
 
-#if !defined(_INCLUDED_SMM) || !defined(_SMMINTRIN_H_INCLUDED)
-    #include <smmintrin.h>
-#endif // !_INCLUDED_SMM _SMMINTRIN_H_INCLUDED
-
-/* OpenGL headers. */
-#if !defined(__glew_h__) || !defined(__GLEW_H__)
-    #include "libraries/glew-2.1.0/include/GL/glew.h"
-#endif
-
-// Local created headers.
-#ifndef FLAGS_H
-    #include "flags.h"
-#endif // !FLAGS_H
+#include <smmintrin.h>
+#include "libraries/glew-2.1.0/include/GL/glew.h"
 
 #ifdef VECTORIZED_CODE // ######################################################
     #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
         /* Vector's internal format is X Y Z W. */
         typedef union __m128 vec4;
-        /* Quaternion's internal format is W X Y Z. */
-        typedef union __m128 quat;
     #elif defined(LINUX) || defined(__linux__)
         /* Vector's internal format is X Y Z W. */
         typedef __m128 vec4;
-        /* Quaternion's internal format is W X Y Z. */
-        typedef __m128 quat;
     #endif
 typedef union {
     vec4 m[4];
@@ -52,13 +37,14 @@ typedef union {
     float m128_f32[4];
 } vec4;
 
-/* Quaternion's internal format is W X Y Z. */
-typedef vec4 quat;
-
 typedef union {
     vec4 m[4];
 } mat4x4;
+
+typedef vec4 quat;
 #endif // VECTORIZED_CODE ######################################################
+
+//#include "headers/components/internal_libraries/quaternions.h"
 
 /* vectors internal format is X Y. Can be used with intrinsics, but didn't found a usefull usage so far. */
 typedef union {

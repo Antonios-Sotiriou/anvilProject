@@ -1,4 +1,8 @@
 #include "headers/components/camera.h"
+#include "libraries/glfw-3.4/include/GLFW/glfw3.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/quaternions.h"
+#include "headers/components/internal_libraries/vec_math.h"
 
 #define FORCE      50.3f    // Force to apply on velocity to move the object.
 #define ANGLE      0.1f     // Angle by which to rotate the camera.

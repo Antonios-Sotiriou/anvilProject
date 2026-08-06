@@ -1,38 +1,20 @@
 #ifndef ANVILPY_H
 #define ANVILPY_H 1
 
-#ifndef Py_PYTHON_H
-    #define PY_SSIZE_T_CLEAN
-    #include <Python.h>
-#endif // !Py_PYTHON_H
+#include "headers/structs.h"
 
-/* Global variables. */
-#ifndef GLOBAL_H
-    #include "headers/global.h"
-#endif // !GLOBAL_H
-
-#ifndef STRUCTS_H
-    #include "headers/structs.h"
-#endif // !STRUCTS_H
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     #ifndef _WINSOCKAPI_
         #include <WinSock2.h>
-        #ifndef _STDINT
-            #include <stdint.h>
-        #endif // !_SDTINT
+        #include <stdint.h>
     #endif // !_WINSOCK2API_
 #else
     #include <unistd.h>
     #include <pthread.h>
 #endif
-
-#ifndef VEC4PY_H
-    #include "headers/pythonAPI/vec4Py.h"
-#endif // !VEC4PY_H
-
-#define debug_log_INFO()\
-        do { if (DEBUG_LVL_1) fprintf(stderr, "CRITICAL:%s:%d:%s()\n", __FILE__, __LINE__, __func__); } while (0)
 
 typedef struct meshPy {
     PyObject_HEAD

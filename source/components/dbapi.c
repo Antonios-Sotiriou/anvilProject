@@ -1,4 +1,11 @@
 #include "headers/components/dbapi.h"
+#include "libraries/sqlite-amalgamation/sqlite3.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/components/internal_libraries/quaternions.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
+
 
 /* Function pointer to dispatch the appropriate function, according to the type of Table. */
 static int (*callback)(void*, int, char**, char**);

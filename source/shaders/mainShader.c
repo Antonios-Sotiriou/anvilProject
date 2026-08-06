@@ -1,4 +1,11 @@
 #include "headers/shaders/mainShader.h"
+#include "libraries/glew-2.1.0/include/GL/glew.h"
+#include "headers/flags.h"
+#include "headers/global.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/quaternions.h"
+
+#include <stdio.h>
 
 const static char *vertexShaderSource = "#version 450 core\n"
 "layout (location = 0) in vec3 vsPos;\n"

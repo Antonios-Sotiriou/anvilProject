@@ -1,5 +1,7 @@
 #include "headers/components/general.h"
 
+#include <stdint.h>
+
 /* Swaping two variables a and b of any type with size. */
 void swap(void *a, void *b, unsigned long size) {
     void *temp = malloc(size);

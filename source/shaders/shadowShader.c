@@ -1,4 +1,10 @@
 #include "headers/shaders/shadowShader.h"
+#include "libraries/glew-2.1.0/include/GL/glew.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/global.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 const static char *shadowVertexShaderSource = "#version 450 core\n"
     "layout (location = 0) in vec3 vsPos;\n"

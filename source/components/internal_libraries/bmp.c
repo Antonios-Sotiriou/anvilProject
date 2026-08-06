@@ -1,4 +1,8 @@
 #include "headers/components/internal_libraries/bmp.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Reades bmp file on the given path and stores data in BMP f pointer. Data must be freed when no longer needed. */
 void readBMP(BMP *f, const char path[]) {

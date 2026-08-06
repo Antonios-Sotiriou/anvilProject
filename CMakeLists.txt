@@ -153,7 +153,7 @@ endif()
 if (PYTHON_INTERFACE)
     find_package (Python COMPONENTS Interpreter Development)
     if (Python_FOUND)
-        file(COPY "${Python_RUNTIME_LIBRARY_DIRS}/python313.dll" DESTINATION "${PROJECT_BINARY_DIR}")
+        file(COPY "${Python_RUNTIME_LIBRARY_DIRS}/python314.dll" DESTINATION "${PROJECT_BINARY_DIR}")
 
         target_include_directories(anvil PUBLIC "${Python_INCLUDE_DIRS}")
         target_link_libraries(anvil PUBLIC "${Python_LIBRARIES}")

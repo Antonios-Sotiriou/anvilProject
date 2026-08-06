@@ -1,5 +1,9 @@
 #include "headers/components/relations.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 /* Add a Child mesh < m > to children of target < t > and assign target < t > as the parent of < m >. */
 int addChild(mesh *t, mesh *m) {
 	if (strncmp(m->cname, t->cname, strlen(t->cname)) == 0) {

@@ -1,4 +1,10 @@
 #include "headers/components/mesh.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/components/internal_libraries/quaternions.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 void createMesh(mesh *m, ENTRY obj) {
     m->vbo_indexes = (obj.f_indexes / 9) * 24;
@@ -46,6 +52,28 @@ void createMesh(mesh *m, ENTRY obj) {
 
     createMeshVAO(m);
     free(m->vbo);
+}
+/* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
+void createMeshVAO(mesh *m) {
+    glGenVertexArrays(1, &m->VAO);
+    glBindVertexArray(m->VAO);
+    glGenBuffers(1, &m->VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m->VBO);
+    glBufferData(GL_ARRAY_BUFFER, m->vbo_size, m->vbo, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+}
+void releaseMeshVAO(mesh *m) {
+    glDeleteBuffers(1, &m->VBO);
+    glDeleteVertexArrays(1, &m->VAO);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 }
 /* Releases allocated ressources of a mesh. */
 void releaseMesh(mesh *m) {

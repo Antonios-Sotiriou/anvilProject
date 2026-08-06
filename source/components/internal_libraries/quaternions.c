@@ -1,5 +1,7 @@
 #include "headers/components/internal_libraries/quaternions.h"
 
+#include <math.h>
+
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Usefull Global variables fro used in this file, to increase some calculations performance. */
 // Useful for eulerToQuat;

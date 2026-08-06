@@ -1,4 +1,13 @@
 #include "headers/components/rasterization.h"
+#include "headers/shaders/mainShader.h"
+#include "headers/shaders/displayShader.h"
+#include "headers/shaders/testShader.h"
+#include "headers/shaders/rigidShader.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 /* Rasterizing Meshes with appropriate shaders. */
 const void rasterize(scene *s) {

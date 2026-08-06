@@ -1,4 +1,8 @@
-#include "headers/pythonAPI/anvilPy.h"
+#include "headers/pythonAPI/vec4Py.h"
+#include "headers/structs.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 static void vec4Py_Dealloc(vec4Py *self);
 static PyObject *vec4Py_New(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -39,7 +43,7 @@ static int vec4Py_Init(vec4Py *self, PyObject *args, PyObject *kwds) {
     int number_of_children = 0;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si", kwlist, &name, &number_of_children)) {
-        debug_log_INFO();
+        debug_log_info(stderr, "An Error has occured");
         return -1;
     }
 
@@ -118,7 +122,7 @@ static vec4Py *vec4Py_FromVec4(vec4 *v) {
     vec4Py *self = (vec4Py*)vec4PyType.tp_alloc(&vec4PyType, 0);
     if (!self) {
         Py_DECREF(self);
-        debug_log_INFO();
+        debug_log_info(stderr, "An Error has occured");
         return NULL;
     } else {
         //self->coords = PyList_New(64);

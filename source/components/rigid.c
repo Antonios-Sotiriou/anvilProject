@@ -1,4 +1,10 @@
 #include "headers/components/rigid.h"
+#include "headers/components/internal_libraries/obj.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/components/internal_libraries/quaternions.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 void loadModelRigid(model *m) {
 	char path[100] = { 0 };
@@ -78,6 +84,28 @@ void loadModelRigid(model *m) {
 	createRigidVAO(&m->rigid);
 	free(m->rigid.vbo);
 	releaseOBJ(&obj);
+}
+/* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the rigid if we want. */
+void createRigidVAO(rigid *r) {
+	glGenVertexArrays(1, &r->VAO);
+	glBindVertexArray(r->VAO);
+	glGenBuffers(1, &r->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, r->VBO);
+	glBufferData(GL_ARRAY_BUFFER, r->vbo_size, r->vbo, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+}
+void releaseRigidVAO(rigid *r) {
+	glDeleteBuffers(1, &r->VBO);
+	glDeleteVertexArrays(1, &r->VAO);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 }
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Find how much in each direction the meshe's Rigid vectors array extends. Populate with values the (min) and (max) Rigid vec4 values */

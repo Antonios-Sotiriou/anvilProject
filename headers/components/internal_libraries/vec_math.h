@@ -1,22 +1,7 @@
 #ifndef VEC_MATH_H
 #define VEC_MATH_H 1
 
-#if !defined(_INCLUDED_SMM) || !defined(_SMMINTRIN_H_INCLUDED)
-    #include <smmintrin.h>
-#endif // !_INCLUDED_SMM _SMMINTRIN_H_INCLUDED
-
-#if !defined(_INC_MATH) || !defined(_MATH_H)
-    #include <math.h>
-#endif //!_INC_MATH _MATH_H
-
-// Local created headers.
-#ifndef FLAGS_H
-    #include "headers/flags.h"
-#endif // !FLAGS_H
-
-#ifndef STRUCTS_H
-    #include "headers/structs.h"
-#endif // !STRUCTS_H
+#include "headers/structs.h"
 
 vec4 setvec4(const float x, const float y, const float z, const float w);
 vec4 setvec4Zero(void);

@@ -1,4 +1,7 @@
 #include "headers/network/c_interface/TCPServer.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 #define MAX 1024
 #define PORT 8080

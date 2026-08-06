@@ -1,4 +1,7 @@
 #include "headers/pythonAPI/anvilPy.h"
+#include "headers/cmake_variables.h"
+#include "headers/pythonAPI/vec4Py.h"
+#include "headers/flags.h"
 
 static void Custom_dealloc(meshPy *self);
 static PyObject *Custom_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -31,7 +34,7 @@ static PyObject *Custom_new(PyTypeObject *type, PyObject *args, PyObject *kwds) 
         self->cname = PyUnicode_FromString("Undefined");
         if (self->cname == NULL) {
             Py_DECREF(self);
-            debug_log_INFO();
+            debug_log_info(stderr, "An Error has occured");
             return NULL;
         }
         printf("Reached Custom New\n");
@@ -56,7 +59,7 @@ static int Custom_init(meshPy *self, PyObject *args, PyObject *kwds) {
     int number_of_children = 0;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si", kwlist, &name, &number_of_children)) {
-        debug_log_INFO();
+        debug_log_info(stderr, "An Error has occured");
         return -1;
     }
 
@@ -146,7 +149,7 @@ static void meshPy_Children(meshPy *self, mesh *m) {
     for (int i = 0; i < self->number_of_children; i++) {
         meshPy *list_entry = meshPy_FromMesh(m->children[i]);
         if (PyList_Append(self->children, (PyObject*)list_entry) != 0) {
-            debug_log_INFO();
+            debug_log_info(stderr, "An Error has occured");
             Py_DECREF(self->children[i]);
             Py_DECREF(self->children);
         }
@@ -168,7 +171,7 @@ static PyObject *Custom_get_meshPy(PyTypeObject *type, PyObject *args) {
     printf("Called Custom_get_meshPy()\n");
     int model_idx, mesh_idx;
     if (!PyArg_ParseTuple(args, "|ii", &model_idx, &mesh_idx)) {
-        debug_log_INFO();
+        debug_log_info(stderr, "An Error has occured");
         return NULL;
     }
     printf("gathering information for %s\n", SCENE->model[model_idx].mesh[mesh_idx].cname);
@@ -208,7 +211,7 @@ static meshPy *meshPy_FromMesh(mesh *m) {
     meshPy *self = (meshPy*)meshPyType.tp_alloc(&meshPyType, 0);
     if (!self) {
         Py_DECREF(self);
-        debug_log_INFO();
+        debug_log_info(stderr, "An Error has occured");
         return NULL;
     } else {
         self->coords = PyList_New(0);

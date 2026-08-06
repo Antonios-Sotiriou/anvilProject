@@ -1,4 +1,11 @@
 #include "headers/components/scene.h"
+#include "headers/flags.h"
+#include "headers/global.h"
+#include "headers/shaders/displayShader.h"
+#include "headers/components/openGL.h"
+#include "headers/components/model.h"
+
+#include <stdio.h>
 
 /* Like name discribes. It does nothink. */
 void doNothink(scene *s) {}

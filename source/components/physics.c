@@ -1,4 +1,8 @@
 #include "headers/components/physics.h"
+#include "headers/flags.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/quaternions.h"
 
  const static vec4 gravity_epicenter = { 0.f, -1.f, 0.f, 0.f };
 

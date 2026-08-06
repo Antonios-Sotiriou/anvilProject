@@ -1,4 +1,7 @@
 #include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/vec_math.h"
+
+#include <math.h>
 
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Usefull to inverse some values in inverseMatrix function. */

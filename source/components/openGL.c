@@ -1,7 +1,16 @@
 #include "headers/components/openGL.h"
+#include "headers/shaders/mainShader.h"
+#include "headers/shaders/displayShader.h"
+#include "headers/shaders/testShader.h"
+#include "headers/shaders/rigidShader.h"
+#include "headers/shaders/shadowShader.h"
+#include "libraries/glew-2.1.0/include/GL/glew.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 /* OpenGL Global variables. */
-GLint mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram, shadowShaderProgram;
+unsigned int mainShaderProgram, displayShaderProgram, testShaderProgram, rigidShaderProgram, shadowShaderProgram;
 
 void static GLAPIENTRY glErrorReportCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
@@ -117,50 +126,6 @@ void createSceneFrameBuffers(scene *s) {
     s->buffers.drawBuffers[0] = GL_COLOR_ATTACHMENT0;
     s->buffers.drawBuffers[1] = GL_COLOR_ATTACHMENT1;
     s->textures.totalTextures = 8;
-}
-/* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the mesh if we want. */
-void createMeshVAO(mesh *m) {
-    glGenVertexArrays(1, &m->VAO);
-    glBindVertexArray(m->VAO);
-    glGenBuffers(1, &m->VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, m->VBO);
-    glBufferData(GL_ARRAY_BUFFER, m->vbo_size, m->vbo, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-}
-void releaseMeshVAO(mesh *m) {
-    glDeleteBuffers(1, &m->VBO);
-    glDeleteVertexArrays(1, &m->VAO);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-}
-/* Creating the Vertex Array Object (VAO) to store in the GPU.After this function we can release the vao pointer of the rigid if we want. */
-void createRigidVAO(rigid *r) {
-    glGenVertexArrays(1, &r->VAO);
-    glBindVertexArray(r->VAO);
-    glGenBuffers(1, &r->VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, r->VBO);
-    glBufferData(GL_ARRAY_BUFFER, r->vbo_size, r->vbo, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, (void*)(3 * sizeof(float)));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-}
-void releaseRigidVAO(rigid *r) {
-    glDeleteBuffers(1, &r->VBO);
-    glDeleteVertexArrays(1, &r->VAO);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
 }
 void releaseSceneFrameBuffers(scene *s) {
     glDeleteFramebuffers(1, &s->buffers.mainFrameBuffer);

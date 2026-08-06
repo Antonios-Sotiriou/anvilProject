@@ -1,4 +1,14 @@
 #include "headers/components/animations.h"
+#include "headers/cmake_variables.h"
+#include "headers/global.h"
+#include "headers/flags.h"
+#include "headers/components/animText.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/internal_libraries/quaternions.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 static float getAnimationTime(animation *an, const float FPS);
 
@@ -61,7 +71,7 @@ void loadModelAnimations(model* m) {
 
                     if (ad.object[y].number_of_children) {
                         m->mesh[x].number_of_children = ad.object[y].number_of_children;
-                        m->mesh[x].children = malloc(8 * ad.object[y].number_of_children);
+                        m->mesh[x].children = malloc(sizeof(double) * ad.object[y].number_of_children);
 
                         for (int c = 0; c < ad.object[y].number_of_children; c++) {
                             for (int z = 0; z < m->mesh_indexes; z++) {

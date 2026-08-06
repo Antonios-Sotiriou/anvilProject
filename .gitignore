@@ -6,4 +6,6 @@ temp
 test.sql
 code_cache.c
 build/
+textures/*
+!textures/.gitkeep
 

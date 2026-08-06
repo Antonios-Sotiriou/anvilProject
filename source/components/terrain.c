@@ -1,4 +1,10 @@
 #include "headers/components/terrain.h"
+#include "headers/components/internal_libraries/bmp.h"
+#include "headers/components/internal_libraries/vec_math.h"
+#include "headers/cmake_variables.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 static int initIndividualTerrainHeightMap(TerrainInitInfo *tif);
 static void initTerrainVectors(BMP *bmp, const int emvadon, const char new_file_path[]);

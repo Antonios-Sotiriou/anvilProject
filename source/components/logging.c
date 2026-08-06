@@ -1,4 +1,7 @@
 #include "headers/components/logging.h"
+#include "headers/components/internal_libraries/vec_math.h"
+
+#include <stdio.h>
 
 void logvec4(const vec4 v) {
 	printf("%f %f %f %f\n", vec4ExtractX(v), vec4ExtractY(v), vec4ExtractZ(v), vec4ExtractW(v));

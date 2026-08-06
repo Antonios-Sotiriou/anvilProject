@@ -1,4 +1,7 @@
 #include "headers/network/c_interface/TCPClient.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 #define MAX 80
 #define PORT 8080

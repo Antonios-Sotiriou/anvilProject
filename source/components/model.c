@@ -1,4 +1,13 @@
 #include "headers/components/model.h"
+#include "headers/components/internal_libraries/obj.h"
+#include "headers/components/internal_libraries/matrices.h"
+#include "headers/components/animations.h"
+#include "headers/components/texture.h"
+#include "headers/components/rigid.h"
+#include "headers/components/mesh.h"
+#include "headers/flags.h"
+
+#include <stdio.h>
 
 void createModel(model *m) {
     int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 14; // Plus 1 here for the null termination \0.
