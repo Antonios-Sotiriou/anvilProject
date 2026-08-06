@@ -1,5 +1,8 @@
 #include "headers/components/rasterization.h"
+#include "headers/components/scene.h"
+#include "headers/components/rigid.h"
 #include "headers/shaders/mainShader.h"
+#include "headers/shaders/shadowShader.h"
 #include "headers/shaders/displayShader.h"
 #include "headers/shaders/testShader.h"
 #include "headers/shaders/rigidShader.h"
@@ -8,6 +11,7 @@
 #include "headers/flags.h"
 
 #include <stdio.h>
+#include <string.h>
 
 /* Rasterizing Meshes with appropriate shaders. */
 const void rasterize(scene *s) {

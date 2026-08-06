@@ -1,5 +1,7 @@
 #include "headers/components/internal_libraries/vec_math.h"
 
+#include <math.h>
+
 #ifdef VECTORIZED_CODE // #######################################################################################
 /* Initializes a vec4 with the given values. */
 vec4 setvec4(const float x, const float y, const float z, const float w) {

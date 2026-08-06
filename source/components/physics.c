@@ -1,4 +1,6 @@
 #include "headers/components/physics.h"
+#include "headers/components/terrain.h"
+#include "headers/components/collisions.h"
 #include "headers/flags.h"
 #include "headers/components/internal_libraries/vec_math.h"
 #include "headers/components/internal_libraries/matrices.h"

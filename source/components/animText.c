@@ -2,6 +2,7 @@
 #include "flags.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void readAnimText(animTextData *an, char path[]) {
     FILE *fp = fopen(path, "r");

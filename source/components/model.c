@@ -8,6 +8,7 @@
 #include "headers/flags.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void createModel(model *m) {
     int path_length = (strlen(m->cname) * 2) + strlen(anvil_SOURCE_DIR) + 14; // Plus 1 here for the null termination \0.

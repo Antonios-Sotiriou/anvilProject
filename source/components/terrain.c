@@ -1,4 +1,5 @@
 #include "headers/components/terrain.h"
+#include "headers/components/dbapi.h"
 #include "headers/components/internal_libraries/bmp.h"
 #include "headers/components/internal_libraries/vec_math.h"
 #include "headers/cmake_variables.h"

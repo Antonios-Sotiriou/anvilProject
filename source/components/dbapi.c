@@ -5,6 +5,8 @@
 #include "headers/flags.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <math.h>
 
 
 /* Function pointer to dispatch the appropriate function, according to the type of Table. */

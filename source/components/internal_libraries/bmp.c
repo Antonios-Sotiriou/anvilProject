@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* Reades bmp file on the given path and stores data in BMP f pointer. Data must be freed when no longer needed. */
 void readBMP(BMP *f, const char path[]) {

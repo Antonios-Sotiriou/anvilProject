@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <xmmintrin.h>
 #include <limits.h>
+#include <string.h>
 
 /* Internal Libraries. */
 #include "headers/global.h"
@@ -24,7 +25,10 @@
 #include "headers/components/openGL.h"
 #include "headers/components/scene.h"
 #include "headers/components/general.h"
+#include "headers/components/terrain.h"
+#include "headers/components/camera.h"
 #include "headers/components/rasterization.h"
+#include "headers/components/animations.h"
 #include "headers/components/physics.h"
 #include "headers/components/internal_libraries/matrices.h"
 #include "headers/components/internal_libraries/vec_math.h"

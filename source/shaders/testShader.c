@@ -1,4 +1,5 @@
 #include "headers/shaders/testShader.h"
+#include "headers/components/rasterization.h"
 #include "libraries/glew-2.1.0/include/GL/glew.h"
 #include "headers/global.h"
 #include "flags.h"

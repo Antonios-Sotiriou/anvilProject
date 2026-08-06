@@ -1,10 +1,13 @@
 #include "headers/components/mesh.h"
+#include "headers/components/rigid.h"
+#include "headers/components/animations.h"
 #include "headers/components/internal_libraries/matrices.h"
 #include "headers/components/internal_libraries/vec_math.h"
 #include "headers/components/internal_libraries/quaternions.h"
 #include "headers/flags.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void createMesh(mesh *m, ENTRY obj) {
     m->vbo_indexes = (obj.f_indexes / 9) * 24;

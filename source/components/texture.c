@@ -3,6 +3,7 @@
 #include "headers/flags.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void loadModelTextureAtlas(model *m) {
     int path_length = (strlen(m->cname) * 2) + 27; // Plus 1 here for the null termination \0.
